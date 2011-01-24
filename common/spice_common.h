@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include "backtrace.h"
 
 #define ASSERT(x) if (!(x)) {                               \
