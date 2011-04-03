@@ -47,20 +47,8 @@
 #include <config.h>
 #endif
 
+#include "spice_common.h"
 #include "lz.h"
-
-#define DEBUG
-
-#ifdef DEBUG
-
-#define ASSERT(usr, x) \
-    if (!(x)) (usr)->error(usr, "%s: ASSERT %s failed\n", __FUNCTION__, #x);
-
-#else
-
-#define ASSERT(usr, x)
-
-#endif
 
 #define HASH_LOG 13
 #define HASH_SIZE (1 << HASH_LOG)
@@ -184,7 +172,7 @@ static int lz_read_image_segments(Encoder *encoder, uint8_t *first_lines,
     uint8_t* lines = first_lines;
     int row;
 
-    ASSERT(encoder->usr, !encoder->head_image_segs);
+    spice_return_val_if_fail(!encoder->head_image_segs, FALSE);
 
     image_seg = lz_alloc_image_seg(encoder);
     if (!image_seg) {
@@ -240,10 +228,10 @@ static INLINE void encode(Encoder *encoder, uint8_t byte)
         if (more_io_bytes(encoder) <= 0) {
             encoder->usr->error(encoder->usr, "%s: no more bytes\n", __FUNCTION__);
         }
-        ASSERT(encoder->usr, encoder->io_now);
+        spice_return_if_fail(encoder->io_now);
     }
 
-    ASSERT(encoder->usr, encoder->io_now < encoder->io_end);
+    spice_return_if_fail(encoder->io_now < encoder->io_end);
     *(encoder->io_now++) = byte;
 }
 
@@ -263,7 +251,7 @@ static INLINE void encode_copy_count(Encoder *encoder, uint8_t copy_count)
 
 static INLINE void update_copy_count(Encoder *encoder, uint8_t copy_count)
 {
-    ASSERT(encoder->usr, encoder->io_last_copy);
+    spice_return_if_fail(encoder->io_last_copy);
     *(encoder->io_last_copy) = copy_count;
 }
 
@@ -278,12 +266,13 @@ static INLINE void compress_output_prev(Encoder *encoder)
     // io_now cannot be the first byte of the buffer
     encoder->io_now--;
     // the function should be called only when copy count is written unnecessarily by lz_compress
-    ASSERT(encoder->usr, encoder->io_now == encoder->io_last_copy)
+    spice_return_if_fail(encoder->io_now == encoder->io_last_copy);
 }
 
 static int encoder_reset(Encoder *encoder, uint8_t *io_ptr, uint8_t *io_ptr_end)
 {
-    ASSERT(encoder->usr, io_ptr <= io_ptr_end);
+    spice_return_val_if_fail(io_ptr <= io_ptr_end, FALSE);
+
     encoder->io_bytes_count = io_ptr_end - io_ptr;
     encoder->io_start = io_ptr;
     encoder->io_now = io_ptr;
@@ -300,9 +289,9 @@ static INLINE uint8_t decode(Encoder *encoder)
         if (num_io_bytes <= 0) {
             encoder->usr->error(encoder->usr, "%s: no more bytes\n", __FUNCTION__);
         }
-        ASSERT(encoder->usr, encoder->io_now);
+        spice_assert(encoder->io_now);
     }
-    ASSERT(encoder->usr, encoder->io_now < encoder->io_end);
+    spice_assert(encoder->io_now < encoder->io_end);
     return *(encoder->io_now++);
 }
 
@@ -707,7 +696,7 @@ void lz_decode(LzContext *lz, LzImageType to_type, uint8_t *buf)
             if (encoder->type == to_type) {
                 out_size = lz_rgb32_decompress(encoder, (rgb32_pixel_t *)buf, size);
                 alpha_size = lz_rgb_alpha_decompress(encoder, (rgb32_pixel_t *)buf, size);
-                ASSERT(encoder->usr, alpha_size == size);
+                spice_assert(alpha_size == size);
             } else {
                 encoder->usr->error(encoder->usr, "unsupported output format\n");
             }
@@ -731,8 +720,8 @@ void lz_decode(LzContext *lz, LzImageType to_type, uint8_t *buf)
         }
     }
 
-    ASSERT(encoder->usr, is_io_to_decode_end(encoder));
-    ASSERT(encoder->usr, out_size == size);
+    spice_assert(is_io_to_decode_end(encoder));
+    spice_assert(out_size == size);
 
     if (out_size != size) {
         encoder->usr->error(encoder->usr, "bad decode size\n");

@@ -235,7 +235,7 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, int i,
     BYTE * const correlate_row_b = channel_b->correlate_row;
     int stopidx;
 
-    ASSERT(encoder->usr, end - i > 0);
+    spice_assert(end - i > 0);
 
     if (!i) {
         unsigned int codeword, codewordlen;
@@ -305,9 +305,9 @@ static void FNAME(compress_row0)(Encoder *encoder, const PIXEL *cur_row,
         }
     }
 
-    ASSERT(encoder->usr, (int)encoder->rgb_state.wmidx <= wmimax);
-    ASSERT(encoder->usr, encoder->rgb_state.wmidx <= 32);
-    ASSERT(encoder->usr, wminext > 0);
+    spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
+    spice_assert(encoder->rgb_state.wmidx <= 32);
+    spice_assert(wminext > 0);
 }
 
 #define COMPRESS_ONE_0(channel) \
@@ -347,7 +347,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, int i,
     int run_size;
 #endif
 
-    ASSERT(encoder->usr, end - i > 0);
+    spice_assert(end - i > 0);
 
     if (!i) {
         unsigned int codeword, codewordlen;
@@ -451,9 +451,9 @@ static void FNAME(compress_row)(Encoder *encoder,
         }
     }
 
-    ASSERT(encoder->usr, (int)encoder->rgb_state.wmidx <= wmimax);
-    ASSERT(encoder->usr, encoder->rgb_state.wmidx <= 32);
-    ASSERT(encoder->usr, wminext > 0);
+    spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
+    spice_assert(encoder->rgb_state.wmidx <= 32);
+    spice_assert(wminext > 0);
 }
 
 #endif
@@ -490,7 +490,7 @@ static void FNAME(uncompress_row0_seg)(Encoder *encoder, int i,
     BYTE * const correlate_row_b = channel_b->correlate_row;
     int stopidx;
 
-    ASSERT(encoder->usr, end - i > 0);
+    spice_assert(end - i > 0);
 
     if (!i) {
         unsigned int codewordlen;
@@ -567,9 +567,9 @@ static void FNAME(uncompress_row0)(Encoder *encoder,
         }
     }
 
-    ASSERT(encoder->usr, (int)encoder->rgb_state.wmidx <= wmimax);
-    ASSERT(encoder->usr, encoder->rgb_state.wmidx <= 32);
-    ASSERT(encoder->usr, wminext > 0);
+    spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
+    spice_assert(encoder->rgb_state.wmidx <= 32);
+    spice_assert(wminext > 0);
 }
 
 #define UNCOMPRESS_ONE_0(channel) \
@@ -611,7 +611,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder,
     int run_end;
 #endif
 
-    ASSERT(encoder->usr, end - i > 0);
+    spice_assert(end - i > 0);
 
     if (!i) {
         unsigned int codewordlen;
@@ -721,9 +721,9 @@ static void FNAME(uncompress_row)(Encoder *encoder,
         }
     }
 
-    ASSERT(encoder->usr, (int)encoder->rgb_state.wmidx <= wmimax);
-    ASSERT(encoder->usr, encoder->rgb_state.wmidx <= 32);
-    ASSERT(encoder->usr, wminext > 0);
+    spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
+    spice_assert(encoder->rgb_state.wmidx <= 32);
+    spice_assert(wminext > 0);
 }
 
 #undef PIXEL

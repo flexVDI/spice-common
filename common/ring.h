@@ -48,14 +48,14 @@ static inline int ring_item_is_linked(RingItem *item)
 
 static inline int ring_is_empty(Ring *ring)
 {
-    ASSERT(ring->next != NULL && ring->prev != NULL);
+    spice_assert(ring->next != NULL && ring->prev != NULL);
     return ring == ring->next;
 }
 
 static inline void ring_add(Ring *ring, RingItem *item)
 {
-    ASSERT(ring->next != NULL && ring->prev != NULL);
-    ASSERT(item->next == NULL && item->prev == NULL);
+    spice_assert(ring->next != NULL && ring->prev != NULL);
+    spice_assert(item->next == NULL && item->prev == NULL);
 
     item->next = ring->next;
     item->prev = ring;
@@ -81,8 +81,8 @@ static inline void __ring_remove(RingItem *item)
 
 static inline void ring_remove(RingItem *item)
 {
-    ASSERT(item->next != NULL && item->prev != NULL);
-    ASSERT(item->next != item);
+    spice_assert(item->next != NULL && item->prev != NULL);
+    spice_assert(item->next != item);
 
     __ring_remove(item);
 }
@@ -91,7 +91,7 @@ static inline RingItem *ring_get_head(Ring *ring)
 {
     RingItem *ret;
 
-    ASSERT(ring->next != NULL && ring->prev != NULL);
+    spice_assert(ring->next != NULL && ring->prev != NULL);
 
     if (ring_is_empty(ring)) {
         return NULL;
@@ -104,7 +104,7 @@ static inline RingItem *ring_get_tail(Ring *ring)
 {
     RingItem *ret;
 
-    ASSERT(ring->next != NULL && ring->prev != NULL);
+    spice_assert(ring->next != NULL && ring->prev != NULL);
 
     if (ring_is_empty(ring)) {
         return NULL;
@@ -117,9 +117,9 @@ static inline RingItem *ring_next(Ring *ring, RingItem *pos)
 {
     RingItem *ret;
 
-    ASSERT(ring->next != NULL && ring->prev != NULL);
-    ASSERT(pos);
-    ASSERT(pos->next != NULL && pos->prev != NULL);
+    spice_assert(ring->next != NULL && ring->prev != NULL);
+    spice_assert(pos);
+    spice_assert(pos->next != NULL && pos->prev != NULL);
     ret = pos->next;
     return (ret == ring) ? NULL : ret;
 }
@@ -128,9 +128,9 @@ static inline RingItem *ring_prev(Ring *ring, RingItem *pos)
 {
     RingItem *ret;
 
-    ASSERT(ring->next != NULL && ring->prev != NULL);
-    ASSERT(pos);
-    ASSERT(pos->next != NULL && pos->prev != NULL);
+    spice_assert(ring->next != NULL && ring->prev != NULL);
+    spice_assert(pos);
+    spice_assert(pos->next != NULL && pos->prev != NULL);
     ret = pos->prev;
     return (ret == ring) ? NULL : ret;
 }

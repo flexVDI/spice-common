@@ -243,7 +243,7 @@ void oglctx_destroy(OGLCtx *ctx)
         XFreePixmap(ctx->x_display, ((OGLPixmapCtx *)ctx)->pixmap);
         break;
     default:
-        PANIC("invalid ogl ctx type");
+        spice_error("invalid ogl ctx type");
     }
 
     XCloseDisplay(ctx->x_display);

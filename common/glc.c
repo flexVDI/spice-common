@@ -305,7 +305,7 @@ void glc_path_move_to(GLCPath path, double x, double y)
 {
     InternalPath *internal = (InternalPath *)path;
 
-    ASSERT(internal);
+    spice_assert(internal);
 
     if (internal->current_segment) {
         internal->current_segment = NULL;
@@ -361,7 +361,7 @@ void glc_path_line_to(GLCPath path, double x, double y)
 {
     InternalPath *internal = (InternalPath *)path;
 
-    ASSERT(internal);
+    spice_assert(internal);
 
     add_segment_common(internal, GLC_PATH_SEG_LINES, 1);
     put_point(internal, x, y);
@@ -372,7 +372,7 @@ void glc_path_curve_to(GLCPath path, double p1_x, double p1_y, double p2_x, doub
 {
     InternalPath *internal = (InternalPath *)path;
 
-    ASSERT(internal);
+    spice_assert(internal);
 
     add_segment_common(internal, GLC_PATH_SEG_BEIZER, 3);
     put_point(internal, p1_x, p1_y);
@@ -384,7 +384,7 @@ void glc_path_close(GLCPath path)
 {
     InternalPath *internal = (InternalPath *)path;
 
-    ASSERT(internal);
+    spice_assert(internal);
     if (!internal->current_path) {
         return;
     }
@@ -397,7 +397,7 @@ void glc_path_cleare(GLCPath path)
 {
     InternalPath *internal = (InternalPath *)path;
 
-    ASSERT(internal);
+    spice_assert(internal);
     internal->paths_pos = internal->segments_pos = 0;
     internal->current_segment = NULL;
     internal->current_path = NULL;
@@ -412,7 +412,7 @@ GLCPath glc_path_create(GLCCtx glc)
     InternaCtx *ctx = (InternaCtx *)glc;
     InternalPath *path;
 
-    ASSERT(ctx);
+    spice_assert(ctx);
     path = spice_new0(InternalPath, 1);
     path->paths_size = 2;
     path->paths = spice_new(Path, path->paths_size);
@@ -447,7 +447,7 @@ static inline void unref_pat(InternalPat *pat)
     if (!pat) {
         return;
     }
-    ASSERT(pat->refs > 0);
+    spice_assert(pat->refs > 0);
     if (--pat->refs == 0) {
         glFinish();
         glDeleteTextures(1, &pat->texture);
@@ -498,16 +498,16 @@ static inline void init_pattern(InternalPat *pat, int x_orign, int y_orign, cons
 
     const int pix_bytes = 4;
 
-    ASSERT(image->format == GLC_IMAGE_RGB32); //for now
+    spice_assert(image->format == GLC_IMAGE_RGB32); //for now
 
     width = image->width;
     height = image->height;
     width2 = gl_get_to_power_two(width);
     height2 = gl_get_to_power_two(height);
 
-    ASSERT(width > 0 && height > 0);
-    ASSERT(width > 0 && width <= pat->owner->max_texture_size);
-    ASSERT(height > 0 && height <= pat->owner->max_texture_size);
+    spice_assert(width > 0 && height > 0);
+    spice_assert(width > 0 && width <= pat->owner->max_texture_size);
+    spice_assert(height > 0 && height <= pat->owner->max_texture_size);
 
     if (width2 != width || height2 != height) {
         tmp_pixmap = (uint32_t *)spice_malloc(width2 * height2 * sizeof(uint32_t));
@@ -529,7 +529,7 @@ static inline void init_pattern(InternalPat *pat, int x_orign, int y_orign, cons
                      tmp_pixmap);
         free(tmp_pixmap);
     } else {
-        ASSERT(image->stride % pix_bytes == 0);
+        spice_assert(image->stride % pix_bytes == 0);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, image->stride / pix_bytes);
         glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE,
                      image->pixels);
@@ -553,7 +553,7 @@ GLCPattern glc_pattern_create(GLCCtx glc, int x_orign, int y_orign, const GLCIma
     InternaCtx *ctx = (InternaCtx *)glc;
     InternalPat *pat;
 
-    ASSERT(ctx && image);
+    spice_assert(ctx && image);
 
     pat = spice_new0(InternalPat, 1);
     pat->refs = 1;
@@ -566,7 +566,7 @@ GLCPattern glc_pattern_create(GLCCtx glc, int x_orign, int y_orign, const GLCIma
 void glc_pattern_set(GLCPattern pattern, int x_orign, int y_orign, const GLCImage *image)
 {
     InternalPat *pat = (InternalPat *)pattern;
-    ASSERT(pat && pat->owner);
+    spice_assert(pat && pat->owner);
 
     glFinish();
     init_pattern(pat, x_orign, y_orign, image);
@@ -603,7 +603,7 @@ void glc_set_pattern(GLCCtx glc, GLCPattern pattern)
     InternaCtx *ctx = (InternaCtx *)glc;
     InternalPat *pat = (InternalPat *)pattern;
 
-    ASSERT(ctx && pat && pat->owner == ctx);
+    spice_assert(ctx && pat && pat->owner == ctx);
     set_pat(ctx, pat);
 }
 
@@ -611,7 +611,7 @@ void glc_set_rgb(GLCCtx glc, double red, double green, double blue)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx);
+    spice_assert(ctx);
 
     glDisable(GL_TEXTURE_2D);
     unref_pat(ctx->pat);
@@ -634,7 +634,7 @@ void glc_set_line_width(GLCCtx glc, double width)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx);
+    spice_assert(ctx);
     ctx->line_width = (GLfloat)width;
     if (ctx->line_width > 0) {
         glLineWidth(ctx->line_width);
@@ -648,7 +648,7 @@ void glc_set_line_dash(GLCCtx glc, const double *dashes, int num_dashes, double 
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx);
+    spice_assert(ctx);
     if (dashes && num_dashes >= 0 && offset >= 0) {
         ctx->line_dash.dashes = spice_new(double, num_dashes);
         memcpy(ctx->line_dash.dashes, dashes, sizeof(double) * num_dashes);
@@ -666,7 +666,7 @@ void glc_set_fill_mode(GLCCtx glc, GLCFillMode fill_mode)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx);
+    spice_assert(ctx);
     int mode;
     switch (fill_mode) {
     case GLC_FILL_MODE_WINDING_ODD:
@@ -703,8 +703,8 @@ void glc_set_mask(GLCCtx glc, int x_dest, int y_dest, int width, int height,
 {
     InternaCtx *ctx = (InternaCtx *)glc;
     uint32_t mask = (id == GLC_MASK_A) ? 0x04 : 0x08;
-    ASSERT(ctx && bitmap);
-    ASSERT(id == GLC_MASK_A || id == GLC_MASK_B);
+    spice_assert(ctx && bitmap);
+    spice_assert(id == GLC_MASK_A || id == GLC_MASK_B);
 
     if (ctx->pat) {
         glDisable(GL_TEXTURE_2D);
@@ -732,8 +732,8 @@ void glc_mask_rects(GLCCtx glc, int num_rect, GLCRect *rects, GLCMaskID id)
     InternaCtx *ctx = (InternaCtx *)glc;
     uint32_t mask = (id == GLC_MASK_A) ? 0x04 : 0x08;
     GLCRect *end;
-    ASSERT(ctx && rects);
-    ASSERT(id == GLC_MASK_A || id == GLC_MASK_B);
+    spice_assert(ctx && rects);
+    spice_assert(id == GLC_MASK_A || id == GLC_MASK_B);
 
     if (ctx->pat) {
         glDisable(GL_TEXTURE_2D);
@@ -763,8 +763,8 @@ void glc_clear_mask(GLCCtx glc, GLCMaskID id)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
     uint32_t mask = (id == GLC_MASK_A) ? 0x04 : 0x08;
-    ASSERT(ctx);
-    ASSERT(id == GLC_MASK_A || id == GLC_MASK_B);
+    spice_assert(ctx);
+    spice_assert(id == GLC_MASK_A || id == GLC_MASK_B);
 
     if ((ctx->stencil_mask & mask)) {
         ctx->stencil_mask &= ~mask;
@@ -855,7 +855,7 @@ void glc_clip_rect(GLCCtx glc, const GLCRect *rect, GLCClipOp op)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx && rect);
+    spice_assert(ctx && rect);
     clip_common(ctx, op, fill_rect, (void *)rect);
 }
 
@@ -863,7 +863,7 @@ void glc_clip_path(GLCCtx glc, GLCPath path, GLCClipOp op)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx && path);
+    spice_assert(ctx && path);
     clip_common(ctx, op, fill_path, path);
 }
 
@@ -889,7 +889,7 @@ void glc_clip_mask(GLCCtx glc, int x_dest, int y_dest, int width, int height,
     InternaCtx *ctx = (InternaCtx *)glc;
     FillMaskInfo mask_info;
 
-    ASSERT(ctx && bitmap);
+    spice_assert(ctx && bitmap);
     mask_info.x_dest = x_dest;
     mask_info.y_dest = y_dest;
     mask_info.width = width;
@@ -934,7 +934,7 @@ void glc_fill_rect(GLCCtx glc, const GLCRect *rect)
     InternaCtx *ctx = (InternaCtx *)glc;
     GLCRect *r = (GLCRect *)rect; // to avoid bugs in gcc older than 4.3
 
-    ASSERT(ctx);
+    spice_assert(ctx);
     start_draw(ctx);
     fill_rect(ctx, (void *)r);
     GLC_ERROR_TEST_FLUSH;
@@ -970,7 +970,7 @@ static void fill_path(InternaCtx *ctx, void *p)
                                   (GLdouble *)&current_point[2]);
                 }
             } else {
-                ASSERT(current_segment->type == GLC_PATH_SEG_LINES);
+                spice_assert(current_segment->type == GLC_PATH_SEG_LINES);
                 end_point = current_point + current_segment->count;
                 for (; current_point < end_point; current_point++) {
                     gluTessVertex(ctx->tesselator, (GLdouble *)current_point,
@@ -987,7 +987,7 @@ void glc_fill_path(GLCCtx glc, GLCPath path_ref)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx && path_ref);
+    spice_assert(ctx && path_ref);
     start_draw(ctx);
     fill_path(ctx, path_ref);
 }
@@ -1005,10 +1005,10 @@ void _glc_fill_mask(GLCCtx glc, int x_dest, int y_dest, int width, int height, i
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx && bitmap);
+    spice_assert(ctx && bitmap);
     start_draw(ctx);
     if (ctx->pat) {
-        WARN_ONCE("%s: unimplemented fill mask with pattern\n", __FUNCTION__);
+        spice_critical("unimplemented fill mask with pattern");
     }
     fill_mask(ctx, x_dest, y_dest, width, height, stride, bitmap);
 }
@@ -1019,7 +1019,7 @@ void glc_fill_alpha(GLCCtx glc, int x_dest, int y_dest, int width, int height, i
     InternaCtx *ctx = (InternaCtx *)glc;
     GLCRect r;
 
-    ASSERT(ctx);
+    spice_assert(ctx);
     start_draw(ctx);
 
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
@@ -1045,7 +1045,7 @@ void glc_stroke_rect(GLCCtx glc, const GLCRect *rect)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx);
+    spice_assert(ctx);
     if (ctx->line_width == 0) {
         return;
     }
@@ -1151,7 +1151,7 @@ static void glc_vertex2d(InternaCtx *ctx, double x, double y)
         ctx->path_stroke.y = y;
         ctx->path_stroke.state = GLC_STROKE_ACTIVE;
     } else {
-        ASSERT(ctx->path_stroke.state == GLC_STROKE_NONACTIVE);
+        spice_assert(ctx->path_stroke.state == GLC_STROKE_NONACTIVE);
         //error
     }
 }
@@ -1173,7 +1173,7 @@ void glc_stroke_path(GLCCtx glc, GLCPath path_ref)
     InternaCtx *ctx = (InternaCtx *)glc;
     InternalPath *path = (InternalPath *)path_ref;
 
-    ASSERT(ctx && path);
+    spice_assert(ctx && path);
     if (ctx->line_width == 0) {
         return;
     }
@@ -1202,7 +1202,7 @@ void glc_stroke_path(GLCCtx glc, GLCPath path_ref)
                     glc_vertex2d(ctx, current_point[2].x, current_point[2].y);
                 }
             } else {
-                ASSERT(current_segment->type == GLC_PATH_SEG_LINES);
+                spice_assert(current_segment->type == GLC_PATH_SEG_LINES);
                 end_point = current_point + current_segment->count;
                 for (; current_point < end_point; current_point++) {
                     glc_vertex2d(ctx, current_point->x, current_point->y);
@@ -1220,10 +1220,10 @@ void glc_draw_image(GLCCtx glc, const GLCRecti *dest, const GLCRecti *src, const
     uint8_t *pixels;
     const int pix_bytes = 4;
 
-    ASSERT(ctx && image);
-    ASSERT(src->width > 0 && src->height > 0);
+    spice_assert(ctx && image);
+    spice_assert(src->width > 0 && src->height > 0);
 
-    ASSERT(image->format == GLC_IMAGE_RGB32 || image->format == GLC_IMAGE_ARGB32); //for now
+    spice_assert(image->format == GLC_IMAGE_RGB32 || image->format == GLC_IMAGE_ARGB32); //for now
     start_draw(ctx);
     if (ctx->pat) {
         glDisable(GL_TEXTURE_2D);
@@ -1242,7 +1242,7 @@ void glc_draw_image(GLCCtx glc, const GLCRecti *dest, const GLCRecti *src, const
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
     }
-    ASSERT(image->stride % pix_bytes == 0);
+    spice_assert(image->stride % pix_bytes == 0);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, image->stride / pix_bytes);
     glDrawPixels(src->width, src->height, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
 
@@ -1262,7 +1262,7 @@ void glc_copy_pixels(GLCCtx glc, int x_dest, int y_dest, int x_src, int y_src, i
     InternaCtx *ctx = (InternaCtx *)glc;
     int recreate = 0;
 
-    ASSERT(ctx);
+    spice_assert(ctx);
 #ifdef USE_COPY_PIXELS
     start_draw(ctx);
     if (ctx->pat) {
@@ -1303,7 +1303,7 @@ void glc_copy_pixels(GLCCtx glc, int x_dest, int y_dest, int x_src, int y_src, i
         glTexImage2D(GL_TEXTURE_2D, 0, 4, ctx->private_tex_width,
                      ctx->private_tex_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
     }
-    ASSERT(ctx->private_tex);
+    spice_assert(ctx->private_tex);
     glBindTexture(GL_TEXTURE_2D, ctx->private_tex);
     glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, x_src, ctx->height - (y_src + height),
                      width2, height2, 0);
@@ -1332,9 +1332,9 @@ void glc_read_pixels(GLCCtx glc, int x, int y, GLCImage *image)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx && image);
-    ASSERT(image->format == GLC_IMAGE_RGB32); //for now
-    ASSERT((image->stride % 4) == 0); //for now
+    spice_assert(ctx && image);
+    spice_assert(image->format == GLC_IMAGE_RGB32); //for now
+    spice_assert((image->stride % 4) == 0); //for now
     glPixelStorei(GL_PACK_ROW_LENGTH, image->stride / 4);
     glReadPixels(x, ctx->height - (y + image->height), image->width, image->height,
                  GL_BGRA, GL_UNSIGNED_BYTE, image->pixels);
@@ -1344,7 +1344,7 @@ void glc_clear(GLCCtx glc)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
 
-    ASSERT(ctx);
+    spice_assert(ctx);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -1458,7 +1458,7 @@ GLCCtx glc_create(int width, int height)
 {
     InternaCtx *ctx;
 
-    ASSERT(sizeof(PathPoint) == sizeof(Vertex));
+    spice_static_assert(sizeof(PathPoint) == sizeof(Vertex));
 
     ctx = spice_new0(InternaCtx, 1);
     if (!init(ctx, width, height)) {

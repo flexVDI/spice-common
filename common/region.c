@@ -561,7 +561,7 @@ static void rect_set(SpiceRect *r, int32_t top, int32_t left, int32_t bottom, in
     r->left = left;
     r->bottom = bottom;
     r->right = right;
-    ASSERT(rect_is_valid(r));
+    spice_assert(rect_is_valid(r));
 }
 
 static void random_region(QRegion *reg)

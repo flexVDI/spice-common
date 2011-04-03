@@ -12,6 +12,8 @@ libspice_common_la_SOURCES =		\
 	draw.h				\
 	lines.c				\
 	lines.h				\
+	log.c				\
+	log.h				\
 	lz.c				\
 	lz.h				\
 	lz_common.h			\

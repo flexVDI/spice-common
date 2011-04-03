@@ -19,16 +19,18 @@
 #include <config.h>
 #endif
 
+#include "spice_common.h"
 #include "mem.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #ifndef MALLOC_ERROR
-#define MALLOC_ERROR(format, ...) {                             \
-    printf(format "\n", ## __VA_ARGS__);   \
-    abort();                                                    \
-}
+#define MALLOC_ERROR(format, ...) SPICE_STMT_START {    \
+    spice_error(format, ## __VA_ARGS__);                \
+    abort();                                            \
+} SPICE_STMT_END
 #endif
 
 size_t spice_strnlen(const char *str, size_t max_len)
@@ -94,8 +96,7 @@ void *spice_malloc(size_t n_bytes)
             return mem;
         }
 
-        MALLOC_ERROR("spice_malloc: panic: unable to allocate %lu bytes\n",
-                     (unsigned long)n_bytes);
+        MALLOC_ERROR("unable to allocate %lu bytes", (unsigned long)n_bytes);
     }
     return NULL;
 }
@@ -111,8 +112,7 @@ void *spice_malloc0(size_t n_bytes)
             return mem;
         }
 
-        MALLOC_ERROR("spice_malloc0: panic: unable to allocate %lu bytes\n",
-                     (unsigned long)n_bytes);
+        MALLOC_ERROR("unable to allocate %lu bytes", (unsigned long)n_bytes);
     }
     return NULL;
 }
@@ -126,8 +126,7 @@ void *spice_realloc(void *mem, size_t n_bytes)
             return mem;
         }
 
-        MALLOC_ERROR("spice_realloc: panic: unable to allocate %lu bytes\n",
-                     (unsigned long)n_bytes);
+        MALLOC_ERROR("unable to allocate %lu bytes", (unsigned long)n_bytes);
     }
 
     free(mem);
@@ -140,7 +139,7 @@ void *spice_realloc(void *mem, size_t n_bytes)
 void *spice_malloc_n(size_t n_blocks, size_t n_block_bytes)
 {
     if (SIZE_OVERFLOWS (n_blocks, n_block_bytes)) {
-        MALLOC_ERROR("spice_malloc_n: overflow allocating %lu*%lu bytes",
+        MALLOC_ERROR("overflow allocating %lu*%lu bytes",
                      (unsigned long)n_blocks, (unsigned long)n_block_bytes);
     }
 
@@ -179,7 +178,7 @@ void *spice_realloc_n(void *mem, size_t n_blocks, size_t n_block_bytes)
     if (SIZE_OVERFLOWS (n_blocks, n_block_bytes)) {
         MALLOC_ERROR("spice_realloc_n: overflow allocating %lu*%lu bytes",
                      (unsigned long)n_blocks, (unsigned long)n_block_bytes);
-  }
+    }
 
     return spice_realloc(mem, n_blocks * n_block_bytes);
 }

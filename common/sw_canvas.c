@@ -83,8 +83,10 @@ static pixman_image_t *canvas_get_pixman_brush(SwCanvas *canvas,
     case SPICE_BRUSH_TYPE_NONE:
         return NULL;
     default:
-        CANVAS_ERROR("invalid brush type");
+        spice_warn_if_reached();
+        return NULL;
     }
+    return NULL;
 }
 
 static pixman_image_t *get_image(SpiceCanvas *canvas)
@@ -477,8 +479,8 @@ static void __scale_image(SpiceCanvas *spice_canvas,
 
     pixman_image_set_transform(src, &transform);
     pixman_image_set_repeat(src, PIXMAN_REPEAT_NONE);
-    ASSERT(scale_mode == SPICE_IMAGE_SCALE_MODE_INTERPOLATE ||
-           scale_mode == SPICE_IMAGE_SCALE_MODE_NEAREST);
+    spice_return_if_fail(scale_mode == SPICE_IMAGE_SCALE_MODE_INTERPOLATE ||
+                         scale_mode == SPICE_IMAGE_SCALE_MODE_NEAREST);
     pixman_image_set_filter(src,
                             (scale_mode == SPICE_IMAGE_SCALE_MODE_NEAREST) ?
                             PIXMAN_FILTER_NEAREST : PIXMAN_FILTER_GOOD,
@@ -539,11 +541,13 @@ static void __scale_image_rop(SpiceCanvas *spice_canvas,
     pixman_box32_t *rects;
     int n_rects, i;
     pixman_fixed_t fsx, fsy;
+    pixman_format_code_t format;
 
     fsx = ((pixman_fixed_48_16_t) src_width * 65536) / dest_width;
     fsy = ((pixman_fixed_48_16_t) src_height * 65536) / dest_height;
 
-    scaled = pixman_image_create_bits(spice_pixman_image_get_format(src),
+    spice_return_if_fail(spice_pixman_image_get_format(src, &format));
+    scaled = pixman_image_create_bits(format,
                                       dest_width,
                                       dest_height,
                                       NULL, 0);
@@ -558,8 +562,8 @@ static void __scale_image_rop(SpiceCanvas *spice_canvas,
 
     pixman_image_set_transform(src, &transform);
     pixman_image_set_repeat(src, PIXMAN_REPEAT_NONE);
-    ASSERT(scale_mode == SPICE_IMAGE_SCALE_MODE_INTERPOLATE ||
-           scale_mode == SPICE_IMAGE_SCALE_MODE_NEAREST);
+    spice_return_if_fail(scale_mode == SPICE_IMAGE_SCALE_MODE_INTERPOLATE ||
+                         scale_mode == SPICE_IMAGE_SCALE_MODE_NEAREST);
     pixman_image_set_filter(src,
                             (scale_mode == SPICE_IMAGE_SCALE_MODE_NEAREST) ?
                             PIXMAN_FILTER_NEAREST : PIXMAN_FILTER_GOOD,
@@ -759,8 +763,8 @@ static void __blend_scale_image(SpiceCanvas *spice_canvas,
 
     pixman_image_set_transform(src, &transform);
     pixman_image_set_repeat(src, PIXMAN_REPEAT_NONE);
-    ASSERT(scale_mode == SPICE_IMAGE_SCALE_MODE_INTERPOLATE ||
-           scale_mode == SPICE_IMAGE_SCALE_MODE_NEAREST);
+    spice_return_if_fail(scale_mode == SPICE_IMAGE_SCALE_MODE_INTERPOLATE ||
+                         scale_mode == SPICE_IMAGE_SCALE_MODE_NEAREST);
     pixman_image_set_filter(src,
                             (scale_mode == SPICE_IMAGE_SCALE_MODE_NEAREST) ?
                             PIXMAN_FILTER_NEAREST : PIXMAN_FILTER_GOOD,
@@ -895,11 +899,13 @@ static void __colorkey_scale_image(SpiceCanvas *spice_canvas,
     pixman_box32_t *rects;
     int n_rects, i;
     pixman_fixed_t fsx, fsy;
+    pixman_format_code_t format;
 
     fsx = ((pixman_fixed_48_16_t) src_width * 65536) / dest_width;
     fsy = ((pixman_fixed_48_16_t) src_height * 65536) / dest_height;
 
-    scaled = pixman_image_create_bits(spice_pixman_image_get_format (src),
+    spice_return_if_fail(spice_pixman_image_get_format(src, &format));
+    scaled = pixman_image_create_bits(format,
                                       dest_width,
                                       dest_height,
                                       NULL, 0);
@@ -1042,7 +1048,7 @@ static void canvas_draw_text(SpiceCanvas *spice_canvas, SpiceRect *bbox,
     pixman_region32_t dest_region;
     pixman_image_t *str_mask, *brush;
     SpiceString *str;
-    SpicePoint pos;
+    SpicePoint pos = { 0, };
     int depth;
 
     pixman_region32_init_rect(&dest_region,
@@ -1064,7 +1070,7 @@ static void canvas_draw_text(SpiceCanvas *spice_canvas, SpiceRect *bbox,
 
         /* Nothing else makes sense for text and we should deprecate it
          * and actually it means OVER really */
-        ASSERT(text->fore_mode == SPICE_ROPD_OP_PUT);
+        spice_return_if_fail(text->fore_mode == SPICE_ROPD_OP_PUT);
 
         pixman_region32_init_rect(&back_region,
                                   text->back_area.left,
@@ -1087,10 +1093,10 @@ static void canvas_draw_text(SpiceCanvas *spice_canvas, SpiceRect *bbox,
     } else if (str->flags & SPICE_STRING_FLAGS_RASTER_A4) {
         depth = 4;
     } else if (str->flags & SPICE_STRING_FLAGS_RASTER_A8) {
-        WARN("untested path A8 glyphs");
+        spice_warning("untested path A8 glyphs");
         depth = 8;
     } else {
-        WARN("unsupported path vector glyphs");
+        spice_warning("unsupported path vector glyphs");
         pixman_region32_fini (&dest_region);
         return;
     }
@@ -1133,7 +1139,7 @@ static void canvas_read_bits(SpiceCanvas *spice_canvas, uint8_t *dest,
     uint8_t *dest_end;
     int bpp;
 
-    ASSERT(canvas && area);
+    spice_return_if_fail(canvas && area);
 
     surface = canvas->image;
 

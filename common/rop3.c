@@ -47,13 +47,13 @@ static void default_rop3_with_pattern_handler(pixman_image_t *d, pixman_image_t 
                                               SpicePoint *src_pos, pixman_image_t *p,
                                               SpicePoint *pat_pos)
 {
-    WARN("not implemented");
+    spice_critical("not implemented");
 }
 
 static void default_rop3_withe_color_handler(pixman_image_t *d, pixman_image_t *s, SpicePoint *src_pos,
                                              uint32_t rgb)
 {
-    WARN("not implemented");
+    spice_critical("not implemented");
 }
 
 static void default_rop3_test_handler(void)
@@ -624,8 +624,8 @@ void do_rop3_with_pattern(uint8_t rop3, pixman_image_t *d, pixman_image_t *s, Sp
     int bpp;
 
     bpp = spice_pixman_image_get_bpp(d);
-    ASSERT (bpp == spice_pixman_image_get_bpp(s));
-    ASSERT (bpp == spice_pixman_image_get_bpp(p));
+    spice_assert(bpp == spice_pixman_image_get_bpp(s));
+    spice_assert(bpp == spice_pixman_image_get_bpp(p));
 
     if (bpp == 32) {
         rop3_with_pattern_handlers_32[rop3](d, s, src_pos, p, pat_pos);
@@ -640,7 +640,7 @@ void do_rop3_with_color(uint8_t rop3, pixman_image_t *d, pixman_image_t *s, Spic
     int bpp;
 
     bpp = spice_pixman_image_get_bpp(d);
-    ASSERT (bpp == spice_pixman_image_get_bpp(s));
+    spice_assert(bpp == spice_pixman_image_get_bpp(s));
 
     if (bpp == 32) {
         rop3_with_color_handlers_32[rop3](d, s, src_pos, rgb);

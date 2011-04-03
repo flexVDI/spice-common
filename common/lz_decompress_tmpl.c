@@ -254,9 +254,9 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
 #endif
             ref -= ofs;
 
-            ASSERT(encoder->usr, op + len <= op_limit);
-            ASSERT(encoder->usr, ref + len <= op_limit);
-            ASSERT(encoder->usr, ref >= out_buf);
+            spice_assert(op + len <= op_limit);
+            spice_assert(ref + len <= op_limit);
+            spice_assert(ref >= out_buf);
 
             // TODO: optimize by not calling loop at least 3 times when not PLT_TO_RGB32 (len is
             //       always >=3). in PLT_TO_RGB32 len >= 3*number_of_pixels_per_byte
@@ -270,29 +270,29 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
                 OUT_PIXEL b = *ref;
                 for (; len; --len) {
                     COPY_PIXEL(b, op);
-                    ASSERT(encoder->usr, op <= op_limit);
+                    spice_assert(op <= op_limit);
                 }
             } else {
                 for (; len; --len) {
                     COPY_REF_PIXEL(ref, op);
-                    ASSERT(encoder->usr, op <= op_limit);
+                    spice_assert(op <= op_limit);
                 }
             }
         } else { // copy
             ctrl++; // copy count is biased by 1
 #if defined(TO_RGB32) && (defined(PLT4_BE) || defined(PLT4_LE) || defined(PLT1_BE) || \
                                                                                    defined(PLT1_LE))
-            ASSERT(encoder->usr, op + CAST_PLT_DISTANCE(ctrl) <= op_limit);
+            spice_assert(op + CAST_PLT_DISTANCE(ctrl) <= op_limit);
 #else
-            ASSERT(encoder->usr, op + ctrl <= op_limit);
+            spice_assert(op + ctrl <= op_limit);
 #endif
             COPY_COMP_PIXEL(encoder, op);
 
-            ASSERT(encoder->usr, op <= op_limit);
+            spice_assert(op <= op_limit);
 
             for (--ctrl; ctrl; ctrl--) {
                 COPY_COMP_PIXEL(encoder, op);
-                ASSERT(encoder->usr, op <= op_limit);
+                spice_assert(op <= op_limit);
             }
         }
 

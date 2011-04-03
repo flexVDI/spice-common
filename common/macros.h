@@ -1,3 +1,4 @@
+/* -*- Mode: C; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 /*
    Copyright (C) 2009 Red Hat, Inc.
 
@@ -15,23 +16,15 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef H_SPICE_COMMON
-#define H_SPICE_COMMON
+#ifndef __MACROS_H
+#define __MACROS_H
 
-#include <stdio.h>
-#include <stdint.h>
-#include <time.h>
-#include <stdlib.h>
-#include <stddef.h>
-
-#include <spice/macros.h>
-#include "backtrace.h"
-#include "log.h"
-
-#ifdef SPICE_DISABLE_ABORT
-#define spice_abort() do { } while(0)
+#if    __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
+#define ATTR_PRINTF(a,b)                               \
+    __attribute__((format(printf,a,b)))
 #else
-#define spice_abort() abort()
-#endif
+#define ATTR_PRINTF(a,b)
+#endif /* __GNUC__ */
 
-#endif
+
+#endif /* __MACROS_H */

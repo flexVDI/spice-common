@@ -20,28 +20,29 @@
 
 #ifndef GL_UTILS_H
 #define GL_UTILS_H
+#include "spice_common.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifdef RED_DEBUG
-#define GLC_ERROR_TEST_FLUSH {                                        \
-    GLenum gl_err;  glFlush();                                        \
-    if ((gl_err = glGetError()) != GL_NO_ERROR) {                     \
-        printf("%s[%d]: opengl error: %s\n",  __FUNCTION__, __LINE__, \
-        gluErrorString(gl_err));                                      \
-        abort();                                                      \
-    }                                                                 \
+#define GLC_ERROR_TEST_FLUSH {                                          \
+    GLenum gl_err;  glFlush();                                          \
+    if ((gl_err = glGetError()) != GL_NO_ERROR) {                       \
+        printf("%s[%d]: opengl error: %s\n",  __FUNCTION__, __LINE__,   \
+        gluErrorString(gl_err));                                        \
+        spice_abort();                                                  \
+    }                                                                   \
 }
 
-#define GLC_ERROR_TEST_FINISH {                                       \
-    GLenum gl_err;  glFinish();                                       \
-    if ((gl_err = glGetError()) != GL_NO_ERROR) {                     \
-        printf("%s[%d]: opengl error: %s\n",  __FUNCTION__, __LINE__, \
-        gluErrorString(gl_err));                                      \
-        abort();                                                      \
-    }                                                                 \
+#define GLC_ERROR_TEST_FINISH {                                         \
+    GLenum gl_err;  glFinish();                                         \
+    if ((gl_err = glGetError()) != GL_NO_ERROR) {                       \
+        printf("%s[%d]: opengl error: %s\n",  __FUNCTION__, __LINE__,   \
+        gluErrorString(gl_err));                                        \
+        spice_abort();                                                  \
+    }                                                                   \
 }
 #else
 #define GLC_ERROR_TEST_FLUSH ;

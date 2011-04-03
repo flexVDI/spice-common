@@ -43,7 +43,7 @@ typedef struct PixmanData {
 
 void spice_pixman_image_set_format(pixman_image_t *image,
                                    pixman_format_code_t format);
-pixman_format_code_t spice_pixman_image_get_format(pixman_image_t *image);
+int spice_pixman_image_get_format(pixman_image_t *image, pixman_format_code_t *format);
 
 
 #ifdef WIN32

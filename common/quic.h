@@ -20,6 +20,7 @@
 #define __QUIC_H
 
 #include "quic_config.h"
+#include "macros.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,9 +42,9 @@ typedef void *QuicContext;
 
 typedef struct QuicUsrContext QuicUsrContext;
 struct QuicUsrContext {
-    void (*error)(QuicUsrContext *usr, const char *fmt, ...);
-    void (*warn)(QuicUsrContext *usr, const char *fmt, ...);
-    void (*info)(QuicUsrContext *usr, const char *fmt, ...);
+    ATTR_PRINTF(2, 3) void (*error)(QuicUsrContext *usr, const char *fmt, ...);
+    ATTR_PRINTF(2, 3) void (*warn)(QuicUsrContext *usr, const char *fmt, ...);
+    ATTR_PRINTF(2, 3) void (*info)(QuicUsrContext *usr, const char *fmt, ...);
     void *(*malloc)(QuicUsrContext *usr, int size);
     void (*free)(QuicUsrContext *usr, void *ptr);
     int (*more_space)(QuicUsrContext *usr, uint32_t **io_ptr, int rows_completed);
