@@ -1,7 +1,3 @@
-if OS_WIN32
-SUBDIRS = win
-endif
-
 NULL =
 
 noinst_LTLIBRARIES = libspice-common.la
