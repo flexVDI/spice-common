@@ -263,7 +263,7 @@ static int verify_hostname(X509* cert, const char *hostname)
     return cn_match;
 }
 
-X509_NAME* subject_to_x509_name(const char *subject, int *nentries)
+static X509_NAME* subject_to_x509_name(const char *subject, int *nentries)
 {
     X509_NAME* in_subject;
     const char *p;
@@ -352,7 +352,7 @@ fail:
     return NULL;
 }
 
-int verify_subject(X509* cert, SpiceOpenSSLVerify* verify)
+static int verify_subject(X509* cert, SpiceOpenSSLVerify* verify)
 {
     X509_NAME *cert_subject = NULL;
     int ret;
