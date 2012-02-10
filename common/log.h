@@ -20,6 +20,7 @@
 
 #include <spice/macros.h>
 #include <stdarg.h>
+#include "macros.h"
 
 SPICE_BEGIN_DECLS
 
@@ -45,14 +46,14 @@ void spice_logv(const char *log_domain,
                 const char *strloc,
                 const char *function,
                 const char *format,
-                va_list args);
+                va_list args) SPICE_ATTR_PRINTF(5, 0);
 
 void spice_log(const char *log_domain,
                SpiceLogLevel log_level,
                const char *strloc,
                const char *function,
                const char *format,
-               ...);
+               ...) SPICE_ATTR_PRINTF(5, 6);
 
 #ifndef spice_return_if_fail
 #define spice_return_if_fail(x) SPICE_STMT_START {                      \

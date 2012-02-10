@@ -20,10 +20,10 @@
 #define __MACROS_H
 
 #if    __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
-#define ATTR_PRINTF(a,b)                               \
+#define SPICE_ATTR_PRINTF(a,b)                               \
     __attribute__((format(printf,a,b)))
 #else
-#define ATTR_PRINTF(a,b)
+#define SPICE_ATTR_PRINTF(a,b)
 #endif /* __GNUC__ */
 
 

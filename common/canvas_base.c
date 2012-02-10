@@ -1741,7 +1741,7 @@ static pixman_image_t *canvas_scale_surface(pixman_image_t *src, const SpiceRect
     return surface;
 }
 
-ATTR_PRINTF(2, 3) static void quic_usr_error(QuicUsrContext *usr, const char *fmt, ...)
+SPICE_ATTR_PRINTF(2, 3) static void quic_usr_error(QuicUsrContext *usr, const char *fmt, ...)
 {
     QuicData *usr_data = (QuicData *)usr;
     va_list ap;
@@ -1753,7 +1753,7 @@ ATTR_PRINTF(2, 3) static void quic_usr_error(QuicUsrContext *usr, const char *fm
     longjmp(usr_data->jmp_env, 1);
 }
 
-ATTR_PRINTF(2, 3) static void quic_usr_warn(QuicUsrContext *usr, const char *fmt, ...)
+SPICE_ATTR_PRINTF(2, 3) static void quic_usr_warn(QuicUsrContext *usr, const char *fmt, ...)
 {
     QuicData *usr_data = (QuicData *)usr;
     va_list ap;
@@ -1773,7 +1773,7 @@ static void quic_usr_free(QuicUsrContext *usr, void *ptr)
     free(ptr);
 }
 
-ATTR_PRINTF(2, 3) static void lz_usr_warn(LzUsrContext *usr, const char *fmt, ...)
+SPICE_ATTR_PRINTF(2, 3) static void lz_usr_warn(LzUsrContext *usr, const char *fmt, ...)
 {
     LzData *usr_data = (LzData *)usr;
     va_list ap;
@@ -1783,7 +1783,7 @@ ATTR_PRINTF(2, 3) static void lz_usr_warn(LzUsrContext *usr, const char *fmt, ..
     va_end(ap);
 }
 
-ATTR_PRINTF(2, 3) static void lz_usr_error(LzUsrContext *usr, const char *fmt, ...)
+SPICE_ATTR_PRINTF(2, 3) static void lz_usr_error(LzUsrContext *usr, const char *fmt, ...)
 {
     LzData *usr_data = (LzData *)usr;
     va_list ap;

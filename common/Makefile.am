@@ -16,6 +16,7 @@ libspice_common_la_SOURCES =		\
 	lz.h				\
 	lz_common.h			\
 	lz_config.h			\
+	macros.h			\
 	marshaller.c			\
 	marshaller.h			\
 	mem.c				\
