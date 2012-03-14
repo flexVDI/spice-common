@@ -51,7 +51,7 @@ libspice_common_la_SOURCES +=		\
 	$(NULL)
 endif
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	$(GL_CFLAGS)			\
 	$(PIXMAN_CFLAGS)		\
 	$(PROTOCOL_CFLAGS)		\
