@@ -23,9 +23,9 @@
 #ifndef _LZ_COMMON_H
 #define _LZ_COMMON_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <spice/macros.h>
+
+SPICE_BEGIN_DECLS
 
 //#define DEBUG
 
@@ -62,8 +62,6 @@ static const int RGB_BYTES_PER_PIXEL[] = {0, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4};
 #define LZ_VERSION_MINOR 1U
 #define LZ_VERSION ((LZ_VERSION_MAJOR << 16) | (LZ_VERSION_MINOR & 0xffff))
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif  // _LZ_COMMON_H

@@ -31,13 +31,12 @@
 #ifndef _H_SPICE_DRAW
 #define _H_SPICE_DRAW
 
+#include <spice/macros.h>
 #include <spice/types.h>
 #include <spice/enums.h>
 #include "mem.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 #define SPICE_GET_ADDRESS(addr) ((void *)(uintptr_t)(addr))
 #define SPICE_SET_ADDRESS(addr, val) ((addr) = (uintptr_t)(val))
@@ -274,8 +273,6 @@ typedef struct SpiceCursorHeader {
     uint16_t hot_spot_y;
 } SpiceCursorHeader;
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif /* _H_SPICE_DRAW */

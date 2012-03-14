@@ -19,9 +19,9 @@
 #ifndef _H_GLCTX
 #define _H_GLCTX
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <spice/macros.h>
+
+SPICE_BEGIN_DECLS
 
 typedef struct OGLCtx OGLCtx;
 
@@ -31,8 +31,6 @@ OGLCtx *pbuf_create(int width, int heigth);
 OGLCtx *pixmap_create(int width, int heigth);
 void oglctx_destroy(OGLCtx *ctx);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

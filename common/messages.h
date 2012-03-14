@@ -32,11 +32,15 @@
 #define _H_MESSAGES
 
 #include <spice/protocol.h>
+#include <spice/macros.h>
+
+#ifdef USE_SMARTCARD
+#include <vscard_common.h>
+#endif
+
 #include "draw.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 typedef struct SpiceMsgData {
     uint32_t data_size;
@@ -518,8 +522,6 @@ typedef struct SpiceMsgcTunnelSocketTokens {
     uint32_t num_tokens;
 } SpiceMsgcTunnelSocketTokens;
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif /* _H_SPICE_PROTOCOL */

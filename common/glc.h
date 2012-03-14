@@ -22,10 +22,9 @@
 #define _H_GL_CANVASE
 
 #include <stdint.h>
+#include <spice/macros.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 typedef void * GLCCtx;
 typedef void * GLCPattern;
@@ -160,8 +159,6 @@ void glc_clear(GLCCtx glc);
 GLCCtx glc_create(int width, int height);
 void glc_destroy(GLCCtx glc, int textures_lost);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

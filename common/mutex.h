@@ -19,9 +19,9 @@
 #ifndef _H_MUTEX
 #define _H_MUTEX
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <spice/macros.h>
+
+SPICE_BEGIN_DECLS
 
 #ifdef _WIN32
 #include <windows.h>
@@ -37,8 +37,6 @@ typedef pthread_mutex_t mutex_t;
 #define MUTEX_UNLOCK(mutex) pthread_mutex_unlock(&mutex)
 #endif
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif // _H_MUTEX

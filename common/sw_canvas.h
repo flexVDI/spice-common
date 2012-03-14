@@ -24,15 +24,14 @@
 #endif
 
 #include <stdint.h>
+#include <spice/macros.h>
 
 #include "draw.h"
 #include "pixman_utils.h"
 #include "canvas_base.h"
 #include "region.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 SpiceCanvas *canvas_create(int width, int height, uint32_t format
 #ifdef SW_CANVAS_CACHE
@@ -63,8 +62,6 @@ SpiceCanvas *canvas_create_for_data(int width, int height, uint32_t format, uint
 
 void sw_canvas_init(void);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

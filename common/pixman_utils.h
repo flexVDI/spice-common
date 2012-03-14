@@ -20,15 +20,14 @@
 #define _H__PIXMAN_UTILS
 
 #include <spice/types.h>
+#include <spice/macros.h>
 #include <stdlib.h>
 #define PIXMAN_DONT_DEFINE_STDINT
 #include <pixman.h>
 
 #include "draw.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 /* This lists all possible 2 argument binary raster ops.
  * This enum has the same values as the X11 GXcopy type
@@ -129,8 +128,6 @@ void spice_pixman_copy_rect(pixman_image_t *image,
                             int w, int h,
                             int dest_x, int dest_y);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif /* _H__PIXMAN_UTILS */

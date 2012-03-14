@@ -20,11 +20,11 @@
 
 #ifndef GL_UTILS_H
 #define GL_UTILS_H
+
+#include <spice/macros.h>
 #include "spice_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 #ifdef RED_DEBUG
 #define GLC_ERROR_TEST_FLUSH {                                          \
@@ -55,8 +55,6 @@ extern "C" {
 #define find_msb spice_bit_find_msb
 #define gl_get_to_power_two spice_bit_next_pow2
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

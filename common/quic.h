@@ -19,12 +19,11 @@
 #ifndef __QUIC_H
 #define __QUIC_H
 
+#include <spice/macros.h>
 #include "quic_config.h"
 #include "macros.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 typedef enum {
     QUIC_IMAGE_TYPE_INVALID,
@@ -66,8 +65,6 @@ void quic_destroy(QuicContext *quic);
 
 void quic_init(void);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

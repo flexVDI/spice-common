@@ -35,9 +35,9 @@
 #endif
 #include <openssl/x509v3.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <spice/macros.h>
+
+SPICE_BEGIN_DECLS
 
 typedef enum {
   SPICE_SSL_VERIFY_OP_NONE     = 0,
@@ -63,7 +63,6 @@ SpiceOpenSSLVerify* spice_openssl_verify_new(SSL *ssl, SPICE_SSL_VERIFY_OP verif
                                              const char *subject);
 void spice_openssl_verify_free(SpiceOpenSSLVerify* verify);
 
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+SPICE_END_DECLS
+
 #endif // SSL_VERIFY_H

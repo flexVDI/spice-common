@@ -24,14 +24,13 @@
 #endif
 
 #include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <spice/macros.h>
 
 #include "pixman_utils.h"
 #include "canvas_base.h"
 #include "region.h"
+
+SPICE_BEGIN_DECLS
 
 SpiceCanvas *gdi_canvas_create(int width, int height,
                                HDC dc, class RecurciveMutex *lock, uint32_t format,
@@ -44,8 +43,6 @@ SpiceCanvas *gdi_canvas_create(int width, int height,
 
 void gdi_canvas_init(void);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

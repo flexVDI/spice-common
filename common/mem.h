@@ -26,9 +26,7 @@
 # include <config.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 #ifdef STDC_HEADERS
 # include <stdlib.h>
@@ -156,7 +154,6 @@ void spice_buffer_append(SpiceBuffer *buffer, const void *data, size_t len);
 size_t spice_buffer_copy(SpiceBuffer *buffer, void *dest, size_t len);
 size_t spice_buffer_remove(SpiceBuffer *buffer, size_t len);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
+
 #endif

@@ -19,12 +19,10 @@
 #ifndef _H_RECT
 #define _H_RECT
 
-#include "draw.h"
 #include <spice/macros.h>
+#include "draw.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 static INLINE void rect_sect(SpiceRect* r, const SpiceRect* bounds)
 {
@@ -76,9 +74,7 @@ static INLINE int rect_is_same_size(const SpiceRect *r1, const SpiceRect *r2)
            r1->bottom - r1->top == r2->bottom - r2->top;
 }
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #ifdef __cplusplus
 
@@ -117,6 +113,6 @@ static inline int rect_is_same_size(const SpiceRect& r1, const SpiceRect& r2)
     return rect_is_same_size(&r1, &r2);
 }
 
-#endif
+#endif /* __cplusplus */
 
 #endif

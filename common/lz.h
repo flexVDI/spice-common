@@ -6,14 +6,14 @@
 #ifndef __LZ_H
 #define __LZ_H
 
+#include <spice/macros.h>
+
 #include "lz_common.h"
 #include "lz_config.h"
 #include "draw.h"
 #include "macros.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 typedef void *LzContext;
 
@@ -76,8 +76,6 @@ LzContext *lz_create(LzUsrContext *usr);
 
 void lz_destroy(LzContext *lz);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif  // __LZ_H

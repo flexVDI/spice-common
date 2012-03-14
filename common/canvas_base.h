@@ -23,6 +23,8 @@
 #error "This header shouldn't be included directly"
 #endif
 
+#include <spice/macros.h>
+
 #include "pixman_utils.h"
 #include "lz.h"
 #include "region.h"
@@ -31,9 +33,7 @@
 #include <windows.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 typedef void (*spice_destroy_fn_t)(void *data);
 
@@ -320,8 +320,6 @@ struct _SpiceCanvas {
   SpiceCanvasOps *ops;
 };
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

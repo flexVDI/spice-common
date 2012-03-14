@@ -19,11 +19,10 @@
 #ifndef _H_RING2
 #define _H_RING2
 
+#include <spice/macros.h>
 #include "spice_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 typedef struct Ring RingItem;
 typedef struct Ring {
@@ -165,8 +164,6 @@ static inline unsigned int ring_get_length(Ring *ring)
     return ret;
 }
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

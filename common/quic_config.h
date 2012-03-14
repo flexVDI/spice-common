@@ -22,9 +22,7 @@
 #include <spice/types.h>
 #include <spice/macros.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 #ifdef __GNUC__
 #include <string.h>
@@ -41,8 +39,6 @@ extern "C" {
 #endif  // QXLDD
 #endif  //__GNUC__
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

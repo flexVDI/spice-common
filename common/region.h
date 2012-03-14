@@ -20,12 +20,12 @@
 #define _H_REGION
 
 #include <stdint.h>
-#include "draw.h"
-#include <pixman_utils.h>
+#include <spice/macros.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "draw.h"
+#include "pixman_utils.h"
+
+SPICE_BEGIN_DECLS
 
 typedef pixman_region32_t QRegion;
 
@@ -63,8 +63,6 @@ void region_offset(QRegion *rgn, int32_t dx, int32_t dy);
 
 void region_dump(const QRegion *rgn, const char *prefix);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

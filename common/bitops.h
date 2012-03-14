@@ -23,9 +23,7 @@
 
 #include <spice/macros.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 #if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 static inline int spice_bit_find_msb(unsigned int val)
@@ -84,8 +82,6 @@ static INLINE int spice_bit_next_pow2(unsigned int val)
     return 1 << spice_bit_find_msb(val);
 }
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif

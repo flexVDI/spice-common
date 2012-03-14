@@ -52,11 +52,11 @@ SOFTWARE.
 #include <pixman_utils.h>
 #include <stdlib.h>
 #include <string.h>
+#include <spice/macros.h>
+
 #include "draw.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 typedef struct lineGC lineGC;
 
@@ -131,8 +131,6 @@ extern int spice_canvas_clip_spans(pixman_region32_t *clip_region,
                                    int *new_widths,
                                    int sorted);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif /* LINES_H */

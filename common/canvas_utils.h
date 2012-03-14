@@ -24,13 +24,12 @@
 #endif
 
 #include <spice/types.h>
+#include <spice/macros.h>
 
 #include "pixman_utils.h"
 #include "lz.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 typedef struct PixmanData {
 #ifdef WIN32
@@ -73,8 +72,7 @@ typedef struct LzDecodeUsrData {
 pixman_image_t *alloc_lz_image_surface(LzDecodeUsrData *canvas_data,
                                        pixman_format_code_t pixman_format, int width,
                                        int height, int gross_pixels, int top_down);
-#ifdef __cplusplus
-}
-#endif
+
+SPICE_END_DECLS
 
 #endif

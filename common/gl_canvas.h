@@ -16,6 +16,8 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <spice/macros.h>
+
 #include "glc.h"
 #include "canvas_base.h"
 #include "region.h"
@@ -27,9 +29,7 @@
 #ifndef _H__GL_CANVAS
 #define _H__GL_CANVAS
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SPICE_BEGIN_DECLS
 
 SpiceCanvas *gl_canvas_create(int width, int height, uint32_t format
 #ifdef SW_CANVAS_CACHE
@@ -46,8 +46,6 @@ SpiceCanvas *gl_canvas_create(int width, int height, uint32_t format
 void gl_canvas_set_textures_lost(SpiceCanvas *canvas, int textures_lost);
 void gl_canvas_init(void);
 
-#ifdef __cplusplus
-}
-#endif
+SPICE_END_DECLS
 
 #endif
