@@ -1,3 +1,5 @@
+*~
+.*.sw?
 *.la
 *.lo
 *.loT
@@ -7,3 +9,4 @@
 .libs
 Makefile
 Makefile.in
+\#*
