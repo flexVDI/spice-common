@@ -16,10 +16,6 @@
    License along with this library; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SPICE_CANVAS_INTERNAL
-#error "This file shouldn't be compiled directly"
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

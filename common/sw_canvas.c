@@ -22,10 +22,6 @@
 #include <config.h>
 #endif
 
-#ifndef SPICE_CANVAS_INTERNAL
-#error "This file shouldn't be compiled directly"
-#endif
-
 #include <math.h>
 #include "sw_canvas.h"
 #define CANVAS_USE_PIXMAN

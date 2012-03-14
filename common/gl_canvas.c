@@ -19,10 +19,6 @@
 #include <config.h>
 #endif
 
-#ifndef SPICE_CANVAS_INTERNAL
-#error "This file shouldn't be compiled directly"
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
