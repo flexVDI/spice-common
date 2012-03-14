@@ -7,6 +7,8 @@ NULL =
 noinst_LTLIBRARIES = libspice-common.la
 libspice_common_la_SOURCES =		\
 	bitops.h			\
+	client_marshallers.h		\
+	client_demarshallers.h		\
 	canvas_utils.c			\
 	canvas_utils.h			\
 	draw.h				\
