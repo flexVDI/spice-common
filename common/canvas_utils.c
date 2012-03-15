@@ -179,6 +179,7 @@ pixman_image_t * surface_create(pixman_format_code_t format, int width, int heig
             break;
         default:
             spice_error("invalid format");
+            return NULL;
         }
 
         bitmap_info.inf.bmiHeader.biCompression = BI_RGB;
