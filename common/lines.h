@@ -49,11 +49,11 @@ SOFTWARE.
 #ifndef LINES_H
 #define LINES_H
 
-#include <pixman_utils.h>
 #include <stdlib.h>
 #include <string.h>
 #include <spice/macros.h>
 
+#include "pixman_utils.h"
 #include "draw.h"
 
 SPICE_BEGIN_DECLS

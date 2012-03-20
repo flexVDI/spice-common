@@ -24,8 +24,11 @@
 #endif
 
 #include <spice/protocol.h>
-#include <marshaller.h>
-#include <messages.h>
+
+#include "marshaller.h"
+#include "messages.h"
+
+SPICE_BEGIN_DECLS
 
 typedef struct {
     void (*msg_SpiceMsgEmpty)(SpiceMarshaller *m, SpiceMsgEmpty *msg);
@@ -70,5 +73,7 @@ typedef struct {
 
 SpiceMessageMarshallers *spice_message_marshallers_get(void);
 SpiceMessageMarshallers *spice_message_marshallers_get1(void);
+
+SPICE_END_DECLS
 
 #endif

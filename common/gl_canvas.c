@@ -23,9 +23,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "gl_canvas.h"
 #include "quic.h"
 #include "rop3.h"
 #include "region.h"
+#include "glc.h"
 
 #define GL_CANVAS
 #include "canvas_base.c"
