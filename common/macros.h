@@ -26,5 +26,12 @@
 #define SPICE_ATTR_PRINTF(a,b)
 #endif /* __GNUC__ */
 
+#if    __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 5)
+#define SPICE_ATTR_NORETURN                                  \
+    __attribute__((noreturn))
+#else
+#define SPICE_ATTR_NORETURN
+#endif /* __GNUC__ */
+
 
 #endif /* __MACROS_H */
