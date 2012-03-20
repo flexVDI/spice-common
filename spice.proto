@@ -225,7 +225,7 @@ channel MainChannel : BaseChannel {
 
     message {
        uint32 name_len;
-       uint8 name[name_len];
+       uint8 name[name_len] @end;
     } name;
 
     message {
