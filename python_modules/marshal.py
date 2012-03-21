@@ -378,6 +378,7 @@ def write_protocol_marshaller(writer, proto, is_server, private_marshallers):
         channel = c.channel_type
         if channel.has_attr("ifdef"):
             writer.ifdef(channel.attributes["ifdef"][0])
+            writer.header.ifdef(channel.attributes["ifdef"][0])
         if is_server:
             for m in channel.client_messages:
                 message = m.message_type
@@ -400,6 +401,7 @@ def write_protocol_marshaller(writer, proto, is_server, private_marshallers):
                     functions[f] = True
         if channel.has_attr("ifdef"):
             writer.endif(channel.attributes["ifdef"][0])
+            writer.header.endif(channel.attributes["ifdef"][0])
 
     if private_marshallers:
         scope = writer.function("spice_message_marshallers_get" +  writer.public_prefix,
