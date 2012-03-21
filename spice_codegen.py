@@ -188,7 +188,7 @@ if options.generate_marshallers:
 if options.struct_marshallers:
     for structname in options.struct_marshallers:
         t = ptypes.lookup_type(structname)
-        marshal.write_marshal_ptr_function(writer, t)
+        marshal.write_marshal_ptr_function(writer, t, False)
 
 if options.generate_marshallers or (options.struct_marshallers and len(options.struct_marshallers) > 0):
     marshal.write_trailer(writer)

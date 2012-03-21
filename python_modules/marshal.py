@@ -99,7 +99,7 @@ class SubMarshallingSource(MarshallingSource):
         else:
             return self.parent_src.get_ref(self.name) + "." + member
 
-def write_marshal_ptr_function(writer, target_type):
+def write_marshal_ptr_function(writer, target_type, is_helper=True):
     if target_type.is_array():
         marshal_function = "spice_marshall_array_%s" % target_type.element_type.primitive_type()
     else:
@@ -116,7 +116,8 @@ def write_marshal_ptr_function(writer, target_type):
         names_args = "".join(n)
 
     header = writer.header
-    writer = writer.function_helper()
+    if is_helper:
+        writer = writer.function_helper()
     writer.header = header
     writer.out_prefix = ""
     if target_type.is_array():
