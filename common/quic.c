@@ -1194,7 +1194,7 @@ static void quic_image_params(Encoder *encoder, QuicImageType type, int *channel
 #define FILL_LINES() {                                                  \
     if (line == lines_end) {                                            \
         int n = encoder->usr->more_lines(encoder->usr, &line);          \
-        if (n <= 0) {                                                   \
+        if (n <= 0 || line == NULL) {                                   \
             encoder->usr->error(encoder->usr, "more lines failed\n");   \
         }                                                               \
         lines_end = line + n * stride;                                  \
@@ -1238,11 +1238,11 @@ int quic_encode(QuicContext *quic, QuicImageType type, int width, int height,
     int i;
 #endif
 
-    if (line == NULL) {
+    lines_end = line + num_lines * stride;
+    if (line == NULL && lines_end != line) {
         spice_warn_if_reached();
         return QUIC_ERROR;
     }
-    lines_end = line + num_lines * stride;
 
     quic_image_params(encoder, type, &channels, &bpc);
 
