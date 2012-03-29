@@ -421,6 +421,13 @@ static int openssl_verify(int preverify_ok, X509_STORE_CTX *ctx)
             spice_warning("openssl verify:num=%d:%s:depth=%d:%s", err,
                           X509_verify_cert_error_string(err), depth, buf);
             v->all_preverify_ok = 0;
+
+            /* if certificate verification failed, we can still authorize the server */
+            /* if its public key matches the one we hold in the peer_connect_options. */
+            if (err == X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN &&
+                v->verifyop & SPICE_SSL_VERIFY_OP_PUBKEY)
+                return 1;
+
             return 0;
         } else
             return 1;
