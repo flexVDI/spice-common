@@ -74,6 +74,12 @@ static INLINE int rect_is_same_size(const SpiceRect *r1, const SpiceRect *r2)
            r1->bottom - r1->top == r2->bottom - r2->top;
 }
 
+static INLINE int rect_contains(const SpiceRect *big, const SpiceRect *small)
+{
+    return big->left <= small->left && big->right >= small->right &&
+           big->top <= small->top && big->bottom >= small->bottom;
+}
+
 SPICE_END_DECLS
 
 #ifdef __cplusplus
@@ -111,6 +117,11 @@ static inline void rect_union(SpiceRect& dest, const SpiceRect& r)
 static inline int rect_is_same_size(const SpiceRect& r1, const SpiceRect& r2)
 {
     return rect_is_same_size(&r1, &r2);
+}
+
+static inline int rect_contains(const SpiceRect& big, const SpiceRect& small)
+{
+    return rect_contains(&big, &small);
 }
 
 #endif /* __cplusplus */
