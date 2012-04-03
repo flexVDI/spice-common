@@ -1,4 +1,4 @@
-AC_PREREQ([2.68])
+AC_PREREQ([2.63])
 
 AC_INIT([spice-common],
         [m4_esyscmd(build-aux/git-version-gen .tarball-version)],
