@@ -50,7 +50,7 @@ def write_parser_helpers(writer):
                 writer.macro("read_%s" % type, "ptr", "(*((%s_t *)(ptr)))" % type)
                 writer.macro("write_%s" % type, "ptr, val", "*(%s_t *)(ptr) = val" % (type))
             else:
-                writer.macro("read_%s" % type, "ptr", "((%s_t)%s(*((%s_t *)(ptr)))" % (type, swap, utype))
+                writer.macro("read_%s" % type, "ptr", "((%s_t)%s(*((%s_t *)(ptr))))" % (type, swap, utype))
                 writer.macro("write_%s" % type, "ptr, val", "*(%s_t *)(ptr) = %s((%s_t)val)" % (utype, swap, utype))
     writer.writeln("#else")
     for size in [8, 16, 32, 64]:
