@@ -80,6 +80,11 @@ static INLINE int rect_contains(const SpiceRect *big, const SpiceRect *small)
            big->top <= small->top && big->bottom >= small->bottom;
 }
 
+static INLINE int rect_get_area(const SpiceRect *r)
+{
+    return (r->right - r->left) * (r->bottom - r->top);
+}
+
 SPICE_END_DECLS
 
 #ifdef __cplusplus
@@ -122,6 +127,11 @@ static inline int rect_is_same_size(const SpiceRect& r1, const SpiceRect& r2)
 static inline int rect_contains(const SpiceRect& big, const SpiceRect& small)
 {
     return rect_contains(&big, &small);
+}
+
+static inline int rect_get_area(const SpiceRect& r)
+{
+    return rect_get_area(&r);
 }
 
 #endif /* __cplusplus */
