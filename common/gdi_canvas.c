@@ -564,7 +564,7 @@ static uint8_t *create_bitmap(HBITMAP *bitmap, HBITMAP *prev_bitmap, HDC *dc,
         break;
     default:
         spice_warn_if_reached();
-        return;
+        return NULL;
     }
 
     if (bitmap_data) {
