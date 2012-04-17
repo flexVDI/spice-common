@@ -52,6 +52,7 @@ typedef struct SpiceMsgData {
 } SpiceMsgData;
 
 typedef struct SpiceMsgEmpty {
+    uint8_t padding;
 } SpiceMsgEmpty;
 
 typedef struct SpiceMsgInputsInit {
