@@ -22,7 +22,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 #include "log.h"
 #include "backtrace.h"
@@ -32,6 +34,15 @@ static int abort_level = -1;
 
 static const char * spice_log_level_to_string(SpiceLogLevel level)
 {
+#ifdef _MSC_VER
+    /* MSVC++ does not implement C99 */
+    static const char *to_string[] = {
+         "ERROR",
+         "CRITICAL",
+         "Warning",
+         "Info",
+         "Debug"};
+#else
     static const char *to_string[] = {
         [ SPICE_LOG_LEVEL_ERROR ] = "ERROR",
         [ SPICE_LOG_LEVEL_CRITICAL ] = "CRITICAL",
@@ -39,6 +50,7 @@ static const char * spice_log_level_to_string(SpiceLogLevel level)
         [ SPICE_LOG_LEVEL_INFO ] = "Info",
         [ SPICE_LOG_LEVEL_DEBUG ] = "Debug",
     };
+#endif
     const char *str = NULL;
  
     if (level < SPICE_N_ELEMENTS(to_string)) {
