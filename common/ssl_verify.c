@@ -386,9 +386,9 @@ static int verify_subject(X509* cert, SpiceOpenSSLVerify* verify)
     if (ret == 0) {
         spice_debug("subjects match");
     } else {
+        char *p;
         spice_debug("subjects mismatch");
 
-        char *p;
         p = X509_NAME_oneline(cert_subject, NULL, 0);
         spice_debug("cert_subject: %s", p);
         free(p);
