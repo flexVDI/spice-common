@@ -308,12 +308,25 @@ typedef struct SpiceMsgDisplayStreamCreate {
     SpiceClip clip;
 } SpiceMsgDisplayStreamCreate;
 
-typedef struct SpiceMsgDisplayStreamData {
+typedef struct SpiceStreamDataHeader {
     uint32_t id;
     uint32_t multi_media_time;
+} SpiceStreamDataHeader;
+
+typedef struct SpiceMsgDisplayStreamData {
+    SpiceStreamDataHeader base;
     uint32_t data_size;
     uint8_t data[0];
 } SpiceMsgDisplayStreamData;
+
+typedef struct SpiceMsgDisplayStreamDataSized {
+    SpiceStreamDataHeader base;
+    uint32_t width;
+    uint32_t height;
+    SpiceRect dest;
+    uint32_t data_size;
+    uint8_t data[0];
+} SpiceMsgDisplayStreamDataSized;
 
 typedef struct SpiceMsgDisplayStreamClip {
     uint32_t id;

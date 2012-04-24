@@ -591,6 +591,11 @@ struct String {
     } u @anon;
 };
 
+struct StreamDataHeader {
+	uint32 id;
+	uint32 multi_media_time;
+};
+
 channel DisplayChannel : BaseChannel {
  server:
     message {
@@ -637,10 +642,9 @@ channel DisplayChannel : BaseChannel {
     } stream_create = 122;
 
     message {
-	uint32 id;
-	uint32 multi_media_time;
+	StreamDataHeader base;
 	uint32 data_size;
-	uint8 data[data_size] @end  @nomarshal;
+	uint8 data[data_size] @end @nomarshal;
     } stream_data;
 
     message {
@@ -784,6 +788,15 @@ channel DisplayChannel : BaseChannel {
     message {
 	uint32 surface_id;
     } @ctype(SpiceMsgSurfaceDestroy) surface_destroy;
+
+    message {
+	StreamDataHeader base;
+	uint32 width;
+	uint32 height;
+	Rect dest;
+	uint32 data_size;
+	uint8 data[data_size] @end @nomarshal;
+    } stream_data_sized;
 
  client:
     message {

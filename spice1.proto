@@ -533,6 +533,11 @@ struct String {
     } u @anon;
 };
 
+struct StreamDataHeader {
+	uint32 id;
+	uint32 multi_media_time;
+};
+
 channel DisplayChannel : BaseChannel {
  server:
     message {
@@ -580,8 +585,7 @@ channel DisplayChannel : BaseChannel {
     } stream_create = 122;
 
     message {
-	uint32 id;
-	uint32 multi_media_time;
+	StreamDataHeader base;
 	uint32 data_size;
 	uint32 pad_size @zero;
 	uint8 data[data_size] @end  @nomarshal;
