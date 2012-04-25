@@ -659,7 +659,7 @@ static void __blend_image(SpiceCanvas *spice_canvas,
 
     mask = NULL;
     if (overall_alpha != 0xff) {
-        pixman_color_t color = { 0 };
+        pixman_color_t color = { 0, 0, 0, 0 };
         color.alpha = overall_alpha * 0x101;
         mask = pixman_image_create_solid_fill(&color);
     }
@@ -752,7 +752,7 @@ static void __blend_scale_image(SpiceCanvas *spice_canvas,
 
     mask = NULL;
     if (overall_alpha != 0xff) {
-        pixman_color_t color = { 0 };
+        pixman_color_t color = { 0, 0, 0, 0 };
         color.alpha = overall_alpha * 0x101;
         mask = pixman_image_create_solid_fill(&color);
     }
@@ -1044,7 +1044,7 @@ static void canvas_draw_text(SpiceCanvas *spice_canvas, SpiceRect *bbox,
     pixman_region32_t dest_region;
     pixman_image_t *str_mask, *brush;
     SpiceString *str;
-    SpicePoint pos = { 0, };
+    SpicePoint pos = { 0, 0 };
     int depth;
 
     pixman_region32_init_rect(&dest_region,

@@ -2988,7 +2988,7 @@ static void canvas_draw_stroke(SpiceCanvas *spice_canvas, SpiceRect *bbox,
 {
     CanvasBase *canvas = (CanvasBase *)spice_canvas;
     SpiceCanvas *surface_canvas = NULL;
-    StrokeGC gc = { { 0 } };
+    StrokeGC gc;
     lineGCOps ops = {
         stroke_fill_spans,
         stroke_fill_rects
@@ -2996,6 +2996,8 @@ static void canvas_draw_stroke(SpiceCanvas *spice_canvas, SpiceRect *bbox,
     StrokeLines lines;
     unsigned int i;
     int dashed;
+
+    memset(&gc, 0, sizeof(gc));
 
     pixman_region32_init_rect(&gc.dest_region,
                               bbox->left, bbox->top,
