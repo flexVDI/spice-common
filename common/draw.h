@@ -82,7 +82,7 @@ typedef struct SpiceClipRects {
 } SpiceClipRects;
 
 typedef struct SpiceClip {
-    uint32_t type;
+    uint8_t type;
     SpiceClipRects *rects;
 } SpiceClip;
 
