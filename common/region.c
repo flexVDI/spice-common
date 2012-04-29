@@ -386,6 +386,17 @@ void region_ret_rects(const QRegion *rgn, SpiceRect *rects, uint32_t num_rects)
     }
 }
 
+void region_extents(const QRegion *rgn, SpiceRect *r)
+{
+    pixman_box32_t *extents;
+
+    extents = pixman_region32_extents((pixman_region32_t *)rgn);
+
+    r->left = extents->x1;
+    r->top = extents->y1;
+    r->right = extents->x2;
+    r->bottom = extents->y2;
+}
 
 int region_is_equal(const QRegion *rgn1, const QRegion *rgn2)
 {
