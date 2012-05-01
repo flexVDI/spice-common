@@ -21,6 +21,7 @@
 
 #include <spice/macros.h>
 #include "draw.h"
+#include "log.h"
 
 SPICE_BEGIN_DECLS
 
@@ -85,6 +86,11 @@ static INLINE int rect_get_area(const SpiceRect *r)
     return (r->right - r->left) * (r->bottom - r->top);
 }
 
+static INLINE void rect_debug(const SpiceRect *r)
+{
+    spice_debug("(%d, %d) (%d, %d)", r->left, r->top, r->right, r->bottom);
+}
+
 SPICE_END_DECLS
 
 #ifdef __cplusplus
@@ -132,6 +138,11 @@ static inline int rect_contains(const SpiceRect& big, const SpiceRect& small)
 static inline int rect_get_area(const SpiceRect& r)
 {
     return rect_get_area(&r);
+}
+
+static inline void rect_debug(const SpiceRect &r)
+{
+    rect_debug(&r);
 }
 
 #endif /* __cplusplus */
