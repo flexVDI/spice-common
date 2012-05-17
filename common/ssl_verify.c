@@ -166,6 +166,8 @@ static int verify_hostname(X509* cert, const char *hostname)
     int cn_match = 0;
     X509_NAME* subject;
 
+    spice_return_val_if_fail(hostname != NULL, 0);
+
     if (!cert) {
         spice_debug("warning: no cert!");
         return 0;
@@ -269,6 +271,9 @@ static X509_NAME* subject_to_x509_name(const char *subject, int *nentries)
         KEY,
         VALUE
     } state;
+
+    spice_return_val_if_fail(subject != NULL, NULL);
+    spice_return_val_if_fail(nentries != NULL, NULL);
 
     key = (char*)alloca(strlen(subject));
     val = (char*)alloca(strlen(subject));
