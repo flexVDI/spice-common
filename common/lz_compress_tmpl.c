@@ -71,6 +71,21 @@
     }
 #endif
 
+#ifdef LZ_A8
+#define PIXEL one_byte_pixel_t
+#define FNAME(name) lz_a8_##name
+#define ENCODE_PIXEL(e, pix) encode(e, (pix).a)   // gets the pixel and write only the needed bytes
+                                                  // from the pixel
+#define SAME_PIXEL(pix1, pix2) ((pix1).a == (pix2).a)
+#define HASH_FUNC(v, p) {  \
+    v = DJB2_START;        \
+    DJB2_HASH(v, p[0].a);  \
+    DJB2_HASH(v, p[1].a);  \
+    DJB2_HASH(v, p[2].a);  \
+    v &= HASH_MASK;        \
+    }
+#endif
+
 #ifdef LZ_RGB_ALPHA
 //#undef LZ_RGB_ALPHA
 #define PIXEL rgb32_pixel_t
@@ -177,7 +192,7 @@ static void FNAME(compress_seg)(Encoder *encoder, LzImageSegment *seg, PIXEL *fr
         size_t distance;
 
         /* minimum match length */
-#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA)
+#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA) || defined(LZ_A8)
         size_t len = 3;
 #elif defined(LZ_RGB16)
         size_t len = 2;
@@ -234,7 +249,7 @@ static void FNAME(compress_seg)(Encoder *encoder, LzImageSegment *seg, PIXEL *fr
         ip++;
 
         /* minimum match length for rgb16 is 2 and for plt and alpha is 3 */
-#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA) || defined(LZ_RGB16)
+#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA) || defined(LZ_RGB16) || defined(LZ_A8)
         if (!SAME_PIXEL(*ref, *ip)) {
             ref++;
             ip++;
@@ -244,7 +259,7 @@ static void FNAME(compress_seg)(Encoder *encoder, LzImageSegment *seg, PIXEL *fr
         ip++;
 #endif
 
-#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA)
+#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA) || defined(LZ_A8)
         if (!SAME_PIXEL(*ref, *ip)) {
             ref++;
             ip++;
@@ -255,7 +270,7 @@ static void FNAME(compress_seg)(Encoder *encoder, LzImageSegment *seg, PIXEL *fr
 #endif
         /* far, needs at least 5-byte match */
         if (distance >= MAX_DISTANCE) {
-#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA)
+#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA) || defined(LZ_A8)
             if (ref >= (ref_limit - 1)) {
                 goto literal;
             }
@@ -272,7 +287,7 @@ static void FNAME(compress_seg)(Encoder *encoder, LzImageSegment *seg, PIXEL *fr
             ref++;
             ip++;
             len++;
-#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA)
+#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA) || defined(LZ_A8)
             if (!SAME_PIXEL(*ref, *ip)) {
                 ref++;
                 ip++;
@@ -464,9 +479,11 @@ static void FNAME(compress)(Encoder *encoder)
     LzImageSegment    *cur_seg = encoder->head_image_segs;
     HashEntry        *hslot;
     PIXEL            *ip;
+    PIXEL            *ip_start;
 
     // fetch the first image segment that is not too small
     while (cur_seg && ((((PIXEL *)cur_seg->lines_end) - ((PIXEL *)cur_seg->lines)) < 4)) {
+        ip_start = cur_seg->lines;
         // coping the segment
         if (cur_seg->lines != cur_seg->lines_end) {
             ip = (PIXEL *)cur_seg->lines;
@@ -526,4 +543,5 @@ static void FNAME(compress)(Encoder *encoder)
 #undef LZ_RGB16
 #undef LZ_RGB24
 #undef LZ_RGB32
+#undef LZ_A8
 #undef HASH_FUNC2

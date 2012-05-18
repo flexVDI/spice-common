@@ -133,6 +133,7 @@ typedef struct {
     void (*draw_text)(SpiceCanvas *canvas, SpiceRect *bbox, SpiceClip *clip, SpiceText *text);
     void (*draw_stroke)(SpiceCanvas *canvas, SpiceRect *bbox, SpiceClip *clip, SpiceStroke *stroke);
     void (*draw_rop3)(SpiceCanvas *canvas, SpiceRect *bbox, SpiceClip *clip, SpiceRop3 *rop3);
+    void (*draw_composite)(SpiceCanvas *canvas, SpiceRect *bbox, SpiceClip *clip, SpiceComposite *composite);
     void (*draw_blend)(SpiceCanvas *canvas, SpiceRect *bbox, SpiceClip *clip, SpiceBlend *blend);
     void (*draw_blackness)(SpiceCanvas *canvas, SpiceRect *bbox, SpiceClip *clip, SpiceBlackness *blackness);
     void (*draw_whiteness)(SpiceCanvas *canvas, SpiceRect *bbox, SpiceClip *clip, SpiceWhiteness *whiteness);
@@ -306,7 +307,7 @@ typedef struct {
     void (*copy_region)(SpiceCanvas *canvas,
                         pixman_region32_t *dest_region,
                         int dx, int dy);
-    pixman_image_t *(*get_image)(SpiceCanvas *canvas);
+    pixman_image_t *(*get_image)(SpiceCanvas *canvas, int force_opaque);
 } SpiceCanvasOps;
 
 void spice_canvas_set_usr_data(SpiceCanvas *canvas, void *data, spice_destroy_fn_t destroy_fn);

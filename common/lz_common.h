@@ -44,7 +44,8 @@ typedef enum {
     LZ_IMAGE_TYPE_RGB24,
     LZ_IMAGE_TYPE_RGB32,
     LZ_IMAGE_TYPE_RGBA,
-    LZ_IMAGE_TYPE_XXXA
+    LZ_IMAGE_TYPE_XXXA,
+    LZ_IMAGE_TYPE_A8
 } LzImageType;
 
 #define LZ_IMAGE_TYPE_MASK 0x0f
@@ -54,7 +55,7 @@ typedef enum {
 static const int IS_IMAGE_TYPE_PLT[] = {0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
 static const int IS_IMAGE_TYPE_RGB[] = {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1};
 static const int PLT_PIXELS_PER_BYTE[] = {0, 8, 8, 2, 2, 1};
-static const int RGB_BYTES_PER_PIXEL[] = {0, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4};
+static const int RGB_BYTES_PER_PIXEL[] = {0, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4, 1};
 
 
 #define LZ_MAGIC (*(uint32_t *)"LZ  ")

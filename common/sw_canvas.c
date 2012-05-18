@@ -85,11 +85,27 @@ static pixman_image_t *canvas_get_pixman_brush(SwCanvas *canvas,
     return NULL;
 }
 
-static pixman_image_t *get_image(SpiceCanvas *canvas)
+static pixman_image_t *get_image(SpiceCanvas *canvas, int force_opaque)
 {
     SwCanvas *sw_canvas = (SwCanvas *)canvas;
+    pixman_format_code_t format;
 
-    pixman_image_ref(sw_canvas->image);
+    spice_pixman_image_get_format (sw_canvas->image, &format);
+    if (force_opaque && PIXMAN_FORMAT_A (format) != 0) {
+        uint32_t *data;
+        int stride;
+        int width, height;
+        
+        /* Remove alpha bits from format */
+        format = (pixman_format_code_t)(((uint32_t)format) & ~(0xf << 12));
+        data = pixman_image_get_data (sw_canvas->image);
+        stride = pixman_image_get_stride (sw_canvas->image);
+        width = pixman_image_get_width (sw_canvas->image);
+        height = pixman_image_get_height (sw_canvas->image);
+        return pixman_image_create_bits (format, width, height, data, stride);
+    } else {
+        pixman_image_ref(sw_canvas->image);
+    }
 
     return sw_canvas->image;
 }

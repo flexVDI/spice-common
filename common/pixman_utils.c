@@ -963,6 +963,9 @@ pixman_format_code_t spice_bitmap_format_to_pixman(int bitmap_format,
     case SPICE_BITMAP_FMT_RGBA:
         return PIXMAN_a8r8g8b8;
 
+    case SPICE_BITMAP_FMT_8BIT_A:
+        return PIXMAN_a8;
+
     case SPICE_BITMAP_FMT_INVALID:
     default:
         printf("Unknown bitmap format %d\n", bitmap_format);
@@ -1081,6 +1084,15 @@ static void bitmap_32_to_32(uint8_t* dest, int dest_stride,
         memcpy(dest, src, width * 4);
     }
 #endif
+}
+
+static void bitmap_8_to_8(uint8_t* dest, int dest_stride,
+                          uint8_t* src, int src_stride,
+                          int width, uint8_t* end)
+{
+    for (; src != end; src += src_stride, dest += dest_stride) {
+        memcpy(dest, src, width);
+    }
 }
 
 static void bitmap_24_to_32(uint8_t* dest, int dest_stride,
@@ -1476,6 +1488,9 @@ pixman_image_t *spice_bitmap_to_pixman(pixman_image_t *dest_image,
     case SPICE_BITMAP_FMT_32BIT:
     case SPICE_BITMAP_FMT_RGBA:
         bitmap_32_to_32(dest, dest_stride, src, src_stride, width, end);
+        break;
+    case SPICE_BITMAP_FMT_8BIT_A:
+        bitmap_8_to_8(dest, dest_stride, src, src_stride, width, end);
         break;
     case SPICE_BITMAP_FMT_24BIT:
         bitmap_24_to_32(dest, dest_stride, src, src_stride, width, end);

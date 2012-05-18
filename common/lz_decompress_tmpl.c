@@ -153,6 +153,22 @@
 #endif // TO_RGB32
 #endif
 
+#ifdef LZ_A8
+#ifndef TO_RGB32
+#define OUT_PIXEL one_byte_pixel_t
+#define FNAME(name) lz_a8_##name
+#define COPY_COMP_PIXEL(encoder, out) {out->a = decode(encoder); out++;}
+#else // TO_RGB32
+#define OUT_PIXEL rgb32_pixel_t
+#define FNAME(name) lz_a8_to_rgb32_##name
+#define COPY_COMP_PIXEL(encoder, out) {                     \
+        (out)->b = (out)->g = (out)->r = 0;                 \
+        (out)->pad = decode(encoder);                       \
+        (out)++;                                            \
+    }
+#endif
+#endif
+
 #ifdef LZ_RGB16
 #ifndef TO_RGB32
 #define OUT_PIXEL rgb16_pixel_t
@@ -237,7 +253,7 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
                 }
             }
 
-#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA)
+#if defined(LZ_PLT) || defined(LZ_RGB_ALPHA) || defined(LZ_A8)
             len += 3; // length is biased by 2 + 1 (fixing bias)
 #elif defined(LZ_RGB16)
             len += 2; // length is biased by 1 + 1 (fixing bias)
@@ -315,6 +331,7 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
 #undef LZ_RGB16
 #undef LZ_RGB24
 #undef LZ_RGB32
+#undef LZ_A8
 #undef LZ_RGB_ALPHA
 #undef TO_RGB32
 #undef OUT_PIXEL

@@ -465,6 +465,13 @@ typedef uint16_t rgb16_pixel_t;
 #define TO_RGB32
 #include "lz_decompress_tmpl.c"
 
+#define LZ_A8
+#include "lz_compress_tmpl.c"
+#define LZ_A8
+#include "lz_decompress_tmpl.c"
+#define LZ_A8
+#define TO_RGB32
+#include "lz_decompress_tmpl.c"
 
 #define LZ_RGB16
 #include "lz_compress_tmpl.c"
@@ -514,7 +521,8 @@ int lz_encode(LzContext *lz, LzImageType type, int width, int height, int top_do
         }
     } else {
         if (encoder->stride != width * RGB_BYTES_PER_PIXEL[encoder->type]) {
-            encoder->usr->error(encoder->usr, "stride != width*bytes_per_pixel (rgb)\n");
+            encoder->usr->error(encoder->usr, "stride != width*bytes_per_pixel (rgb) %d %d %d\n",
+                                encoder->stride, width, RGB_BYTES_PER_PIXEL[encoder->type]);
         }
     }
 
@@ -559,6 +567,9 @@ int lz_encode(LzContext *lz, LzImageType type, int width, int height, int top_do
         break;
     case LZ_IMAGE_TYPE_XXXA:
         lz_rgb_alpha_compress(encoder);
+        break;
+    case LZ_IMAGE_TYPE_A8:
+        lz_a8_compress(encoder);
         break;
     case LZ_IMAGE_TYPE_INVALID:
     default:
@@ -704,6 +715,17 @@ void lz_decode(LzContext *lz, LzImageType to_type, uint8_t *buf)
         case LZ_IMAGE_TYPE_XXXA:
             if (encoder->type == to_type) {
                 alpha_size = lz_rgb_alpha_decompress(encoder, (rgb32_pixel_t *)buf, size);
+                out_size = alpha_size;
+            } else {
+                encoder->usr->error(encoder->usr, "unsupported output format\n");
+            }
+            break;
+        case LZ_IMAGE_TYPE_A8:
+            if (encoder->type == to_type) {
+                alpha_size = lz_a8_decompress(encoder, (one_byte_pixel_t *)buf, size);
+                out_size = alpha_size;
+            } else if (to_type == LZ_IMAGE_TYPE_RGB32) {
+                alpha_size = lz_a8_to_rgb32_decompress(encoder, (rgb32_pixel_t *)buf, size);
                 out_size = alpha_size;
             } else {
                 encoder->usr->error(encoder->usr, "unsupported output format\n");

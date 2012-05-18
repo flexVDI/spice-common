@@ -115,7 +115,7 @@ generated_client_marshallers1.c: $(top_srcdir)/spice1.proto $(MARSHALLERS_DEPS)
 generated_server_demarshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-demarshallers --server --include messages.h $< $@ >/dev/null
 
-STRUCTS = -M String -M Rect -M Point -M DisplayBase -M Fill -M Opaque -M Copy -M Blend -M Blackness -M Whiteness -M Invers -M Rop3 -M Stroke -M Text -M Transparent -M AlphaBlend
+STRUCTS = -M String -M Rect -M Point -M DisplayBase -M Fill -M Opaque -M Copy -M Blend -M Blackness -M Whiteness -M Invers -M Rop3 -M Stroke -M Text -M Transparent -M AlphaBlend -M Composite
 generated_server_marshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers $(STRUCTS) --server --include messages.h $< $@ >/dev/null
 

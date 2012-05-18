@@ -253,6 +253,11 @@ typedef struct SpiceMsgDisplayDrawAlphaBlend {
     SpiceAlphaBlend data;
 } SpiceMsgDisplayDrawAlphaBlend;
 
+typedef struct SpiceMsgDisplayDrawComposite {
+    SpiceMsgDisplayBase base;
+    SpiceComposite data;
+} SpiceMsgDisplayDrawComposite;
+
 typedef struct SpiceMsgDisplayCopyBits {
     SpiceMsgDisplayBase base;
     SpicePoint src_pos;

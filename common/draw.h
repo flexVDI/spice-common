@@ -223,6 +223,26 @@ typedef struct SpiceRop3 {
     SpiceQMask mask;
 } SpiceRop3;
 
+/* Given in 16.16 fixed point */
+typedef struct SpiceTransform {
+    uint32_t t00;
+    uint32_t t01;
+    uint32_t t02;
+    uint32_t t10;
+    uint32_t t11;
+    uint32_t t12;
+} SpiceTransform;
+
+typedef struct SpiceComposite {
+    uint32_t flags;
+    SpiceImage *src_bitmap;
+    SpiceImage *mask_bitmap;
+    SpiceTransform src_transform;
+    SpiceTransform mask_transform;
+    SpicePoint16 src_origin;
+    SpicePoint16 mask_origin;
+} SpiceComposite;
+
 typedef struct SpiceBlackness {
     SpiceQMask mask;
 } SpiceBlackness, SpiceInvers, SpiceWhiteness;

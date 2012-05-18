@@ -776,6 +776,10 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image, int 
         as_type = LZ_IMAGE_TYPE_RGB32;
         pixman_format = PIXMAN_x8r8g8b8;
         break;
+    case LZ_IMAGE_TYPE_A8:
+        as_type = LZ_IMAGE_TYPE_A8;
+        pixman_format = PIXMAN_a8;
+        break;
     case LZ_IMAGE_TYPE_RGB16:
         if (!want_original &&
             (canvas->format == SPICE_SURFACE_FMT_32_xRGB ||
@@ -1271,13 +1275,25 @@ static void canvas_touch_image(CanvasBase *canvas, SpiceImage *image)
 
 static pixman_image_t* canvas_get_image_from_self(SpiceCanvas *canvas,
                                                   int x, int y,
-                                                  int32_t width, int32_t height)
+                                                  int32_t width, int32_t height,
+                                                  int force_opaque)
 {
     CanvasBase *canvas_base = (CanvasBase *)canvas;
     pixman_image_t *surface;
     uint8_t *dest;
     int dest_stride;
     SpiceRect area;
+    pixman_format_code_t format;
+
+    format = spice_surface_format_to_pixman (canvas_base->format);
+    if (force_opaque)
+    {
+        /* Set alpha bits of the format to 0 */
+        format = (pixman_format_code_t)(((uint32_t)format) & ~(0xf << 12));
+
+        spice_return_val_if_fail (
+            pixman_format_supported_destination (format), NULL);
+    }
 
     surface = pixman_image_create_bits(spice_surface_format_to_pixman (canvas_base->format),
                                        width, height, NULL, 0);
@@ -1919,7 +1935,7 @@ static void canvas_mask_pixman(CanvasBase *canvas,
     surface_canvas = canvas_get_surface_mask(canvas, mask->bitmap);
     if (surface_canvas) {
         needs_invert = mask->flags & SPICE_MASK_FLAGS_INVERS;
-        image = surface_canvas->ops->get_image(surface_canvas);
+        image = surface_canvas->ops->get_image(surface_canvas, FALSE);
     } else {
         needs_invert = FALSE;
         image = canvas_get_mask(canvas,
@@ -3174,10 +3190,10 @@ static void canvas_draw_rop3(SpiceCanvas *spice_canvas, SpiceRect *bbox,
     width = bbox->right - bbox->left;
     heigth = bbox->bottom - bbox->top;
 
-    d = canvas_get_image_from_self(spice_canvas, bbox->left, bbox->top, width, heigth);
+    d = canvas_get_image_from_self(spice_canvas, bbox->left, bbox->top, width, heigth, FALSE);
     surface_canvas = canvas_get_surface(canvas, rop3->src_bitmap);
     if (surface_canvas) {
-        s = surface_canvas->ops->get_image(surface_canvas);
+        s = surface_canvas->ops->get_image(surface_canvas, FALSE);
     } else {
         s = canvas_get_image(canvas, rop3->src_bitmap, FALSE);
     }
@@ -3204,7 +3220,7 @@ static void canvas_draw_rop3(SpiceCanvas *spice_canvas, SpiceRect *bbox,
 
         _surface_canvas = canvas_get_surface(canvas, rop3->brush.u.pattern.pat);
         if (_surface_canvas) {
-            p = _surface_canvas->ops->get_image(_surface_canvas);
+            p = _surface_canvas->ops->get_image(_surface_canvas, FALSE);
         } else {
             p = canvas_get_image(canvas, rop3->brush.u.pattern.pat, FALSE);
         }
@@ -3218,6 +3234,117 @@ static void canvas_draw_rop3(SpiceCanvas *spice_canvas, SpiceRect *bbox,
         do_rop3_with_color(rop3->rop3, d, s, &src_pos, rop3->brush.u.color);
     }
     pixman_image_unref(s);
+
+    spice_canvas->ops->blit_image(spice_canvas, &dest_region, d,
+                                  bbox->left,
+                                  bbox->top);
+
+    pixman_image_unref(d);
+
+    pixman_region32_fini(&dest_region);
+}
+
+static void transform_to_pixman_transform(SpiceTransform *transform,
+                                          pixman_transform_t *p)
+{
+    p->matrix[0][0] = transform->t00;
+    p->matrix[0][1] = transform->t01;
+    p->matrix[0][2] = transform->t02;
+    p->matrix[1][0] = transform->t10;
+    p->matrix[1][1] = transform->t11;
+    p->matrix[1][2] = transform->t12;
+    p->matrix[2][0] = 0;
+    p->matrix[2][1] = 0;
+    p->matrix[2][2] = pixman_fixed_1;
+}
+
+#define MASK(lo, hi)                                                    \
+    (((1U << (hi)) - 1) - (((1U << (lo))) - 1))
+
+#define EXTRACT(v, lo, hi)                                              \
+    ((v & MASK(lo, hi)) >> lo)
+
+static void canvas_draw_composite(SpiceCanvas *spice_canvas, SpiceRect *bbox,
+                                  SpiceClip *clip, SpiceComposite *composite)
+{
+    CanvasBase *canvas = (CanvasBase *)spice_canvas;
+    SpiceCanvas *surface_canvas;
+    pixman_region32_t dest_region;
+    pixman_image_t *d;
+    pixman_image_t *s;
+    pixman_image_t *m;
+    pixman_repeat_t src_repeat;
+    pixman_filter_t src_filter;
+    pixman_op_t op;
+    pixman_transform_t transform;
+    int width, height;
+
+    pixman_region32_init_rect(&dest_region,
+                              bbox->left, bbox->top,
+                              bbox->right - bbox->left,
+                              bbox->bottom - bbox->top);
+
+    canvas_clip_pixman(canvas, &dest_region, clip);
+
+    width = bbox->right - bbox->left;
+    height = bbox->bottom - bbox->top;
+
+    /* Dest */
+    d = canvas_get_image_from_self(spice_canvas, bbox->left, bbox->top, width, height,
+                                   (composite->flags & SPICE_COMPOSITE_DEST_OPAQUE));
+
+    /* Src */
+    surface_canvas = canvas_get_surface(canvas, composite->src_bitmap);
+    if (surface_canvas) {
+        s = surface_canvas->ops->get_image(surface_canvas,
+                                           (composite->flags & SPICE_COMPOSITE_SOURCE_OPAQUE));
+    } else {
+        s = canvas_get_image(canvas, composite->src_bitmap, FALSE);
+    }
+    if (composite->flags & SPICE_COMPOSITE_HAS_SRC_TRANSFORM)
+    {
+        transform_to_pixman_transform (&composite->src_transform, &transform);
+        pixman_image_set_transform (s, &transform);
+    }
+    src_filter = (pixman_filter_t) EXTRACT (composite->flags, 8, 11);
+    src_repeat = (pixman_repeat_t) EXTRACT (composite->flags, 14, 16);
+    pixman_image_set_filter (s, src_filter, NULL, 0);
+    pixman_image_set_repeat (s, src_repeat);
+
+    /* Mask */
+    m = NULL;
+    if (composite->flags & SPICE_COMPOSITE_HAS_MASK) {
+        pixman_filter_t mask_filter = (pixman_filter_t) EXTRACT (composite->flags, 11, 14);
+        pixman_repeat_t mask_repeat = (pixman_repeat_t) EXTRACT (composite->flags, 16, 18);
+        pixman_bool_t component_alpha = EXTRACT (composite->flags, 18, 19);
+
+        surface_canvas = canvas_get_surface(canvas, composite->mask_bitmap);
+        if (surface_canvas) {
+            m = surface_canvas->ops->get_image(surface_canvas, FALSE);
+        } else {
+            m = canvas_get_image(canvas, composite->mask_bitmap, FALSE);
+        }
+
+        if (composite->flags & SPICE_COMPOSITE_HAS_MASK_TRANSFORM) {
+            transform_to_pixman_transform (&composite->mask_transform, &transform);
+            pixman_image_set_transform (m, &transform);
+        }
+
+        pixman_image_set_repeat (m, mask_repeat);
+        pixman_image_set_filter (m, mask_filter, NULL, 0);
+        pixman_image_set_component_alpha (m, component_alpha);
+    }
+
+    op = (pixman_op_t) EXTRACT (composite->flags, 0, 8);
+
+    pixman_image_composite32 (op, s, m, d,
+                              composite->src_origin.x, composite->src_origin.y,
+                              composite->mask_origin.x, composite->mask_origin.y,
+                              0, 0, width, height);
+
+    pixman_image_unref(s);
+    if (m)
+        pixman_image_unref(m);
 
     spice_canvas->ops->blit_image(spice_canvas, &dest_region, d,
                                   bbox->left,
@@ -3315,6 +3442,7 @@ inline static void canvas_base_init_ops(SpiceCanvasOps *ops)
     ops->draw_alpha_blend = canvas_draw_alpha_blend;
     ops->draw_stroke = canvas_draw_stroke;
     ops->draw_rop3 = canvas_draw_rop3;
+    ops->draw_composite = canvas_draw_composite;
     ops->group_start = canvas_base_group_start;
     ops->group_end = canvas_base_group_end;
 }
