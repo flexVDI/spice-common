@@ -558,6 +558,22 @@ typedef struct SpiceMsgcSmartcard {
 } SpiceMsgcSmartcard;
 #endif
 
+typedef struct SpiceMsgDisplayHead {
+    uint32_t id;
+    uint32_t surface_id;
+    uint32_t width;
+    uint32_t height;
+    uint32_t x;
+    uint32_t y;
+    uint32_t flags;
+} SpiceHead;
+
+typedef struct SpiceMsgDisplayMonitorsConfig {
+    uint16_t count;
+    uint16_t max_allowed;
+    SpiceHead heads[0];
+} SpiceMsgDisplayMonitorsConfig;
+
 SPICE_END_DECLS
 
 #endif /* _H_SPICE_PROTOCOL */

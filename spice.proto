@@ -596,6 +596,16 @@ struct StreamDataHeader {
 	uint32 multi_media_time;
 };
 
+struct Head {
+    uint32 id;
+    uint32 surface_id;
+    uint32 width;
+    uint32 height;
+    uint32 x;
+    uint32 y;
+    uint32 flags;
+};
+
 channel DisplayChannel : BaseChannel {
  server:
     message {
@@ -797,6 +807,12 @@ channel DisplayChannel : BaseChannel {
 	uint32 data_size;
 	uint8 data[data_size] @end @nomarshal;
     } stream_data_sized;
+
+    message {
+	uint16 count;
+    uint16 max_allowed;
+	Head heads[count] @end;
+    } monitors_config;
 
  client:
     message {
