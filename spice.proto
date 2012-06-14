@@ -1139,7 +1139,7 @@ enum32 vsc_message_type {
     APDU,
     Flush,
     FlushComplete
-} @prefix(VSC_);
+};
 
 struct VscMessageHeader {
     vsc_message_type type;
@@ -1170,7 +1170,7 @@ channel SmartcardChannel : BaseChannel {
 	uint32 reader_id;
 	uint32 length;
 	uint8 data[] @end;
-    } @ctype(SpiceMsgSmartcard) msg = 101;
+    } @ctype(SpiceMsgSmartcard) data = 101;
 
  client:
     message {
@@ -1184,7 +1184,7 @@ channel SmartcardChannel : BaseChannel {
 	case Error:
 	    VscMessageError error;
 	} u @anon;
-    } @ctype(SpiceMsgcSmartcard) msg = 101;
+    } @ctype(SpiceMsgcSmartcard) data = 101;
 
     message {
 	vsc_message_type type;

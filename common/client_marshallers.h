@@ -66,7 +66,7 @@ typedef struct {
     void (*msgc_smartcard_atr)(SpiceMarshaller *m, VSCMsgATR *msg);
     void (*msgc_smartcard_error)(SpiceMarshaller *m, VSCMsgError *msg);
     void (*msgc_smartcard_header)(SpiceMarshaller *m, VSCMsgHeader *msg);
-    void (*msgc_smartcard_msg)(SpiceMarshaller *m, SpiceMsgcSmartcard *msg, SpiceMarshaller **reader_name_out);
+    void (*msgc_smartcard_data)(SpiceMarshaller *m, SpiceMsgcSmartcard *msg, SpiceMarshaller **reader_name_out);
     void (*msgc_smartcard_reader_add)(SpiceMarshaller *m, VSCMsgReaderAdd *msg);
 #endif
 } SpiceMessageMarshallers;
