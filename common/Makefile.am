@@ -14,7 +14,7 @@ SERVER_MARSHALLERS =					\
 	$(srcdir)/generated_server_marshallers.h	\
 	$(NULL)
 
-BUILT_SOURCES = $(CLIENT_MARSHALLERS) $(SERVER_MARSHALLERS)
+BUILT_SOURCES = $(CLIENT_MARSHALLERS) $(SERVER_MARSHALLERS) $(top_srcdir)/spice-protocol/spice/enums.h
 
 noinst_LTLIBRARIES = libspice-common.la libspice-common-server.la libspice-common-client.la
 libspice_common_la_SOURCES =		\
@@ -121,6 +121,9 @@ generated_server_marshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
 
 generated_server_marshallers.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers $(STRUCTS) --server --include messages.h -H $< $@ >/dev/null
+
+$(top_srcdir)/spice-protocol/spice/enums.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-enums $< $@ >/dev/null
 
 EXTRA_DIST =				\
 	$(CLIENT_MARSHALLERS)		\
