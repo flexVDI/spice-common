@@ -10,6 +10,8 @@ EXTRA_DIST =				\
 	spice1.proto			\
 	$(NULL)
 
+DISTCLEANFILES = *.pyc
+
 MAINTAINERCLEANFILES =						\
 	$(srcdir)/INSTALL					\
 	$(srcdir)/aclocal.m4					\
