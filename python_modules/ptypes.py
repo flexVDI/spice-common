@@ -234,7 +234,7 @@ class EnumBaseType(Type):
         return codegen.prefix_camel(self.name)
 
     def c_enumname(self, value):
-        self.c_enumname_by_name(self.names[value])
+        return self.c_enumname_by_name(self.names[value])
 
     def c_enumname_by_name(self, name):
         if self.has_attr("prefix"):
