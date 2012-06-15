@@ -282,6 +282,9 @@ pixman_image_t *alloc_lz_image_surface(LzDecodeUsrData *canvas_data,
 
     stride = (gross_pixels / height) * (PIXMAN_FORMAT_BPP (pixman_format) / 8);
 
+    /* pixman requires strides to be 4-byte aligned */
+    stride = SPICE_ALIGN(stride, 4);
+    
     if (!top_down) {
         stride = -stride;
     }
