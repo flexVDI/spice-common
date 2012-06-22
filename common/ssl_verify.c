@@ -413,6 +413,7 @@ static int openssl_verify(int preverify_ok, X509_STORE_CTX *ctx)
     SSL *ssl;
     X509* cert;
     char buf[256];
+    unsigned int failed_verifications;
 
     ssl = (SSL*)X509_STORE_CTX_get_ex_data(ctx, SSL_get_ex_data_X509_STORE_CTX_idx());
     v = (SpiceOpenSSLVerify*)SSL_get_app_data(ssl);
@@ -444,20 +445,42 @@ static int openssl_verify(int preverify_ok, X509_STORE_CTX *ctx)
         return 0;
     }
 
-    if (v->verifyop & SPICE_SSL_VERIFY_OP_PUBKEY &&
-        verify_pubkey(cert, v->pubkey, v->pubkey_size))
-        return 1;
+    failed_verifications = 0;
+    if (v->verifyop & SPICE_SSL_VERIFY_OP_PUBKEY)
+        if (verify_pubkey(cert, v->pubkey, v->pubkey_size))
+            return 1;
+        else
+            failed_verifications |= SPICE_SSL_VERIFY_OP_PUBKEY;
 
     if (!v->all_preverify_ok || !preverify_ok)
         return 0;
 
-    if (v->verifyop & SPICE_SSL_VERIFY_OP_HOSTNAME &&
-        verify_hostname(cert, v->hostname))
-        return 1;
+    if (v->verifyop & SPICE_SSL_VERIFY_OP_HOSTNAME)
+       if (verify_hostname(cert, v->hostname))
+           return 1;
+        else
+            failed_verifications |= SPICE_SSL_VERIFY_OP_HOSTNAME;
 
-    if (v->verifyop & SPICE_SSL_VERIFY_OP_SUBJECT &&
-        verify_subject(cert, v))
-        return 1;
+
+    if (v->verifyop & SPICE_SSL_VERIFY_OP_SUBJECT)
+        if (verify_subject(cert, v))
+            return 1;
+        else
+            failed_verifications |= SPICE_SSL_VERIFY_OP_SUBJECT;
+
+    /* If we reach this code, this means all the tests failed, thus
+     * verification failed
+     */
+    if (failed_verifications & SPICE_SSL_VERIFY_OP_PUBKEY)
+        spice_warning("ssl: pubkey verification failed");
+
+    if (failed_verifications & SPICE_SSL_VERIFY_OP_HOSTNAME)
+        spice_warning("ssl: hostname '%s' verification failed", v->hostname);
+
+    if (failed_verifications & SPICE_SSL_VERIFY_OP_SUBJECT)
+        spice_warning("ssl: subject '%s' verification failed", v->subject);
+
+    spice_warning("ssl: verification failed");
 
     return 0;
 }
