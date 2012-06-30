@@ -446,27 +446,30 @@ static int openssl_verify(int preverify_ok, X509_STORE_CTX *ctx)
     }
 
     failed_verifications = 0;
-    if (v->verifyop & SPICE_SSL_VERIFY_OP_PUBKEY)
+    if (v->verifyop & SPICE_SSL_VERIFY_OP_PUBKEY) {
         if (verify_pubkey(cert, v->pubkey, v->pubkey_size))
             return 1;
         else
             failed_verifications |= SPICE_SSL_VERIFY_OP_PUBKEY;
+    }
 
     if (!v->all_preverify_ok || !preverify_ok)
         return 0;
 
-    if (v->verifyop & SPICE_SSL_VERIFY_OP_HOSTNAME)
+    if (v->verifyop & SPICE_SSL_VERIFY_OP_HOSTNAME) {
        if (verify_hostname(cert, v->hostname))
            return 1;
         else
             failed_verifications |= SPICE_SSL_VERIFY_OP_HOSTNAME;
+    }
 
 
-    if (v->verifyop & SPICE_SSL_VERIFY_OP_SUBJECT)
+    if (v->verifyop & SPICE_SSL_VERIFY_OP_SUBJECT) {
         if (verify_subject(cert, v))
             return 1;
         else
             failed_verifications |= SPICE_SSL_VERIFY_OP_SUBJECT;
+    }
 
     /* If we reach this code, this means all the tests failed, thus
      * verification failed
