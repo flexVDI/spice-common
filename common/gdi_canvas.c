@@ -756,7 +756,7 @@ uint8_t calc_rop3(uint16_t rop3_bits, int brush)
 
     if (rop3_bits & SPICE_ROPD_OP_BLACKNESS || rop3_bits & SPICE_ROPD_OP_WHITENESS ||
         rop3_bits & SPICE_ROPD_OP_INVERS) {
-        spice_warn_if_reached("invalid rop3 type");
+        spice_warning("invalid rop3 type");
         return 0;
     }
     return rop3;
