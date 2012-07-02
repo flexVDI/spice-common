@@ -161,9 +161,7 @@ struct ChannelId {
     uint8 id;
 };
 
-channel MainChannel : BaseChannel {
- server:
-     message {
+struct DstInfo {
 	uint16 port;
 	uint16 sport;
 	uint32 host_offset @zero;
@@ -173,6 +171,12 @@ channel MainChannel : BaseChannel {
 	uint32 pub_key_size @minor(1);
 	uint8 host_data[host_size] @as_ptr @zero_terminated;
 	uint8 pub_key_data[pub_key_size] @minor(1) @as_ptr @zero_terminated;
+} @ctype(SpiceMigrationDstInfo);
+
+channel MainChannel : BaseChannel {
+ server:
+     message {
+        DstInfo dst_info;
     } @ctype(SpiceMsgMainMigrationBegin) migrate_begin = 101;
 
     Empty migrate_cancel;

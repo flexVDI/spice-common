@@ -193,15 +193,19 @@ struct ChannelId {
     uint8 id;
 };
 
-channel MainChannel : BaseChannel {
- server:
-     message {
+struct DstInfo {
 	uint16 port;
 	uint16 sport;
 	uint32 host_size;
 	uint8 *host_data[host_size] @zero_terminated @marshall @nonnull;
 	uint32 cert_subject_size;
 	uint8 *cert_subject_data[cert_subject_size] @zero_terminated @marshall;
+} @ctype(SpiceMigrationDstInfo);
+
+channel MainChannel : BaseChannel {
+ server:
+     message {
+        DstInfo dst_info;
     } @ctype(SpiceMsgMainMigrationBegin) migrate_begin = 101;
 
     Empty migrate_cancel;
@@ -267,6 +271,14 @@ channel MainChannel : BaseChannel {
         uint32 num_tokens;
     } agent_connected_tokens;
 
+    message {
+        DstInfo dst_info;
+        uint32 src_mig_version;
+    } migrate_begin_seamless;
+
+    Empty migrate_dst_seamless_ack;
+    Empty migrate_dst_seamless_nack;
+
  client:
     message {
 	uint64 cache_size;
@@ -293,6 +305,12 @@ channel MainChannel : BaseChannel {
     } @ctype(SpiceMsgcMainAgentTokens) agent_token;
 
     Empty migrate_end;
+
+    message {
+        uint32 src_version;
+    } migrate_dst_do_seamless;
+
+    Empty migrate_connected_seamless;
 };
 
 enum8 clip_type {

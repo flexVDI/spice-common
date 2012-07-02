@@ -42,6 +42,7 @@ typedef struct {
     void (*msgc_main_mouse_mode_request)(SpiceMarshaller *m, SpiceMsgcMainMouseModeRequest *msg);
     void (*msgc_main_agent_start)(SpiceMarshaller *m, SpiceMsgcMainAgentStart *msg);
     void (*msgc_main_agent_token)(SpiceMarshaller *m, SpiceMsgcMainAgentTokens *msg);
+    void (*msgc_main_migrate_dst_do_seamless)(SpiceMarshaller *m, SpiceMsgcMainMigrateDstDoSeamless *msg);
     void (*msgc_display_init)(SpiceMarshaller *m, SpiceMsgcDisplayInit *msg);
     void (*msgc_inputs_key_down)(SpiceMarshaller *m, SpiceMsgcKeyDown *msg);
     void (*msgc_inputs_key_up)(SpiceMarshaller *m, SpiceMsgcKeyUp *msg);

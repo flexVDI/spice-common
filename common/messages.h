@@ -67,7 +67,7 @@ typedef struct SpiceMsgMainMultiMediaTime {
     uint32_t time;
 } SpiceMsgMainMultiMediaTime;
 
-typedef struct SpiceMsgMainMigrationBegin {
+typedef struct SpiceMigrationDstInfo {
     uint16_t port;
     uint16_t sport;
     uint32_t host_size;
@@ -77,7 +77,20 @@ typedef struct SpiceMsgMainMigrationBegin {
     uint8_t *pub_key_data;
     uint32_t cert_subject_size;
     uint8_t *cert_subject_data;
+} SpiceMigrationDstInfo;
+
+typedef struct SpiceMsgMainMigrationBegin {
+    SpiceMigrationDstInfo dst_info;
 } SpiceMsgMainMigrationBegin;
+
+typedef struct SpiceMsgMainMigrateBeginSeamless {
+    SpiceMigrationDstInfo dst_info;
+    uint32_t src_mig_version;
+} SpiceMsgMainMigrateBeginSeamless;
+
+typedef struct SpiceMsgcMainMigrateDstDoSeamless {
+    uint32_t src_version;
+} SpiceMsgcMainMigrateDstDoSeamless;
 
 typedef struct SpiceMsgMainMigrationSwitchHost {
     uint16_t port;
