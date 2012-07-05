@@ -85,6 +85,12 @@ void spice_log(const char *log_domain,
 } SPICE_STMT_END
 #endif
 
+#ifndef spice_info
+#define spice_info(format, ...) SPICE_STMT_START {                     \
+    spice_log(SPICE_LOG_DOMAIN, SPICE_LOG_LEVEL_INFO, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+} SPICE_STMT_END
+#endif
+
 #ifndef spice_debug
 #define spice_debug(format, ...) SPICE_STMT_START {                     \
     spice_log(SPICE_LOG_DOMAIN, SPICE_LOG_LEVEL_DEBUG, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
