@@ -122,7 +122,10 @@ generated_server_marshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
 generated_server_marshallers.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers $(STRUCTS) --server --include messages.h -H $< $@ >/dev/null
 
-$(top_srcdir)/spice-protocol/spice/enums.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
+# this is going to upset automake distcheck, since we try to write to
+# readonly srcdir. To limit the fail chances, rebuild automatically
+# enums.h only if the spice.proto has changed.
+$(top_srcdir)/spice-protocol/spice/enums.h: $(top_srcdir)/spice.proto # $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-enums $< $@ >/dev/null
 
 EXTRA_DIST =				\
