@@ -263,6 +263,10 @@ channel MainChannel : BaseChannel {
        uint8 uuid[16];
     } uuid;
 
+    message {
+        uint32 num_tokens;
+    } agent_connected_tokens;
+
  client:
     message {
 	uint64 cache_size;

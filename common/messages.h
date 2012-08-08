@@ -189,6 +189,8 @@ typedef struct SpiceMsgMainAgentTokens {
     uint32_t num_tokens;
 } SpiceMsgMainAgentTokens, SpiceMsgcMainAgentTokens, SpiceMsgcMainAgentStart;
 
+typedef struct SpiceMsgMainAgentTokens SpiceMsgMainAgentConnectedTokens;
+
 typedef struct SpiceMsgcClientInfo {
     uint64_t cache_size;
 } SpiceMsgcClientInfo;
