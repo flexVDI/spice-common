@@ -141,3 +141,15 @@ AC_DEFUN([SPICE_CHECK_PIXMAN], [
     AS_VAR_APPEND([$1_CFLAGS], [" $PIXMAN_CFLAGS"])
     AS_VAR_APPEND([$1_LIBS], [" $PIXMAN_LIBS"])
 ])
+
+
+# SPICE_CHECK_GLIB2(PREFIX)
+# --------------------------
+# Check for the availability of glib2. If found, it will append the flags to
+# use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables.
+#---------------------------
+AC_DEFUN([SPICE_CHECK_GLIB2], [
+    PKG_CHECK_MODULES(GLIB2, glib-2.0)
+    AS_VAR_APPEND([$1_CFLAGS], [" $GLIB2_CFLAGS"])
+    AS_VAR_APPEND([$1_LIBS], [" $GLIB2_LIBS"])
+])
