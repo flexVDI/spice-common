@@ -3,6 +3,7 @@
 # Checks for header files and library functions needed by spice-common.
 # ---------------------
 AC_DEFUN([SPICE_CHECK_SYSDEPS], [
+    AC_C_BIGENDIAN
     AC_FUNC_ALLOCA
     AC_CHECK_HEADERS([arpa/inet.h malloc.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/socket.h unistd.h])
 
