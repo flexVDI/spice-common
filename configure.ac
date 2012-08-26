@@ -9,6 +9,9 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 
+# For automake >= 1.12
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
+
 # Checks for programs
 AM_INIT_AUTOMAKE([1.11 dist-xz no-dist-gzip tar-ustar foreign -Wall -Werror])
 AM_MAINTAINER_MODE
