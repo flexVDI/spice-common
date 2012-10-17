@@ -521,8 +521,9 @@ int lz_encode(LzContext *lz, LzImageType type, int width, int height, int top_do
         }
     } else {
         if (encoder->stride != width * RGB_BYTES_PER_PIXEL[encoder->type]) {
-            encoder->usr->error(encoder->usr, "stride != width*bytes_per_pixel (rgb) %d %d %d\n",
-                                encoder->stride, width, RGB_BYTES_PER_PIXEL[encoder->type]);
+            encoder->usr->error(encoder->usr, "stride != width*bytes_per_pixel (rgb) %d != %d * %d (%d)\n",
+                                encoder->stride, width, RGB_BYTES_PER_PIXEL[encoder->type],
+                                encoder->type);
         }
     }
 
