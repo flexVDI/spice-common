@@ -434,6 +434,9 @@ static int openssl_verify(int preverify_ok, X509_STORE_CTX *ctx)
                 v->verifyop & SPICE_SSL_VERIFY_OP_PUBKEY)
                 return 1;
 
+            if (err == X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN)
+                spice_debug("server certificate not being signed by the provided CA");
+
             return 0;
         } else
             return 1;
