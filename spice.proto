@@ -1309,6 +1309,22 @@ client:
 channel UsbredirChannel : SpicevmcChannel {
 };
 
+channel PortChannel : SpicevmcChannel {
+ client:
+    message {
+	uint8 event;
+    } event = 201;
+ server:
+    message {
+	uint32 name_size;
+	uint8 *name[name_size] @zero_terminated @marshall @nonnull;
+	uint8 opened;
+    } init = 201;
+    message {
+	uint8 event;
+    } event;
+};
+
 protocol Spice {
     MainChannel main = 1;
     DisplayChannel display;
@@ -1319,4 +1335,5 @@ protocol Spice {
     TunnelChannel tunnel;
     SmartcardChannel smartcard;
     UsbredirChannel usbredir;
+    PortChannel port;
 };

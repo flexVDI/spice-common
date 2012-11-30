@@ -594,6 +594,20 @@ typedef struct SpiceMsgDisplayMonitorsConfig {
     SpiceHead heads[0];
 } SpiceMsgDisplayMonitorsConfig;
 
+typedef struct SpiceMsgPortInit {
+    uint32_t name_size;
+    uint8_t *name;
+    uint8_t opened;
+} SpiceMsgPortInit;
+
+typedef struct SpiceMsgPortEvent {
+    uint8_t event;
+} SpiceMsgPortEvent;
+
+typedef struct SpiceMsgcPortEvent {
+    uint8_t event;
+} SpiceMsgcPortEvent;
+
 SPICE_END_DECLS
 
 #endif /* _H_SPICE_PROTOCOL */
