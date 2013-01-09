@@ -469,6 +469,10 @@ typedef struct SpiceMsgPlaybackPacket {
     uint32_t data_size;
 } SpiceMsgPlaybackPacket, SpiceMsgcRecordPacket;
 
+typedef struct SpiceMsgPlaybackLatency {
+    uint32_t latency_ms;
+} SpiceMsgPlaybackLatency;
+
 typedef struct SpiceMsgRecordStart {
     uint32_t channels;
     uint32_t format; //SPICE_AUDIO_FMT_?

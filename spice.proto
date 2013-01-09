@@ -1102,6 +1102,10 @@ channel PlaybackChannel : BaseChannel {
     Empty stop;
     AudioVolume volume;
     AudioMute mute;
+
+    message {
+        uint32 latency_ms;
+    } latency;
 };
 
 channel RecordChannel : BaseChannel {
