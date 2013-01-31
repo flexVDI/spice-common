@@ -1037,8 +1037,24 @@ static SpiceCanvas *canvas_get_surface_mask_internal(CanvasBase *canvas, SpiceIm
     return NULL;
 }
 
-#if defined(SW_CANVAS_CACHE) || defined(SW_CANVAS_IMAGE_CACHE)
 
+#if defined(SW_CANVAS_CACHE)
+static int image_has_palette_to_cache(SpiceImage *image)
+{
+    SpiceImageDescriptor *descriptor = &image->descriptor;
+
+    if (descriptor->type == SPICE_IMAGE_TYPE_BITMAP) {
+        return image->u.bitmap.palette &&
+               (image->u.bitmap.flags & SPICE_BITMAP_FLAGS_PAL_CACHE_ME);
+    } else if (descriptor->type == SPICE_IMAGE_TYPE_LZ_PLT) {
+        return image->u.lz_plt.palette &&
+               (image->u.lz_plt.flags & SPICE_BITMAP_FLAGS_PAL_CACHE_ME);
+    }
+    return FALSE;
+}
+#endif
+
+#if defined(SW_CANVAS_CACHE) || defined(SW_CANVAS_IMAGE_CACHE)
 //#define DEBUG_LZ
 
 /* If real get is FALSE, then only do whatever is needed but don't return an image. For instance,
@@ -1064,6 +1080,7 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
         !(descriptor->flags & SPICE_IMAGE_FLAGS_CACHE_ME) &&
 #ifdef SW_CANVAS_CACHE
         !(descriptor->flags & SPICE_IMAGE_FLAGS_CACHE_REPLACE_ME) &&
+        !image_has_palette_to_cache(image) &&
 #endif
         (descriptor->type != SPICE_IMAGE_TYPE_GLZ_RGB) &&
         (descriptor->type != SPICE_IMAGE_TYPE_ZLIB_GLZ_RGB)) {
