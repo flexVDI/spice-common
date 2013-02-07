@@ -483,7 +483,7 @@ static void FNAME(compress)(Encoder *encoder)
 
     // fetch the first image segment that is not too small
     while (cur_seg && ((((PIXEL *)cur_seg->lines_end) - ((PIXEL *)cur_seg->lines)) < 4)) {
-        ip_start = cur_seg->lines;
+        ip_start = (PIXEL *)cur_seg->lines;
         // coping the segment
         if (cur_seg->lines != cur_seg->lines_end) {
             ip = (PIXEL *)cur_seg->lines;
