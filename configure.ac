@@ -1,7 +1,7 @@
 AC_PREREQ([2.63])
 
 AC_INIT([spice-common],
-        [m4_esyscmd(build-aux/git-version-gen .tarball-version)],
+        [noversion],
         [spice-devel@lists.freedesktop.org])
 
 AC_CONFIG_SRCDIR([common/bitops.h])
