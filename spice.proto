@@ -890,6 +890,13 @@ channel DisplayChannel : BaseChannel {
 	} data;
     } draw_composite;
 
+    message {
+        uint32 stream_id;
+        uint32 unique_id;
+        uint32 max_window_size;
+        uint32 timeout_ms;
+    } stream_activate_report;
+
  client:
     message {
 	uint8 pixmap_cache_id;
@@ -897,6 +904,17 @@ channel DisplayChannel : BaseChannel {
 	uint8 glz_dictionary_id;
 	int32 glz_dictionary_window_size;  // in pixels
     } init = 101;
+
+    message {
+        uint32 stream_id;
+        uint32 unique_id;
+        uint32 start_frame_mm_time;
+        uint32 end_frame_mm_time;
+        uint32 num_frames;
+        uint32 num_drops;
+        int32 last_frame_delay;
+        uint32 audio_delay;
+    } stream_report;
 };
 
 flags16 keyboard_modifier_flags {
