@@ -420,7 +420,7 @@ int region_bounds_intersects(const QRegion *rgn1, const QRegion *rgn2)
     pixman_box32_t *extents1, *extents2;
 
     extents1 = pixman_region32_extents((pixman_region32_t *)rgn1);
-    extents2 = pixman_region32_extents((pixman_region32_t *)rgn1);
+    extents2 = pixman_region32_extents((pixman_region32_t *)rgn2);
 
     return EXTENTCHECK(extents1, extents2);
 }
