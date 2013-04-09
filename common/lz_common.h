@@ -24,6 +24,7 @@
 #define _LZ_COMMON_H
 
 #include <spice/macros.h>
+#include "verify.h"
 
 SPICE_BEGIN_DECLS
 
@@ -57,6 +58,10 @@ static const int IS_IMAGE_TYPE_RGB[] = {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1};
 static const int PLT_PIXELS_PER_BYTE[] = {0, 8, 8, 2, 2, 1};
 static const int RGB_BYTES_PER_PIXEL[] = {0, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4, 1};
 
+verify(SPICE_N_ELEMENTS(IS_IMAGE_TYPE_PLT) == (LZ_IMAGE_TYPE_A8 + 1));
+verify(SPICE_N_ELEMENTS(IS_IMAGE_TYPE_RGB) == (LZ_IMAGE_TYPE_A8 + 1));
+verify(SPICE_N_ELEMENTS(PLT_PIXELS_PER_BYTE) == (LZ_IMAGE_TYPE_PLT8 + 1));
+verify(SPICE_N_ELEMENTS(RGB_BYTES_PER_PIXEL) == (LZ_IMAGE_TYPE_A8 + 1));
 
 #define LZ_MAGIC (*(uint32_t *)"LZ  ")
 #define LZ_VERSION_MAJOR 1U

@@ -55,6 +55,7 @@ libspice_common_la_SOURCES =		\
 	spice_common.h			\
 	ssl_verify.c			\
 	ssl_verify.h			\
+	verify.h			\
 	$(NULL)
 
 libspice_common_client_la_SOURCES =		\
