@@ -75,6 +75,9 @@ typedef struct QuicFamily {
     unsigned int notGRsuffixlen[MAXNUMCODES];    /* indexed by code number, contains suffix
                                                     length of the not-GR codeword */
 
+    unsigned int golomb_code_len[256][MAXNUMCODES];
+    unsigned int golomb_code[256][MAXNUMCODES];
+
     /* array for translating distribution U to L for depths up to 8 bpp,
     initialized by decorelateinit() */
     BYTE xlatU2L[256];
@@ -360,9 +363,22 @@ static void corelate_init(QuicFamily *family, int bpc)
     }
 }
 
+static void golomb_coding_slow(QuicFamily *family, const BYTE n, const unsigned int l,
+                               unsigned int * const codeword,
+                               unsigned int * const codewordlen)
+{
+    if (n < family->nGRcodewords[l]) {
+        (*codeword) = bitat[l] | (n & bppmask[l]);
+        (*codewordlen) = (n >> l) + l + 1;
+    } else {
+        (*codeword) = n - family->nGRcodewords[l];
+        (*codewordlen) = family->notGRcwlen[l];
+    }
+}
+
 static void family_init(QuicFamily *family, int bpc, int limit)
 {
-    int l;
+    int l, b;
 
     for (l = 0; l < bpc; l++) { /* fill arrays indexed by code number */
         int altprefixlen, altcodewords;
@@ -378,6 +394,13 @@ static void family_init(QuicFamily *family, int bpc, int limit)
         family->notGRcwlen[l] = altprefixlen + ceil_log_2(altcodewords);
         family->notGRprefixmask[l] = bppmask[32 - altprefixlen]; /* needed for decoding only */
         family->notGRsuffixlen[l] = ceil_log_2(altcodewords); /* needed for decoding only */
+
+        for (b = 0; b < 256; b++) {
+            unsigned int code, len;
+            golomb_coding_slow(family, b, l, &code, &len);
+            family->golomb_code[b][l] = code;
+            family->golomb_code_len[b][l] = len;
+        }
     }
 
     decorelate_init(family, bpc);
