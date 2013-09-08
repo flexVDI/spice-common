@@ -173,7 +173,7 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel, int i,
         } else {
             channel->state.waitcnt = (tabrand(&channel->state.tabrand_seed) & waitmask);
             update_model(&channel->state, find_bucket(channel, decorelate_drow[-1]),
-                         decorelate_drow[i], bpc);
+                         decorelate_drow[i]);
         }
         stopidx = ++i + channel->state.waitcnt;
     } else {
@@ -191,7 +191,7 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel, int i,
         }
 
         update_model(&channel->state, find_bucket(channel, decorelate_drow[stopidx - 1]),
-                     decorelate_drow[stopidx], bpc);
+                     decorelate_drow[stopidx]);
         stopidx = i + (tabrand(&channel->state.tabrand_seed) & waitmask);
     }
 
@@ -272,7 +272,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
         } else {
             channel->state.waitcnt = (tabrand(&channel->state.tabrand_seed) & waitmask);
             update_model(&channel->state, find_bucket(channel, decorelate_drow[-1]),
-                         decorelate_drow[0], bpc);
+                         decorelate_drow[0]);
         }
         stopidx = ++i + channel->state.waitcnt;
     } else {
@@ -295,7 +295,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
             }
 
             update_model(&channel->state, find_bucket(channel, decorelate_drow[stopidx - 1]),
-                         decorelate_drow[stopidx], bpc);
+                         decorelate_drow[stopidx]);
             stopidx = i + (tabrand(&channel->state.tabrand_seed) & waitmask);
         }
 
@@ -406,7 +406,7 @@ static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel, int i
         } else {
             channel->state.waitcnt = (tabrand(&channel->state.tabrand_seed) & waitmask);
             update_model(&channel->state, find_bucket(channel, correlate_row[-1]),
-                         correlate_row[0], bpc);
+                         correlate_row[0]);
         }
         stopidx = ++i + channel->state.waitcnt;
     } else {
@@ -426,7 +426,7 @@ static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel, int i
             decode_eatbits(encoder, codewordlen);
         }
 
-        update_model(&channel->state, pbucket, correlate_row[stopidx], bpc);
+        update_model(&channel->state, pbucket, correlate_row[stopidx]);
 
         stopidx = i + (tabrand(&channel->state.tabrand_seed) & waitmask);
     }
@@ -511,7 +511,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
         } else {
             channel->state.waitcnt = (tabrand(&channel->state.tabrand_seed) & waitmask);
             update_model(&channel->state, find_bucket(channel, correlate_row[-1]),
-                         correlate_row[0], bpc);
+                         correlate_row[0]);
         }
         stopidx = ++i + channel->state.waitcnt;
     } else {
@@ -535,7 +535,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
                 decode_eatbits(encoder, codewordlen);
             }
 
-            update_model(&channel->state, pbucket, correlate_row[stopidx], bpc);
+            update_model(&channel->state, pbucket, correlate_row[stopidx]);
 
             stopidx = i + (tabrand(&channel->state.tabrand_seed) & waitmask);
         }

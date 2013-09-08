@@ -74,13 +74,13 @@ static unsigned int FNAME(golomb_decoding)(const unsigned int l, const unsigned 
 
 /* update the bucket using just encoded curval */
 static void FNAME(update_model)(CommonState *state, s_bucket * const bucket,
-                                const BYTE curval, unsigned int bpp)
+                                const BYTE curval)
 {
+    const unsigned int bpp = BPC;
     COUNTER * const pcounters = bucket->pcounters;
     unsigned int i;
     unsigned int bestcode;
     unsigned int bestcodelen;
-    //unsigned int bpp = encoder->bpp;
 
     /* update counters, find minimum */
 
