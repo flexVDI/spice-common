@@ -166,6 +166,8 @@ channel BaseChannel {
 
     Data list; /* the msg body is SpiceSubMessageList */
 
+    Empty base_last = 100;
+
  client:
     message {
 	uint32 generation;
