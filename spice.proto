@@ -425,6 +425,8 @@ flags8 string_flags {
 };
 
 flags32 surface_flags {
+    /* Adding flags requires some caps check, since old clients only
+       treat the value as an enum and not as a flag (flag == PRIMARY) */
     PRIMARY
 };
 
