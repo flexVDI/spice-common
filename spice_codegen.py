@@ -10,38 +10,73 @@ from python_modules import codegen
 from python_modules import demarshal
 from python_modules import marshal
 
-def write_channel_enums(writer, channel, client):
+def write_channel_enums(writer, channel, client, describe):
     messages = filter(lambda m : m.channel == channel, \
                           channel.client_messages if client else channel.server_messages)
     if len(messages) == 0:
         return
-    writer.begin_block("enum")
-    i = 0
     if client:
         prefix = [ "MSGC" ]
     else:
         prefix = [ "MSG" ]
     if channel.member_name:
         prefix.append(channel.member_name.upper())
+    if not describe:
+        writer.begin_block("enum")
+    else:
+        writer.begin_block("static const value_string %s_vs[] = " % (codegen.prefix_underscore_lower(*[x.lower() for x in prefix])))
+    i = 0
     prefix.append(None) # To be replaced with name
     for m in messages:
         prefix[-1] = m.name.upper()
         enum = codegen.prefix_underscore_upper(*prefix)
-        if m.value == i:
-            writer.writeln("%s," % enum)
-            i = i + 1
+        if describe:
+            writer.writeln("{ %s, \"%s %s\" }," % (enum, "Client" if client else "Server", m.name.upper()))
         else:
-            writer.writeln("%s = %s," % (enum, m.value))
-            i = m.value + 1
-    if channel.member_name:
-        prefix[-1] = prefix[-2]
-        prefix[-2] = "END"
-        writer.newline()
-        writer.writeln("%s" % (codegen.prefix_underscore_upper(*prefix)))
+            if m.value == i:
+                writer.writeln("%s," % enum)
+                i = i + 1
+            else:
+                writer.writeln("%s = %s," % (enum, m.value))
+                i = m.value + 1
+    if describe:
+        writer.writeln("{ 0, NULL }");
+    else:
+        if channel.member_name:
+            prefix[-1] = prefix[-2]
+            prefix[-2] = "END"
+            writer.newline()
+            writer.writeln("%s" % (codegen.prefix_underscore_upper(*prefix)))
     writer.end_block(semicolon=True)
     writer.newline()
 
-def write_enums(writer):
+def write_channel_type_enum(writer, describe=False):
+    i = 0
+    if describe:
+        writer.begin_block("static const value_string channel_types_vs[] =")
+    else:
+        writer.begin_block("enum")
+    for c in proto.channels:
+        enum = codegen.prefix_underscore_upper("CHANNEL", c.name.upper())
+        if describe:
+            writer.writeln("{ %s, \"%s\" }," % (enum, c.name.upper()))
+        else:
+            if c.value == i:
+                writer.writeln("%s," % enum)
+                i = i + 1
+            else:
+                writer.writeln("%s = %s," % (enum, c.value))
+                i = c.value + 1
+    writer.newline()
+    if describe:
+        writer.writeln("{ 0, NULL }")
+    else:
+        writer.writeln("SPICE_END_CHANNEL")
+    writer.end_block(semicolon=True)
+    writer.newline()
+
+
+def write_enums(writer, describe=False):
     writer.writeln("#ifndef _H_SPICE_ENUMS")
     writer.writeln("#define _H_SPICE_ENUMS")
     writer.newline()
@@ -52,27 +87,22 @@ def write_enums(writer):
     for t in ptypes.get_named_types():
         if isinstance(t, ptypes.EnumBaseType):
             t.c_define(writer)
+            if describe:
+                t.c_describe(writer)
 
-    i = 0
-    writer.begin_block("enum")
-    for c in proto.channels:
-        enum = codegen.prefix_underscore_upper("CHANNEL", c.name.upper())
-        if c.value == i:
-            writer.writeln("%s," % enum)
-            i = i + 1
-        else:
-            writer.writeln("%s = %s," % (enum, c.value))
-            i = c.value + 1
-    writer.newline()
-    writer.writeln("SPICE_END_CHANNEL")
-    writer.end_block(semicolon=True)
-    writer.newline()
+    write_channel_type_enum(writer)
+    if (describe):
+        write_channel_type_enum(writer, True)
 
     for c in ptypes.get_named_types():
         if not isinstance(c, ptypes.ChannelType):
             continue
-        write_channel_enums(writer, c, False)
-        write_channel_enums(writer, c, True)
+        write_channel_enums(writer, c, False, False)
+        if describe:
+            write_channel_enums(writer, c, False, describe)
+        write_channel_enums(writer, c, True, False)
+        if describe:
+            write_channel_enums(writer, c, True, describe)
 
     writer.writeln("#endif /* _H_SPICE_ENUMS */")
 
@@ -80,6 +110,9 @@ parser = OptionParser(usage="usage: %prog [options] <protocol_file> <destination
 parser.add_option("-e", "--generate-enums",
                   action="store_true", dest="generate_enums", default=False,
                   help="Generate enums")
+parser.add_option("-w", "--generate-wireshark-dissector",
+                  action="store_true", dest="generate_dissector", default=False,
+                  help="Generate Wireshark dissector definitions")
 parser.add_option("-d", "--generate-demarshallers",
                   action="store_true", dest="generate_demarshallers", default=False,
                   help="Generate demarshallers")
@@ -160,8 +193,8 @@ if options.includes:
         writer.header.writeln('#include "%s"' % i)
         writer.writeln('#include "%s"' % i)
 
-if options.generate_enums:
-    write_enums(writer)
+if options.generate_enums or options.generate_dissector:
+    write_enums(writer, options.generate_dissector)
 
 if options.generate_demarshallers:
     if not options.server and not options.client:

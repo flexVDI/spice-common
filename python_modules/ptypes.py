@@ -247,6 +247,23 @@ class EnumBaseType(Type):
     def get_fixed_nw_size(self):
         return self.bits / 8
 
+    # generates a value-name table suitable for use with the wireshark protocol
+    # dissector
+    def c_describe(self, writer):
+        writer.write("static const value_string %s_vs[] = " % codegen.prefix_underscore_lower(self.name))
+        writer.begin_block()
+        values = self.names.keys()
+        values.sort()
+        for i in values:
+            writer.write("{ ")
+            writer.write(self.c_enumname(i))
+            writer.write(", \"%s\" }," % self.names[i])
+            writer.newline()
+        writer.write("{ 0, NULL }")
+        writer.end_block(semicolon=True)
+        writer.newline()
+
+
 class EnumType(EnumBaseType):
     def __init__(self, bits, name, enums, attribute_list):
         Type.__init__(self)
