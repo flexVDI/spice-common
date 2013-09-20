@@ -456,8 +456,16 @@ static int openssl_verify(int preverify_ok, X509_STORE_CTX *ctx)
             failed_verifications |= SPICE_SSL_VERIFY_OP_PUBKEY;
     }
 
-    if (!v->all_preverify_ok || !preverify_ok)
+    if (!preverify_ok) {
+        err = X509_STORE_CTX_get_error(ctx);
+        depth = X509_STORE_CTX_get_error_depth(ctx);
+        spice_warning("Error in server certificate verification: %s (num=%d:depth%d:%s)",
+                      X509_verify_cert_error_string(err), err, depth, buf);
         return 0;
+    }
+    if (!v->all_preverify_ok) {
+        return 0;
+    }
 
     if (v->verifyop & SPICE_SSL_VERIFY_OP_HOSTNAME) {
        if (verify_hostname(cert, v->hostname))
