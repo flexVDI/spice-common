@@ -424,8 +424,8 @@ static int openssl_verify(int preverify_ok, X509_STORE_CTX *ctx)
     err = X509_STORE_CTX_get_error(ctx);
     if (depth > 0) {
         if (!preverify_ok) {
-            spice_warning("openssl verify:num=%d:%s:depth=%d:%s", err,
-                          X509_verify_cert_error_string(err), depth, buf);
+            spice_warning("Error in certificate chain verification: %s (num=%d:depth%d:%s)",
+                          X509_verify_cert_error_string(err), err, depth, buf);
             v->all_preverify_ok = 0;
 
             /* if certificate verification failed, we can still authorize the server */
