@@ -758,7 +758,7 @@ static void gl_canvas_put_image(SpiceCanvas *spice_canvas, const SpiceRect *dest
     GLCImage image;
     uint32_t i;
 
-    spice_return_if_fail(src_stride <= 0);
+    spice_warn_if_fail(src_stride <= 0);
 
     glc_clip_reset(canvas->glc);
 
@@ -788,9 +788,13 @@ static void gl_canvas_put_image(SpiceCanvas *spice_canvas, const SpiceRect *dest
     image.format = GLC_IMAGE_RGB32;
     image.width = src_width;
     image.height = src_height;
-    src_stride = -src_stride;
+    if (src_stride < 0) {
+        src_stride = -src_stride;
+        image.pixels = (uint8_t *)src_data - (src_height - 1) * src_stride;
+    } else {
+        image.pixels = (uint8_t *)src_data;
+    }
     image.stride = src_stride;
-    image.pixels = (uint8_t *)src_data - (src_height - 1) * src_stride;
     image.pallet = NULL;
     glc_draw_image(canvas->glc, &gldest, &src, &image, 0, 1);
 
