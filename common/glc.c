@@ -1263,7 +1263,7 @@ void glc_copy_pixels(GLCCtx glc, int x_dest, int y_dest, int x_src, int y_src, i
     int recreate = 0;
 
     spice_assert(ctx);
-#ifdef USE_COPY_PIXELS
+#if 1 /* USE_COPY_PIXELS */
     start_draw(ctx);
     if (ctx->pat) {
         glDisable(GL_TEXTURE_2D);
