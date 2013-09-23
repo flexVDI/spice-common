@@ -373,6 +373,7 @@ static void gl_canvas_draw_copy(SpiceCanvas *spice_canvas, SpiceRect *bbox, Spic
     surface_to_image(canvas, surface, &image, 0);
     SET_GLC_RECT(&dest, bbox);
     SET_GLC_RECT(&src, &copy->src_area);
+    image.format = GLC_IMAGE_RGB32;
     glc_draw_image(canvas->glc, &dest, &src, &image, 0, 1);
 
     pixman_image_unref(surface);
