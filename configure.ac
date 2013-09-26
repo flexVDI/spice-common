@@ -34,18 +34,22 @@ PKG_CHECK_MODULES(PIXMAN, pixman-1 >= 0.17.7)
 AC_SUBST(PIXMAN_CFLAGS)
 
 AC_ARG_ENABLE([smartcard],
-  AS_HELP_STRING([--enable-smartcard=@<:@yes/no@:>@],
-                 [Enable smartcard support @<:@default=yes@:>@]),
+  AS_HELP_STRING([--enable-smartcard=@<:@yes/no/auto@:>@],
+                 [Enable smartcard support @<:@default=auto@:>@]),
   [],
-  [enable_smartcard="yes"])
+  [enable_smartcard="auto"])
 
-if test "x$enable_smartcard" = "xno"; then
-  AM_CONDITIONAL(WITH_SMARTCARD, false)
-else
-  PKG_CHECK_MODULES(SMARTCARD, libcacard >= 0.1.2)
-  AC_DEFINE(USE_SMARTCARD, [1], [Define if supporting smartcard proxying])
-  AM_CONDITIONAL(WITH_SMARTCARD, true)
+have_smartcard=no
+if test "x$enable_smartcard" != "xno"; then
+  PKG_CHECK_MODULES(SMARTCARD, libcacard >= 0.1.2, [have_smartcard=yes], [have_smartcard=no])
+  if test "x$enable_smartcard" != "xauto" && test "x$have_smartcard" = "xno"; then
+    AC_MSG_ERROR("Smartcard support requested but libcacard could not be found")
+  fi
+  if test "x$have_smartcard" = "xyes"; then
+    AC_DEFINE(USE_SMARTCARD, [1], [Define if supporting smartcard proxying])
+  fi
 fi
+AM_CONDITIONAL([WITH_SMARTCARD], [test "x$have_smartcard" = "xyes"])
 
 AC_ARG_ENABLE([opengl],
   AS_HELP_STRING([--enable-opengl=@<:@yes/no@:>@],
