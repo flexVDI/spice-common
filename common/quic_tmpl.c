@@ -83,12 +83,12 @@ if (i > 1 && cur_row[i - 1].a == cur_row[i - 2].a && i != run_index) {  \
 #endif
 
 /*  a  */
-static INLINE BYTE FNAME(decorelate_0)(const PIXEL * const curr, const unsigned int bpc_mask)
+static inline BYTE FNAME(decorelate_0)(const PIXEL * const curr, const unsigned int bpc_mask)
 {
     return family.xlatU2L[(unsigned)((int)curr[0].a - (int)_PIXEL_A) & bpc_mask];
 }
 
-static INLINE void FNAME(corelate_0)(PIXEL *curr, const BYTE corelate,
+static inline void FNAME(corelate_0)(PIXEL *curr, const BYTE corelate,
                                      const unsigned int bpc_mask)
 {
     curr->a = (family.xlatL2U[corelate] + _PIXEL_A) & bpc_mask;
@@ -97,14 +97,14 @@ static INLINE void FNAME(corelate_0)(PIXEL *curr, const BYTE corelate,
 #ifdef PRED_1
 
 /*  (a+b)/2  */
-static INLINE BYTE FNAME(decorelate)(const PIXEL *const prev, const PIXEL * const curr,
+static inline BYTE FNAME(decorelate)(const PIXEL *const prev, const PIXEL * const curr,
                                      const unsigned int bpc_mask)
 {
     return family.xlatU2L[(unsigned)((int)curr->a - (int)((_PIXEL_A + _PIXEL_B) >> 1)) & bpc_mask];
 }
 
 
-static INLINE void FNAME(corelate)(const PIXEL *prev, PIXEL *curr, const BYTE corelate,
+static inline void FNAME(corelate)(const PIXEL *prev, PIXEL *curr, const BYTE corelate,
                                    const unsigned int bpc_mask)
 {
     curr->a = (family.xlatL2U[corelate] + (int)((_PIXEL_A + _PIXEL_B) >> 1)) & bpc_mask;
@@ -115,7 +115,7 @@ static INLINE void FNAME(corelate)(const PIXEL *prev, PIXEL *curr, const BYTE co
 #ifdef PRED_2
 
 /*  .75a+.75b-.5c  */
-static INLINE BYTE FNAME(decorelate)(const PIXEL *const prev, const PIXEL * const curr,
+static inline BYTE FNAME(decorelate)(const PIXEL *const prev, const PIXEL * const curr,
                                      const unsigned int bpc_mask)
 {
     int p = ((int)(3 * (_PIXEL_A + _PIXEL_B)) - (int)(_PIXEL_C << 1)) >> 2;
@@ -131,7 +131,7 @@ static INLINE BYTE FNAME(decorelate)(const PIXEL *const prev, const PIXEL * cons
     }
 }
 
-static INLINE void FNAME(corelate)(const PIXEL *prev, PIXEL *curr, const BYTE corelate,
+static inline void FNAME(corelate)(const PIXEL *prev, PIXEL *curr, const BYTE corelate,
                                    const unsigned int bpc_mask)
 {
     const int p = ((int)(3 * (_PIXEL_A + _PIXEL_B)) - (int)(_PIXEL_C << 1)) >> 2;
