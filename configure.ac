@@ -51,6 +51,22 @@ if test "x$enable_smartcard" != "xno"; then
 fi
 AM_CONDITIONAL([WITH_SMARTCARD], [test "x$have_smartcard" = "xyes"])
 
+AC_ARG_ENABLE(celt051,
+[  --disable-celt051       Disable celt051 audio codec (enabled by default)],,
+[enable_celt051="yes"])
+
+if test "x$enable_celt051" = "xyes"; then
+    PKG_CHECK_MODULES(CELT051, celt051 >= 0.5.1.1, have_celt051=yes, have_celt051=no)
+    AC_SUBST(CELT051_CFLAGS)
+    AC_SUBST(CELT051_LIBS)
+    AC_SUBST(CELT051_LIBDIR)
+else
+    have_celt051=no
+fi
+
+AM_CONDITIONAL([HAVE_CELT051], [test "x$have_celt051" = "xyes"])
+AM_COND_IF([HAVE_CELT051], AC_DEFINE([HAVE_CELT051], 1, [Define if we have celt051 codec]))
+
 AC_ARG_ENABLE([opengl],
   AS_HELP_STRING([--enable-opengl=@<:@yes/no@:>@],
                  [Enable opengl support (not recommended) @<:@default=no@:>@]),

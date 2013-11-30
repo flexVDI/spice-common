@@ -52,6 +52,8 @@ libspice_common_la_SOURCES =		\
 	ring.h				\
 	rop3.c				\
 	rop3.h				\
+	snd_codec.c			\
+	snd_codec.h			\
 	spice_common.h			\
 	ssl_verify.c			\
 	ssl_verify.h			\
@@ -81,12 +83,16 @@ endif
 AM_CPPFLAGS =				\
 	$(GL_CFLAGS)			\
 	$(PIXMAN_CFLAGS)		\
+	$(CELT051_CFLAGS)		\
 	$(PROTOCOL_CFLAGS)		\
 	$(SMARTCARD_CFLAGS)		\
 	$(VISIBILITY_HIDDEN_CFLAGS)	\
 	$(WARN_CFLAGS)			\
 	-std=gnu99			\
 	$(NULL)
+
+libspice_common_la_LIBADD =				\
+	$(CELT051_LIBS)
 
 MARSHALLERS_DEPS =					\
 	$(top_srcdir)/python_modules/__init__.py	\
@@ -142,6 +148,7 @@ EXTRA_DIST =				\
 	quic_family_tmpl.c		\
 	quic_rgb_tmpl.c			\
 	quic_tmpl.c			\
+	snd_codec.h			\
 	sw_canvas.c			\
 	sw_canvas.h			\
 	$(NULL)
