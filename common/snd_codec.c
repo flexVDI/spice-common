@@ -48,6 +48,11 @@ typedef struct
     CELTEncoder *celt_encoder;
     CELTDecoder *celt_decoder;
 #endif
+
+#if HAVE_OPUS
+    OpusEncoder *opus_encoder;
+    OpusDecoder *opus_decoder;
+#endif
 } SndCodecInternal;
 
 
@@ -77,7 +82,7 @@ static int snd_codec_create_celt051(SndCodecInternal *codec, int purpose)
     int celt_error;
 
     codec->celt_mode = celt051_mode_create(codec->frequency,
-                                           SND_CODEC_CELT_PLAYBACK_CHAN,
+                                           SND_CODEC_PLAYBACK_CHAN,
                                            SND_CODEC_CELT_FRAME_SIZE, &celt_error);
     if (! codec->celt_mode) {
         spice_printerr("create celt mode failed %d", celt_error);
@@ -111,7 +116,7 @@ error:
 static int snd_codec_encode_celt051(SndCodecInternal *codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
 {
     int n;
-    if (in_size != SND_CODEC_CELT_FRAME_SIZE * SND_CODEC_CELT_PLAYBACK_CHAN * 2)
+    if (in_size != SND_CODEC_CELT_FRAME_SIZE * SND_CODEC_PLAYBACK_CHAN * 2)
         return SND_CODEC_INVALID_ENCODE_SIZE;
     n = celt051_encode(codec->celt_encoder, (celt_int16_t *) in_ptr, NULL, out_ptr, *out_size);
     if (n < 0) {
@@ -130,11 +135,86 @@ static int snd_codec_decode_celt051(SndCodecInternal *codec, uint8_t *in_ptr, in
         spice_printerr("celt051_decode failed %d\n", n);
         return SND_CODEC_DECODE_FAILED;
     }
-    *out_size = SND_CODEC_CELT_FRAME_SIZE * SND_CODEC_CELT_PLAYBACK_CHAN * 2 /* 16 fmt */;
+    *out_size = SND_CODEC_CELT_FRAME_SIZE * SND_CODEC_PLAYBACK_CHAN * 2 /* 16 fmt */;
     return SND_CODEC_OK;
 }
 #endif
 
+
+/* Opus support routines */
+#if HAVE_OPUS
+static void snd_codec_destroy_opus(SndCodecInternal *codec)
+{
+    if (codec->opus_decoder) {
+        opus_decoder_destroy(codec->opus_decoder);
+        codec->opus_decoder = NULL;
+    }
+
+    if (codec->opus_encoder) {
+        opus_encoder_destroy(codec->opus_encoder);
+        codec->opus_encoder = NULL;
+    }
+
+}
+
+static int snd_codec_create_opus(SndCodecInternal *codec, int purpose)
+{
+    int opus_error;
+
+    if (purpose & SND_CODEC_ENCODE) {
+        codec->opus_encoder = opus_encoder_create(codec->frequency,
+                                SND_CODEC_PLAYBACK_CHAN,
+                                OPUS_APPLICATION_AUDIO, &opus_error);
+        if (! codec->opus_encoder) {
+            spice_printerr("create opus encoder failed; error %d", opus_error);
+            goto error;
+        }
+    }
+
+    if (purpose & SND_CODEC_DECODE) {
+        codec->opus_decoder = opus_decoder_create(codec->frequency,
+                                SND_CODEC_PLAYBACK_CHAN, &opus_error);
+        if (! codec->opus_decoder) {
+            spice_printerr("create opus decoder failed; error %d", opus_error);
+            goto error;
+        }
+    }
+
+    codec->mode = SPICE_AUDIO_DATA_MODE_OPUS;
+    return SND_CODEC_OK;
+
+error:
+    snd_codec_destroy_opus(codec);
+    return SND_CODEC_UNAVAILABLE;
+}
+
+static int snd_codec_encode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
+{
+    int n;
+    if (in_size != SND_CODEC_OPUS_FRAME_SIZE * SND_CODEC_PLAYBACK_CHAN * 2)
+        return SND_CODEC_INVALID_ENCODE_SIZE;
+    n = opus_encode(codec->opus_encoder, (opus_int16 *) in_ptr, SND_CODEC_OPUS_FRAME_SIZE, out_ptr, *out_size);
+    if (n < 0) {
+        spice_printerr("opus_encode failed %d\n", n);
+        return SND_CODEC_ENCODE_FAILED;
+    }
+    *out_size = n;
+    return SND_CODEC_OK;
+}
+
+static int snd_codec_decode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int in_size, uint8_t *out_ptr, int *out_size)
+{
+    int n;
+    n = opus_decode(codec->opus_decoder, in_ptr, in_size, (opus_int16 *) out_ptr,
+                *out_size / SND_CODEC_PLAYBACK_CHAN / 2, 0);
+    if (n < 0) {
+        spice_printerr("opus_decode failed %d\n", n);
+        return SND_CODEC_DECODE_FAILED;
+    }
+    *out_size = n * SND_CODEC_PLAYBACK_CHAN * 2 /* 16 fmt */;
+    return SND_CODEC_OK;
+}
+#endif
 
 
 /*----------------------------------------------------------------------------
@@ -147,14 +227,23 @@ static int snd_codec_decode_celt051(SndCodecInternal *codec, uint8_t *in_ptr, in
       use the given codec, FALSE otherwise.
    mode must be a SPICE_AUDIO_DATA_MODE_XXX enum from spice/enum.h
  */
-int snd_codec_is_capable(int mode)
+int snd_codec_is_capable(int mode, int frequency)
 {
 #if HAVE_CELT051
     if (mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1)
         return TRUE;
-#else
-    return FALSE;
 #endif
+
+#if HAVE_OPUS
+    if (mode == SPICE_AUDIO_DATA_MODE_OPUS &&
+         (frequency == SND_CODEC_ANY_FREQUENCY ||
+          frequency == 48000 || frequency == 24000 ||
+          frequency == 16000 || frequency == 12000 ||
+          frequency == 8000) )
+        return TRUE;
+#endif
+
+    return FALSE;
 }
 
 /*
@@ -183,6 +272,11 @@ int snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose)
         rc = snd_codec_create_celt051(*c, purpose);
 #endif
 
+#if HAVE_OPUS
+    if (mode == SPICE_AUDIO_DATA_MODE_OPUS)
+        rc = snd_codec_create_opus(*c, purpose);
+#endif
+
     return rc;
 }
 
@@ -198,6 +292,10 @@ void snd_codec_destroy(SndCodec *codec)
 
 #if HAVE_CELT051
     snd_codec_destroy_celt051(*c);
+#endif
+
+#if HAVE_OPUS
+    snd_codec_destroy_opus(*c);
 #endif
 
     free(*c);
@@ -216,6 +314,10 @@ int snd_codec_frame_size(SndCodec codec)
 #if HAVE_CELT051
     if (c && c->mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1)
         return SND_CODEC_CELT_FRAME_SIZE;
+#endif
+#if HAVE_OPUS
+    if (c && c->mode == SPICE_AUDIO_DATA_MODE_OPUS)
+        return SND_CODEC_OPUS_FRAME_SIZE;
 #endif
     return SND_CODEC_MAX_FRAME_SIZE;
 }
@@ -242,8 +344,18 @@ int snd_codec_encode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_
 {
     SndCodecInternal *c = (SndCodecInternal *) codec;
 #if HAVE_CELT051
-    if (c && c->mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1)
+    if (c && c->mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1) {
+        /* The output buffer size in celt determines the compression,
+            and so is essentially mandatory to use a certain value (47) */
+        if (*out_size > SND_CODEC_CELT_COMPRESSED_FRAME_BYTES)
+            *out_size = SND_CODEC_CELT_COMPRESSED_FRAME_BYTES;
         return snd_codec_encode_celt051(c, in_ptr, in_size, out_ptr, out_size);
+    }
+#endif
+
+#if HAVE_OPUS
+    if (c && c->mode == SPICE_AUDIO_DATA_MODE_OPUS)
+        return snd_codec_encode_opus(c, in_ptr, in_size, out_ptr, out_size);
 #endif
 
     return SND_CODEC_ENCODER_UNAVAILABLE;
@@ -271,6 +383,11 @@ int snd_codec_decode(SndCodec codec, uint8_t *in_ptr, int in_size, uint8_t *out_
 #if HAVE_CELT051
     if (c && c->mode == SPICE_AUDIO_DATA_MODE_CELT_0_5_1)
         return snd_codec_decode_celt051(c, in_ptr, in_size, out_ptr, out_size);
+#endif
+
+#if HAVE_OPUS
+    if (c && c->mode == SPICE_AUDIO_DATA_MODE_OPUS)
+        return snd_codec_decode_opus(c, in_ptr, in_size, out_ptr, out_size);
 #endif
 
     return SND_CODEC_DECODER_UNAVAILABLE;

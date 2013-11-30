@@ -876,6 +876,7 @@ enum32 audio_data_mode {
     INVALID,
     RAW,
     CELT_0_5_1,
+    OPUS,
 };
 
 enum32 audio_fmt {

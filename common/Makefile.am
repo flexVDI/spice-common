@@ -84,6 +84,7 @@ AM_CPPFLAGS =				\
 	$(GL_CFLAGS)			\
 	$(PIXMAN_CFLAGS)		\
 	$(CELT051_CFLAGS)		\
+	$(OPUS_CFLAGS)		        \
 	$(PROTOCOL_CFLAGS)		\
 	$(SMARTCARD_CFLAGS)		\
 	$(VISIBILITY_HIDDEN_CFLAGS)	\
@@ -92,6 +93,7 @@ AM_CPPFLAGS =				\
 	$(NULL)
 
 libspice_common_la_LIBADD =				\
+	$(OPUS_LIBS)		                        \
 	$(CELT051_LIBS)
 
 MARSHALLERS_DEPS =					\

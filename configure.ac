@@ -67,6 +67,10 @@ fi
 AM_CONDITIONAL([HAVE_CELT051], [test "x$have_celt051" = "xyes"])
 AM_COND_IF([HAVE_CELT051], AC_DEFINE([HAVE_CELT051], 1, [Define if we have celt051 codec]))
 
+PKG_CHECK_MODULES([OPUS], [opus >= 0.9.14], have_opus=yes, have_opus=no)
+AM_CONDITIONAL([HAVE_OPUS], [test "x$have_opus" = "xyes"])
+AM_COND_IF([HAVE_OPUS], AC_DEFINE([HAVE_OPUS], 1, [Define if we have Opus]))
+
 AC_ARG_ENABLE([opengl],
   AS_HELP_STRING([--enable-opengl=@<:@yes/no@:>@],
                  [Enable opengl support (not recommended) @<:@default=no@:>@]),

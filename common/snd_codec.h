@@ -24,6 +24,10 @@
 #include <celt051/celt.h>
 #endif
 
+#if HAVE_OPUS
+#include  <opus.h>
+#endif
+
 /* Spice uses a very fixed protocol when transmitting CELT audio;
    audio must be transmitted in frames of 256, and we must compress
    data down to a fairly specific size (47, computation below).
@@ -33,14 +37,20 @@
 #define SND_CODEC_CELT_FRAME_SIZE       256
 #define SND_CODEC_CELT_BIT_RATE         (64 * 1024)
 #define SND_CODEC_CELT_PLAYBACK_FREQ    44100
-#define SND_CODEC_CELT_PLAYBACK_CHAN    2
 #define SND_CODEC_CELT_COMPRESSED_FRAME_BYTES (SND_CODEC_CELT_FRAME_SIZE * SND_CODEC_CELT_BIT_RATE / \
                                         SND_CODEC_CELT_PLAYBACK_FREQ / 8)
 
+#define SND_CODEC_OPUS_FRAME_SIZE       480
+#define SND_CODEC_OPUS_PLAYBACK_FREQ    48000
+#define SND_CODEC_OPUS_COMPRESSED_FRAME_BYTES 480
 
-#define SND_CODEC_MAX_FRAME_SIZE        SND_CODEC_CELT_FRAME_SIZE
-#define SND_CODEC_MAX_FRAME_BYTES       (SND_CODEC_MAX_FRAME_SIZE * SND_CODEC_CELT_PLAYBACK_CHAN * 2 /* FMT_S16 */)
-#define SND_CODEC_MAX_COMPRESSED_BYTES  SND_CODEC_CELT_COMPRESSED_FRAME_BYTES
+#define SND_CODEC_PLAYBACK_CHAN         2
+
+#define SND_CODEC_MAX_FRAME_SIZE        (MAX(SND_CODEC_CELT_FRAME_SIZE, SND_CODEC_OPUS_FRAME_SIZE))
+#define SND_CODEC_MAX_FRAME_BYTES       (SND_CODEC_MAX_FRAME_SIZE * SND_CODEC_PLAYBACK_CHAN * 2 /* FMT_S16 */)
+#define SND_CODEC_MAX_COMPRESSED_BYTES  MAX(SND_CODEC_CELT_COMPRESSED_FRAME_BYTES, SND_CODEC_OPUS_COMPRESSED_FRAME_BYTES)
+
+#define SND_CODEC_ANY_FREQUENCY        -1
 
 #define SND_CODEC_OK                    0
 #define SND_CODEC_UNAVAILABLE           1
@@ -57,7 +67,7 @@ SPICE_BEGIN_DECLS
 
 typedef struct SndCodecInternal * SndCodec;
 
-int  snd_codec_is_capable(int mode);
+int  snd_codec_is_capable(int mode, int frequency);
 
 int  snd_codec_create(SndCodec *codec, int mode, int frequency, int purpose);
 void snd_codec_destroy(SndCodec *codec);
