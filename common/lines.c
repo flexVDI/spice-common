@@ -814,6 +814,8 @@ miFillUniqueSpanGroup (GCPtr pGC, SpanGroup * spanGroup, Boolean foreground)
                             }
                             xfree (yspans);
                             xfree (ysizes);
+                            xfree (newpoints);
+                            xfree (newwidths);
                             miDisposeSpanGroup (spanGroup);
                             return;
                         }
