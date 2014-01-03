@@ -806,8 +806,6 @@ miFillUniqueSpanGroup (GCPtr pGC, SpanGroup * spanGroup, Boolean foreground)
                         newwidths = xrealloc (newspans->widths,
                                               ysizes[index] * sizeof (int));
                         if (!newpoints || !newwidths) {
-                            int i;
-
                             for (i = 0; i < ylength; i++) {
                                 xfree (yspans[i].points);
                                 xfree (yspans[i].widths);
@@ -838,8 +836,6 @@ miFillUniqueSpanGroup (GCPtr pGC, SpanGroup * spanGroup, Boolean foreground)
         points = (DDXPointRec*)xalloc (count * sizeof (DDXPointRec));
         widths = (int *)xalloc (count * sizeof (int));
         if (!points || !widths) {
-            int i;
-
             for (i = 0; i < ylength; i++) {
                 xfree (yspans[i].points);
                 xfree (yspans[i].widths);
