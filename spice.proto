@@ -1352,6 +1352,9 @@ channel PortChannel : SpicevmcChannel {
     } event;
 };
 
+channel WebDAVChannel : PortChannel {
+};
+
 protocol Spice {
     MainChannel main = 1;
     DisplayChannel display;
@@ -1363,4 +1366,5 @@ protocol Spice {
     SmartcardChannel smartcard;
     UsbredirChannel usbredir;
     PortChannel port;
+    WebDAVChannel webdav;
 };
