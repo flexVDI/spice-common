@@ -954,7 +954,7 @@ static void find_model_params(Encoder *encoder,
     bsize = *firstsize;
 
     do { /* other buckets */
-        if (nbuckets) {         /* bucket start */
+        if (*nbuckets) {         /* bucket start */
             bstart = bend + 1;
         } else {
             bstart = 0;
