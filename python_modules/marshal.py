@@ -4,7 +4,7 @@ import codegen
 
 def write_includes(writer):
     writer.header.writeln("#include <spice/protocol.h>")
-    writer.header.writeln('#include "marshaller.h"')
+    writer.header.writeln('#include "common/marshaller.h"')
     writer.header.newline()
     writer.header.writeln("#ifndef _GENERATED_HEADERS_H")
     writer.header.writeln("#define _GENERATED_HEADERS_H")
@@ -15,7 +15,7 @@ def write_includes(writer):
     writer.writeln("#include <stdio.h>")
     writer.writeln("#include <spice/protocol.h>")
     writer.writeln("#include <spice/macros.h>")
-    writer.writeln('#include "marshaller.h"')
+    writer.writeln('#include "common/marshaller.h"')
     writer.newline()
     writer.writeln("#ifdef _MSC_VER")
     writer.writeln("#pragma warning(disable:4101)")
