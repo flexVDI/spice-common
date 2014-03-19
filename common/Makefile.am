@@ -1,17 +1,17 @@
 NULL =
 
 # Avoid need for python(pyparsing) by end users
-CLIENT_MARSHALLERS =					\
-	$(srcdir)/generated_client_demarshallers.c	\
-	$(srcdir)/generated_client_demarshallers1.c	\
-	$(srcdir)/generated_client_marshallers.c	\
-	$(srcdir)/generated_client_marshallers1.c	\
+CLIENT_MARSHALLERS =				\
+	generated_client_demarshallers.c	\
+	generated_client_demarshallers1.c	\
+	generated_client_marshallers.c		\
+	generated_client_marshallers1.c		\
 	$(NULL)
 
-SERVER_MARSHALLERS =					\
-	$(srcdir)/generated_server_demarshallers.c	\
-	$(srcdir)/generated_server_marshallers.c	\
-	$(srcdir)/generated_server_marshallers.h	\
+SERVER_MARSHALLERS =				\
+	generated_server_demarshallers.c	\
+	generated_server_marshallers.c		\
+	generated_server_marshallers.h		\
 	$(NULL)
 
 BUILT_SOURCES = $(CLIENT_MARSHALLERS) $(SERVER_MARSHALLERS) $(top_srcdir)/spice-protocol/spice/enums.h
