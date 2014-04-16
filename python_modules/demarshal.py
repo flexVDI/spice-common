@@ -138,22 +138,25 @@ class ItemInfo:
         return self.position
 
 class MemberItemInfo(ItemInfo):
-    def __init__(self, member, container, start):
+    def __init__(self, member, mprefix, container, start):
         if not member.is_switch():
             self.type = member.member_type
         self.prefix = member.name
+        if mprefix:
+            mprefix = mprefix + "_"
+            self.prefix = mprefix + self.prefix
         self.subprefix = member.name
-        self.position = "(%s + %s)" % (start, container.get_nw_offset(member, "", "__nw_size"))
+        self.position = "(%s + %s)" % (start, container.get_nw_offset(member, mprefix or "", "__nw_size"))
         self.member = member
 
-def write_validate_switch_member(writer, container, switch_member, scope, parent_scope, start,
+def write_validate_switch_member(writer, mprefix, container, switch_member, scope, parent_scope, start,
                                  want_nw_size, want_mem_size, want_extra_size):
     var = container.lookup_member(switch_member.variable)
     var_type = var.member_type
 
     v = write_read_primitive(writer, start, container, switch_member.variable, parent_scope)
 
-    item = MemberItemInfo(switch_member, container, start)
+    item = MemberItemInfo(switch_member, mprefix, container, start)
 
     first = True
     for c in switch_member.cases:
@@ -487,7 +490,7 @@ def write_validate_item(writer, container, item, scope, parent_scope, start,
         writer.add_function_variable("uint32_t", saved_size + " = 0")
         writer.assign(saved_size, item.nw_size())
 
-def write_validate_member(writer, container, member, parent_scope, start,
+def write_validate_member(writer, mprefix, container, member, parent_scope, start,
                           want_nw_size, want_mem_size, want_extra_size):
     if member.has_attr("virtual"):
         return
@@ -498,10 +501,10 @@ def write_validate_member(writer, container, member, parent_scope, start,
     else:
         prefix = ""
         newline = True
-    item = MemberItemInfo(member, container, start)
+    item = MemberItemInfo(member, mprefix, container, start)
     with writer.block(prefix, newline=newline, comment=member.name) as scope:
         if member.is_switch():
-            write_validate_switch_member(writer, container, member, scope, parent_scope, start,
+            write_validate_switch_member(writer, mprefix, container, member, scope, parent_scope, start,
                                          want_nw_size, want_mem_size, want_extra_size)
         else:
             write_validate_item(writer, container, item, scope, parent_scope, start,
@@ -526,22 +529,29 @@ def write_validate_member(writer, container, member, parent_scope, start,
             assert not want_extra_size
 
 def write_validate_container(writer, prefix, container, start, parent_scope, want_nw_size, want_mem_size, want_extra_size):
+    def prefix_m(prefix, m):
+        name = m.name
+        if prefix:
+            name = prefix + "_" + name
+        return name
+
     for m in container.members:
         sub_want_nw_size = want_nw_size and not m.is_fixed_nw_size()
         sub_want_mem_size = m.is_extra_size() and want_mem_size
         sub_want_extra_size = not m.is_extra_size() and m.contains_extra_size()
-
         defs = ["size_t"]
+        name = prefix_m(prefix, m)
         if sub_want_nw_size:
-            defs.append (m.name + "__nw_size")
+
+            defs.append (name + "__nw_size")
         if sub_want_mem_size:
-            defs.append (m.name + "__mem_size")
+            defs.append (name + "__mem_size")
         if sub_want_extra_size:
-            defs.append (m.name + "__extra_size")
+            defs.append (name + "__extra_size")
 
         if sub_want_nw_size or sub_want_mem_size or sub_want_extra_size:
             parent_scope.variable_def(*defs)
-            write_validate_member(writer, container, m, parent_scope, start,
+            write_validate_member(writer, prefix, container, m, parent_scope, start,
                                   sub_want_nw_size, sub_want_mem_size, sub_want_extra_size)
             writer.newline()
 
@@ -558,8 +568,9 @@ def write_validate_container(writer, prefix, container, start, parent_scope, wan
 
         nm_sum = str(size)
         for m in container.members:
+            name = prefix_m(prefix, m)
             if not m.is_fixed_nw_size():
-                nm_sum = nm_sum + " + " + m.name + "__nw_size"
+                nm_sum = nm_sum + " + " + name + "__nw_size"
 
         writer.assign(nw_size, nm_sum)
 
@@ -571,10 +582,11 @@ def write_validate_container(writer, prefix, container, start, parent_scope, wan
 
         mem_sum = container.sizeof()
         for m in container.members:
+            name = prefix_m(prefix, m)
             if m.is_extra_size():
-                mem_sum = mem_sum + " + " + m.name + "__mem_size"
+                mem_sum = mem_sum + " + " + name + "__mem_size"
             elif m.contains_extra_size():
-                mem_sum = mem_sum + " + " + m.name + "__extra_size"
+                mem_sum = mem_sum + " + " + name + "__extra_size"
 
         writer.assign(mem_size, mem_sum)
 
@@ -586,10 +598,11 @@ def write_validate_container(writer, prefix, container, start, parent_scope, wan
 
         extra_sum = []
         for m in container.members:
+            name = prefix_m(prefix, m)
             if m.is_extra_size():
-                extra_sum.append(m.name + "__mem_size")
+                extra_sum.append(name + "__mem_size")
             elif m.contains_extra_size():
-                extra_sum.append(m.name + "__extra_size")
+                extra_sum.append(name + "__extra_size")
         writer.assign(extra_size, codegen.sum_array(extra_sum))
 
 class DemarshallingDestination:
