@@ -60,6 +60,16 @@ libspice_common_la_SOURCES =		\
 	verify.h			\
 	$(NULL)
 
+# These 2 files are not build as part of spice-common
+# build system, but modules using spice-common will build
+# them with the appropriate options. We need to let automake
+# know that these are source files so that it can properly
+# track these files dependencies
+EXTRA_libspice_common_la_SOURCES = 	\
+	sw_canvas.c			\
+	sw_canvas.h			\
+	$(NULL)
+
 libspice_common_client_la_SOURCES =		\
 	$(CLIENT_MARSHALLERS)			\
 	$(NULL)
@@ -152,8 +162,6 @@ EXTRA_DIST =				\
 	quic_rgb_tmpl.c			\
 	quic_tmpl.c			\
 	snd_codec.h			\
-	sw_canvas.c			\
-	sw_canvas.h			\
 	$(NULL)
 
 -include $(top_srcdir)/git.mk
