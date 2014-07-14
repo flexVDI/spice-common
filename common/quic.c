@@ -578,7 +578,7 @@ static void encode_run(Encoder *encoder, unsigned int runlen) //todo: try use en
     while (runlen >= encoder->rgb_state.melcorder) {
         hits++;
         runlen -= encoder->rgb_state.melcorder;
-        if (encoder->rgb_state.melcstate < MELCSTATES) {
+        if (encoder->rgb_state.melcstate < MELCSTATES - 1) {
             encoder->rgb_state.melclen = J[++encoder->rgb_state.melcstate];
             encoder->rgb_state.melcorder = (1L << encoder->rgb_state.melclen);
         }
@@ -610,7 +610,7 @@ static void encode_channel_run(Encoder *encoder, Channel *channel, unsigned int 
     while (runlen >= channel->state.melcorder) {
         hits++;
         runlen -= channel->state.melcorder;
-        if (channel->state.melcstate < MELCSTATES) {
+        if (channel->state.melcstate < MELCSTATES - 1) {
             channel->state.melclen = J[++channel->state.melcstate];
             channel->state.melcorder = (1L << channel->state.melclen);
         }
@@ -647,7 +647,7 @@ static int decode_run(Encoder *encoder)
         for (hits = 1; hits <= temp; hits++) {
             runlen += encoder->rgb_state.melcorder;
 
-            if (encoder->rgb_state.melcstate < MELCSTATES) {
+            if (encoder->rgb_state.melcstate < MELCSTATES - 1) {
                 encoder->rgb_state.melclen = J[++encoder->rgb_state.melcstate];
                 encoder->rgb_state.melcorder = (1U << encoder->rgb_state.melclen);
             }
@@ -688,7 +688,7 @@ static int decode_channel_run(Encoder *encoder, Channel *channel)
         for (hits = 1; hits <= temp; hits++) {
             runlen += channel->state.melcorder;
 
-            if (channel->state.melcstate < MELCSTATES) {
+            if (channel->state.melcstate < MELCSTATES - 1) {
                 channel->state.melclen = J[++channel->state.melcstate];
                 channel->state.melcorder = (1U << channel->state.melclen);
             }
