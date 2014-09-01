@@ -1835,15 +1835,6 @@ miPolyBuildEdge (double x0, double y0, double k,        /* x0 * dy - y0 * dx */
         dx = -dx;
         k = -k;
     }
-#ifdef NOTDEF
-    {
-        double realk, kerror;
-        realk = x0 * dy - y0 * dx;
-        kerror = Fabs (realk - k);
-        if (kerror > .1)
-            printf ("realk: %g k: %g\n", realk, k);
-    }
-#endif
     y = ICEIL (y0);
     xady = ICEIL (k) + y * dx;
 
