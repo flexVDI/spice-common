@@ -2978,7 +2978,7 @@ miWideDashSegment (GCPtr pGC,
     double L, l;
     double k;
     PolyVertexRec vertices[4];
-    PolyVertexRec saveRight = { 0 }, saveBottom;
+    PolyVertexRec saveRight = { 0, 0 }, saveBottom;
     PolySlopeRec slopes[4];
     PolyEdgeRec left[4], right[4];
     LineFaceRec lcapFace, rcapFace;
