@@ -1824,7 +1824,7 @@ miFillRectPolyHelper (GCPtr pGC, Boolean foreground, SpanDataPtr spanData, int x
 }
 
 static int
-miPolyBuildEdge (double x0, double y0, double k,        /* x0 * dy - y0 * dx */
+miPolyBuildEdge (SPICE_GNUC_UNUSED double x0, double y0, double k, /* x0 * dy - y0 * dx */
                  int dx, int dy, int xi, int yi, int left, PolyEdgePtr edge)
 {
     int x, y, e;
@@ -1959,7 +1959,11 @@ miPolyBuildPoly (PolyVertexPtr vertices,
 }
 
 static void
-miLineOnePoint (GCPtr pGC, Boolean foreground, SpanDataPtr spanData, int x, int y)
+miLineOnePoint (GCPtr pGC,
+                Boolean foreground,
+                SPICE_GNUC_UNUSED SpanDataPtr spanData,
+                int x,
+                int y)
 {
     DDXPointRec pt;
     int wid;
@@ -2490,9 +2494,14 @@ miLineArc (GCPtr pGC,
 }
 
 static void
-miLineProjectingCap (GCPtr pGC, Boolean foreground,
-                     SpanDataPtr spanData, LineFacePtr face, Boolean isLeft,
-                     double xorg, double yorg, Boolean isInt)
+miLineProjectingCap (GCPtr pGC,
+                     Boolean foreground,
+                     SpanDataPtr spanData,
+                     LineFacePtr face,
+                     Boolean isLeft,
+                     SPICE_GNUC_UNUSED double xorg,
+                     SPICE_GNUC_UNUSED double yorg,
+                     Boolean isInt)
 {
     int xorgi = 0, yorgi = 0;
     int lw;

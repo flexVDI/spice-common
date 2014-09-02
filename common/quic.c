@@ -840,7 +840,7 @@ typedef uint16_t rgb16_pixel_t;
 
 #endif
 
-static void fill_model_structures(Encoder *encoder, FamilyStat *family_stat,
+static void fill_model_structures(SPICE_GNUC_UNUSED Encoder *encoder, FamilyStat *family_stat,
                                   unsigned int rep_first, unsigned int first_size,
                                   unsigned int rep_next, unsigned int mul_size,
                                   unsigned int levels, unsigned int ncounters,
