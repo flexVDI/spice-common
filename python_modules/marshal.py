@@ -353,7 +353,7 @@ def write_message_marshaller(writer, message, is_server, private):
 
     scope = writer.function(function_name,
                             "static void" if private else "void",
-                            "SpiceMarshaller *m, %s *msg" % message.c_type() + names_args)
+                            "SPICE_GNUC_UNUSED SpiceMarshaller *m, SPICE_GNUC_UNUSED %s *msg" % message.c_type() + names_args)
     scope.variable_def("SPICE_GNUC_UNUSED SpiceMarshaller *", "m2")
 
     for n in names:
