@@ -162,11 +162,11 @@ def get_array_size(array, container_src):
         rows_v = container_src.get_ref(rows)
         # TODO: Handle multiplication overflow
         if bpp == 8:
-            return "(%s * %s)" % (width_v, rows_v)
+            return "(unsigned) (%s * %s)" % (width_v, rows_v)
         elif bpp == 1:
-            return "(((%s + 7) / 8 ) * %s)" % (width_v, rows_v)
+            return "(unsigned) (((%s + 7) / 8 ) * %s)" % (width_v, rows_v)
         else:
-            return "(((%s * %s + 7) / 8 ) * %s)" % (bpp, width_v, rows_v)
+            return "(unsigned) (((%s * %s + 7) / 8 ) * %s)" % (bpp, width_v, rows_v)
     elif array.is_bytes_length():
         return container_src.get_ref(array.size[2])
     else:
