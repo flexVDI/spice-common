@@ -358,6 +358,7 @@ enum8 image_type {
     FROM_CACHE_LOSSLESS,
     ZLIB_GLZ_RGB,
     JPEG_ALPHA,
+    LZ4,
 };
 
 flags8 image_flags {
@@ -568,6 +569,8 @@ struct Image {
         BinaryData lz_rgb;
     case JPEG:
         BinaryData jpeg;
+    case LZ4:
+        BinaryData lz4;
     case LZ_PLT:
         LZPLTData lz_plt;
     case ZLIB_GLZ_RGB:
