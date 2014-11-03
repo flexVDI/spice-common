@@ -319,7 +319,7 @@ static void set_path(GdiCanvas *canvas, SpicePath *s)
     unsigned int i;
 
     for (i = 0; i < s->num_segments; i++) {
-        SpicePathSeg* seg = s->segments[0];
+        SpicePathSeg* seg = s->segments[i];
         SpicePointFix* point = seg->points;
         SpicePointFix* end_point = point + seg->count;
 
