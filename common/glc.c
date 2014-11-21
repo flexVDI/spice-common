@@ -1260,7 +1260,6 @@ void glc_copy_pixels(GLCCtx glc, int x_dest, int y_dest, int x_src, int y_src, i
                      int height)
 {
     InternaCtx *ctx = (InternaCtx *)glc;
-    int recreate = 0;
 
     spice_assert(ctx);
 #if 1 /* USE_COPY_PIXELS */
@@ -1275,6 +1274,7 @@ void glc_copy_pixels(GLCCtx glc, int x_dest, int y_dest, int x_src, int y_src, i
         glEnable(GL_TEXTURE_2D);
     }
 #else
+    int recreate = 0;
     int width2 = gl_get_to_power_two(width);
     int height2 = gl_get_to_power_two(height);
 
