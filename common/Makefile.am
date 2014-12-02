@@ -94,13 +94,12 @@ AM_CPPFLAGS =				\
 	$(SPICE_COMMON_CFLAGS)		\
 	$(GL_CFLAGS)			\
 	$(PIXMAN_CFLAGS)		\
-	$(OPUS_CFLAGS)		        \
 	$(PROTOCOL_CFLAGS)		\
 	$(NULL)
 
 libspice_common_la_LIBADD =				\
 	$(SPICE_COMMON_LIBS)				\
-	$(OPUS_LIBS)
+	$(NULL)
 
 MARSHALLERS_DEPS =					\
 	$(top_srcdir)/python_modules/__init__.py	\

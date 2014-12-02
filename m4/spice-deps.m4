@@ -80,3 +80,21 @@ AC_DEFUN([SPICE_CHECK_CELT051], [
     AS_VAR_APPEND([$1_CFLAGS], [" $CELT051_CFLAGS"])
     AS_VAR_APPEND([$1_LIBS], [" $CELT051_LIBS"])
 ])
+
+
+# SPICE_CHECK_OPUS(PREFIX)
+# ------------------------
+# Check for the availability of Opus. If found, it will append the flags to use
+# to the $PREFIX_CFLAGS and $PREFIX_LIBS variables, and it will define a
+# HAVE_OPUS preprocessor symbol as well as a HAVE_OPUS Makefile conditional.
+#-------------------------
+AC_DEFUN([SPICE_CHECK_OPUS], [
+    PKG_CHECK_MODULES([OPUS], [opus >= 0.9.14], [have_opus=yes], [have_opus=no])
+
+    AM_CONDITIONAL([HAVE_OPUS], [test "x$have_opus" = "xyes"])
+    if test "x$have_opus" = "xyes" ; then
+      AC_DEFINE([HAVE_OPUS], [1], [Define if we have OPUS])
+    fi
+    AS_VAR_APPEND([$1_CFLAGS], [" $OPUS_CFLAGS"])
+    AS_VAR_APPEND([$1_LIBS], [" $OPUS_LIBS"])
+])
