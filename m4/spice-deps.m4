@@ -54,3 +54,29 @@ AC_DEFUN([SPICE_CHECK_SMARTCARD], [
     AS_VAR_APPEND([$1_CFLAGS], [" $SMARTCARD_CFLAGS"])
     AS_VAR_APPEND([$1_LIBS], [" $SMARTCARD_LIBS"])
 ])
+
+
+# SPICE_CHECK_CELT051(PREFIX)
+# ---------------------------
+# Adds a --disable-celt051 switch in order to enable/disable CELT 0.5.1
+# support, and checks if the needed libraries are available. If found, it will
+# append the flags to use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables, and
+# it will define a HAVE_CELT051 preprocessor symbol as well as a HAVE_CELT051
+# Makefile conditional.
+#----------------------------
+AC_DEFUN([SPICE_CHECK_CELT051], [
+    AC_ARG_ENABLE([celt051],
+        [  --disable-celt051       Disable celt051 audio codec (enabled by default)],,
+        [enable_celt051="yes"])
+
+    if test "x$enable_celt051" = "xyes"; then
+        PKG_CHECK_MODULES([CELT051], [celt051 >= 0.5.1.1], [have_celt051=yes], [have_celt051=no])
+    else
+        have_celt051=no
+    fi
+
+    AM_CONDITIONAL([HAVE_CELT051], [test "x$have_celt051" = "xyes"])
+    AM_COND_IF([HAVE_CELT051], AC_DEFINE([HAVE_CELT051], 1, [Define if we have celt051 codec]))
+    AS_VAR_APPEND([$1_CFLAGS], [" $CELT051_CFLAGS"])
+    AS_VAR_APPEND([$1_LIBS], [" $CELT051_LIBS"])
+])
