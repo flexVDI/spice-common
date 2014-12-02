@@ -42,28 +42,9 @@ AC_SUBST(PIXMAN_CFLAGS)
 SPICE_CHECK_SMARTCARD(SPICE_COMMON)
 SPICE_CHECK_CELT051(SPICE_COMMON)
 SPICE_CHECK_OPUS(SPICE_COMMON)
+SPICE_CHECK_OPENGL(SPICE_COMMON)
 AC_SUBST(SPICE_COMMON_CFLAGS)
 AC_SUBST(SPICE_COMMON_LIBS)
-
-AC_ARG_ENABLE([opengl],
-  AS_HELP_STRING([--enable-opengl=@<:@yes/no@:>@],
-                 [Enable opengl support (not recommended) @<:@default=no@:>@]),
-  [],
-  [enable_opengl="no"])
-AM_CONDITIONAL(SUPPORT_GL, test "x$enable_opengl" = "xyes")
-
-if test "x$enable_opengl" = "xyes"; then
-   AC_CHECK_LIB(GL, glBlendFunc, GL_LIBS="$GL_LIBS -lGL", enable_opengl=no)
-   AC_CHECK_LIB(GLU, gluSphere, GL_LIBS="$GL_LIBS -lGLU", enable_opengl=no)
-   AC_DEFINE([USE_OPENGL], [1], [Define to build with OpenGL support])
-   AC_DEFINE([GL_GLEXT_PROTOTYPES], [], [Enable GLExt prototypes])
-
-   if test "x$enable_opengl" = "xno"; then
-      AC_MSG_ERROR([GL libraries not available])
-   fi
-fi
-AC_SUBST(GL_CFLAGS)
-AC_SUBST(GL_LIBS)
 
 # The End!
 AC_CONFIG_FILES([
