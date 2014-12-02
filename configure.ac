@@ -92,7 +92,6 @@ AC_SUBST(GL_CFLAGS)
 AC_SUBST(GL_LIBS)
 
 # Checks for header files
-AC_PATH_X
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([arpa/inet.h malloc.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/socket.h unistd.h])
 
