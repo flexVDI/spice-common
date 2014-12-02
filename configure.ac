@@ -49,7 +49,6 @@ if test "x$enable_smartcard" != "xno"; then
     AC_DEFINE(USE_SMARTCARD, [1], [Define if supporting smartcard proxying])
   fi
 fi
-AM_CONDITIONAL([WITH_SMARTCARD], [test "x$have_smartcard" = "xyes"])
 
 AC_ARG_ENABLE(celt051,
 [  --disable-celt051       Disable celt051 audio codec (enabled by default)],,
