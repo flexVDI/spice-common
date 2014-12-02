@@ -114,21 +114,6 @@ AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
 AC_CHECK_FUNCS([dup2 floor inet_ntoa memmove memset pow sqrt])
 
-# Others
-AC_CANONICAL_HOST
-
-AC_MSG_CHECKING([for native Win32])
-case "$host_os" in
-     *mingw*|*cygwin*)
-        os_win32=yes
-        ;;
-     *)
-        os_win32=no
-        ;;
-esac
-AC_MSG_RESULT([$os_win32])
-AM_CONDITIONAL([OS_WIN32],[test "$os_win32" = "yes"])
-
 # The End!
 AC_CONFIG_FILES([
   Makefile
