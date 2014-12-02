@@ -29,6 +29,8 @@ if test "x$ac_cv_prog_cc_c99" = xno; then
 fi
 AM_PROG_CC_C_O
 
+SPICE_CHECK_SYSDEPS
+
 # Checks for libraries
 AC_CONFIG_SUBDIRS([spice-protocol])
 PROTOCOL_CFLAGS='-I ${top_srcdir}/spice-protocol'
@@ -93,29 +95,6 @@ if test "x$enable_opengl" = "xyes"; then
 fi
 AC_SUBST(GL_CFLAGS)
 AC_SUBST(GL_LIBS)
-
-# Checks for header files
-AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([arpa/inet.h malloc.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/socket.h unistd.h])
-
-# Checks for typedefs, structures, and compiler characteristics
-AC_C_INLINE
-AC_TYPE_INT16_T
-AC_TYPE_INT32_T
-AC_TYPE_INT64_T
-AC_TYPE_INT8_T
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-AC_TYPE_UINT16_T
-AC_TYPE_UINT32_T
-AC_TYPE_UINT64_T
-AC_TYPE_UINT8_T
-
-# Checks for library functions
-# do not check malloc or realloc, since that cannot be cross-compiled checked
-AC_FUNC_ERROR_AT_LINE
-AC_FUNC_FORK
-AC_CHECK_FUNCS([dup2 floor inet_ntoa memmove memset pow sqrt])
 
 # The End!
 AC_CONFIG_FILES([
