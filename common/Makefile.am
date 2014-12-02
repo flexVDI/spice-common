@@ -92,7 +92,6 @@ endif
 AM_CPPFLAGS =				\
 	-I$(top_srcdir)			\
 	$(SPICE_COMMON_CFLAGS)		\
-	$(PIXMAN_CFLAGS)		\
 	$(PROTOCOL_CFLAGS)		\
 	$(NULL)
 

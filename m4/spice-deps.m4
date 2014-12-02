@@ -129,3 +129,15 @@ AC_DEFUN([SPICE_CHECK_OPENGL], [
     AS_VAR_APPEND([$1_CFLAGS], [" $GL_CFLAGS"])
     AS_VAR_APPEND([$1_LIBS], [" $GL_LIBS"])
 ])
+
+
+# SPICE_CHECK_PIXMAN(PREFIX)
+# --------------------------
+# Check for the availability of pixman. If found, it will append the flags to
+# use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables.
+#---------------------------
+AC_DEFUN([SPICE_CHECK_PIXMAN], [
+    PKG_CHECK_MODULES(PIXMAN, pixman-1 >= 0.17.7)
+    AS_VAR_APPEND([$1_CFLAGS], [" $PIXMAN_CFLAGS"])
+    AS_VAR_APPEND([$1_LIBS], [" $PIXMAN_LIBS"])
+])
