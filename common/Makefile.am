@@ -97,9 +97,6 @@ AM_CPPFLAGS =				\
 	$(OPUS_CFLAGS)		        \
 	$(PROTOCOL_CFLAGS)		\
 	$(SMARTCARD_CFLAGS)		\
-	$(VISIBILITY_HIDDEN_CFLAGS)	\
-	$(WARN_CFLAGS)			\
-	-std=gnu99			\
 	$(NULL)
 
 libspice_common_la_LIBADD =				\
