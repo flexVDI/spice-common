@@ -40,7 +40,6 @@ libspice_common_la_SOURCES =		\
 	mem.c				\
 	mem.h				\
 	messages.h			\
-	mutex.h				\
 	pixman_utils.c			\
 	pixman_utils.h			\
 	quic.c				\

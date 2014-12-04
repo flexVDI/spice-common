@@ -42,7 +42,6 @@
 #include "rop3.h"
 #include "mem.h"
 #include "macros.h"
-#include "mutex.h"
 
 #define ROUND(_x) ((int)floor((_x) + 0.5))
 
