@@ -41,7 +41,7 @@ def write_parser_helpers(writer):
     writer = writer.function_helper()
 
     writer.writeln("#ifdef WORDS_BIGENDIAN")
-    for size in [8, 16, 32, 64]:
+    for size in [8, 16, 32]:
         for sign in ["", "u"]:
             utype = "uint%d" % (size)
             type = "%sint%d" % (sign, size)
@@ -52,12 +52,48 @@ def write_parser_helpers(writer):
             else:
                 writer.macro("read_%s" % type, "ptr", "((%s_t)%s(*((%s_t *)(ptr))))" % (type, swap, utype))
                 writer.macro("write_%s" % type, "ptr, val", "*(%s_t *)(ptr) = %s((%s_t)val)" % (utype, swap, utype))
+    writer.writeln("#if defined(__arm__) || defined(_M_ARM)")
+    for sign in ["", "u"]:
+        ctype = "%sint64_t" % sign
+        scope = writer.function("read_%sint64" % sign, ctype, "uint8_t *ptr", True)
+        scope.variable_def(ctype, "val")
+        writer.assign("*((uint32_t *)(&val))", "SPICE_BYTESWAP32(*((uint32_t *)(ptr) + 1))")
+        writer.assign("*((uint32_t *)(&val) + 1)", "SPICE_BYTESWAP32(*((uint32_t *)(ptr)))")
+        writer.statement("return val")
+        writer.end_block()
+        writer.macro("write_%sint64" % sign, "ptr, val", "\\")
+        writer.writeln("    do { *((uint32_t *)(ptr)) = SPICE_BYTESWAP32(*((uint32_t *)(&val) + 1)); \\")
+        writer.writeln("         *((uint32_t *)(ptr) + 1) = SPICE_BYTESWAP32(*((uint32_t *)(&val))); } while(0)")
     writer.writeln("#else")
-    for size in [8, 16, 32, 64]:
+    for sign in ["", "u"]:
+        writer.macro("read_%sint64" % sign, "ptr", "((%sint64_t)SPICE_BYTESWAP64(*((uint64_t *)(ptr))))" % sign)
+        writer.macro("write_%sint64" % sign, "ptr, val", "*(uint64_t *)(ptr) = SPICE_BYTESWAP64((uint64_t)val)")
+    writer.writeln("#endif")
+    writer.writeln("#else")
+    for size in [8, 16, 32]:
         for sign in ["", "u"]:
             type = "%sint%d" % (sign, size)
             writer.macro("read_%s" % type, "ptr", "(*((%s_t *)(ptr)))" % type)
             writer.macro("write_%s" % type, "ptr, val", "(*((%s_t *)(ptr))) = val" % type)
+    writer.writeln("#if defined(__arm__) || defined(_M_ARM)")
+    writer.writeln("#warning Compiling for ARM, avoiding unaligned accesses")
+    for sign in ["", "u"]:
+        ctype = "%sint64_t" % sign
+        scope = writer.function("read_%sint64" % sign, ctype, "uint8_t *ptr", True)
+        scope.variable_def(ctype, "val")
+        writer.assign("*((uint32_t *)(&val))", "SPICE_BYTESWAP32(*((uint32_t *)(ptr)))")
+        writer.assign("*((uint32_t *)(&val) + 1)", "SPICE_BYTESWAP32(*((uint32_t *)(ptr) + 1))")
+        writer.statement("return val")
+        writer.end_block()
+        writer.macro("write_%sint64" % sign, "ptr, val", "\\")
+        writer.writeln("    do { *((uint32_t *)(ptr)) = *((uint32_t *)(&val)); \\")
+        writer.writeln("         *((uint32_t *)(ptr) + 1) = *((uint32_t *)(&val) + 1); } while(0)")
+    writer.writeln("#else")
+    for sign in ["", "u"]:
+        type = "%sint64" % sign
+        writer.macro("read_%s" % type, "ptr", "(*((%s_t *)(ptr)))" % type)
+        writer.macro("write_%s" % type, "ptr, val", "(*((%s_t *)(ptr))) = val" % type)
+    writer.writeln("#endif")
     writer.writeln("#endif")
 
     for size in [8, 16, 32, 64]:

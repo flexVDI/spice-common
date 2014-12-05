@@ -32,8 +32,16 @@
 #define write_uint16(ptr,v) (*((uint16_t *)(ptr)) = SPICE_BYTESWAP16((uint16_t)(v)))
 #define write_int32(ptr,v) (*((int32_t *)(ptr)) = SPICE_BYTESWAP32((uint32_t)(v)))
 #define write_uint32(ptr,v) (*((uint32_t *)(ptr)) = SPICE_BYTESWAP32((uint32_t)(v)))
+#if defined(__arm__) || defined(_M_ARM)
+// In ARM, there may be problems with unaligned accesses in 64 bit values
+#warning Compiling for big-endian ARM architecture
+#define write_int64(ptr,v) do { *((uint32_t *)(ptr)) = SPICE_BYTESWAP32(*((uint32_t *)(&v) + 1)); \
+    *((uint32_t *)(ptr) + 1) = SPICE_BYTESWAP32(*((uint32_t *)(&v))); } while(0)
+#define write_uint64(ptr,v) write_int64(ptr,v)
+#else
 #define write_int64(ptr,v) (*((int64_t *)(ptr)) = SPICE_BYTESWAP64((uint64_t)(v)))
 #define write_uint64(ptr,v) (*((uint64_t *)(ptr)) = SPICE_BYTESWAP64((uint64_t)(v)))
+#endif
 #else
 #define write_int8(ptr,v) (*((int8_t *)(ptr)) = v)
 #define write_uint8(ptr,v) (*((uint8_t *)(ptr)) = v)
@@ -41,8 +49,16 @@
 #define write_uint16(ptr,v) (*((uint16_t *)(ptr)) = v)
 #define write_int32(ptr,v) (*((int32_t *)(ptr)) = v)
 #define write_uint32(ptr,v) (*((uint32_t *)(ptr)) = v)
+#if defined(__arm__) || defined(_M_ARM)
+// In ARM, there may be problems with unaligned accesses in 64 bit values
+#warning Compiling for little-endian ARM architecture
+#define write_int64(ptr,v) do { *((uint32_t *)(ptr)) = *((uint32_t *)(&v)); \
+    *((uint32_t *)(ptr)+1) = *((uint32_t *)(&v)+1); } while(0)
+#define write_uint64(ptr,v) write_int64(ptr,v)
+#else
 #define write_int64(ptr,v) (*((int64_t *)(ptr)) = v)
 #define write_uint64(ptr,v) (*((uint64_t *)(ptr)) = v)
+#endif
 #endif
 
 typedef struct {
