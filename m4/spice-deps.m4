@@ -25,3 +25,32 @@ AC_DEFUN([SPICE_CHECK_SYSDEPS], [
     AC_FUNC_FORK
     AC_CHECK_FUNCS([dup2 floor inet_ntoa memmove memset pow sqrt])
 ])
+
+
+# SPICE_CHECK_SMARTCARD(PREFIX)
+# -----------------------------
+# Adds a --enable-smartcard switch in order to enable/disable smartcard
+# support, and checks if the needed libraries are available. If found, it will
+# append the flags to use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables, and
+# it will define a USE_SMARTCARD preprocessor symbol.
+#------------------------------
+AC_DEFUN([SPICE_CHECK_SMARTCARD], [
+    AC_ARG_ENABLE([smartcard],
+      AS_HELP_STRING([--enable-smartcard=@<:@yes/no/auto@:>@],
+                     [Enable smartcard support @<:@default=auto@:>@]),
+      [],
+      [enable_smartcard="auto"])
+
+    have_smartcard=no
+    if test "x$enable_smartcard" != "xno"; then
+      PKG_CHECK_MODULES([SMARTCARD], [libcacard >= 0.1.2], [have_smartcard=yes], [have_smartcard=no])
+      if test "x$enable_smartcard" != "xauto" && test "x$have_smartcard" = "xno"; then
+        AC_MSG_ERROR("Smartcard support requested but libcacard could not be found")
+      fi
+      if test "x$have_smartcard" = "xyes"; then
+        AC_DEFINE(USE_SMARTCARD, [1], [Define if supporting smartcard proxying])
+      fi
+    fi
+    AS_VAR_APPEND([$1_CFLAGS], [" $SMARTCARD_CFLAGS"])
+    AS_VAR_APPEND([$1_LIBS], [" $SMARTCARD_LIBS"])
+])

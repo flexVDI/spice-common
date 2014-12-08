@@ -91,15 +91,16 @@ endif
 
 AM_CPPFLAGS =				\
 	-I$(top_srcdir)			\
+	$(SPICE_COMMON_CFLAGS)		\
 	$(GL_CFLAGS)			\
 	$(PIXMAN_CFLAGS)		\
 	$(CELT051_CFLAGS)		\
 	$(OPUS_CFLAGS)		        \
 	$(PROTOCOL_CFLAGS)		\
-	$(SMARTCARD_CFLAGS)		\
 	$(NULL)
 
 libspice_common_la_LIBADD =				\
+	$(SPICE_COMMON_LIBS)				\
 	$(OPUS_LIBS)		                        \
 	$(CELT051_LIBS)
 

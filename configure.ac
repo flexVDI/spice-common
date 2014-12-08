@@ -39,22 +39,9 @@ AC_SUBST(PROTOCOL_CFLAGS)
 PKG_CHECK_MODULES(PIXMAN, pixman-1 >= 0.17.7)
 AC_SUBST(PIXMAN_CFLAGS)
 
-AC_ARG_ENABLE([smartcard],
-  AS_HELP_STRING([--enable-smartcard=@<:@yes/no/auto@:>@],
-                 [Enable smartcard support @<:@default=auto@:>@]),
-  [],
-  [enable_smartcard="auto"])
-
-have_smartcard=no
-if test "x$enable_smartcard" != "xno"; then
-  PKG_CHECK_MODULES(SMARTCARD, libcacard >= 0.1.2, [have_smartcard=yes], [have_smartcard=no])
-  if test "x$enable_smartcard" != "xauto" && test "x$have_smartcard" = "xno"; then
-    AC_MSG_ERROR("Smartcard support requested but libcacard could not be found")
-  fi
-  if test "x$have_smartcard" = "xyes"; then
-    AC_DEFINE(USE_SMARTCARD, [1], [Define if supporting smartcard proxying])
-  fi
-fi
+SPICE_CHECK_SMARTCARD(SPICE_COMMON)
+AC_SUBST(SPICE_COMMON_CFLAGS)
+AC_SUBST(SPICE_COMMON_LIBS)
 
 AC_ARG_ENABLE(celt051,
 [  --disable-celt051       Disable celt051 audio codec (enabled by default)],,
