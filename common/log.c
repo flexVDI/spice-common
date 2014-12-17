@@ -19,6 +19,7 @@
 #include <config.h>
 #endif
 
+#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -60,6 +61,13 @@ static const char * spice_log_level_to_string(SpiceLogLevel level)
     return str;
 }
 
+const char * spice_log_date(void) {
+    static char date[20];
+    time_t now = time(NULL);
+    strftime(date, 20, "%Y/%m/%d %H:%M:%S", localtime(&now));
+    return date;
+}
+
 #ifndef SPICE_ABORT_LEVEL_DEFAULT
 #ifdef SPICE_DISABLE_ABORT
 #define SPICE_ABORT_LEVEL_DEFAULT -1
@@ -87,7 +95,7 @@ void spice_logv(const char *log_domain,
     if (debug_level < (int) log_level)
         return;
 
-    fprintf(stderr, "(%s:%d): ", getenv("_"), getpid());
+    fprintf(stderr, "%s (%s:%d): ", spice_log_date(), getenv("_"), getpid());
 
     if (log_domain) {
         fprintf(stderr, "%s-", log_domain);

@@ -55,6 +55,8 @@ void spice_log(const char *log_domain,
                const char *format,
                ...) SPICE_ATTR_PRINTF(5, 6);
 
+const char * spice_log_date(void);
+
 #ifndef spice_return_if_fail
 #define spice_return_if_fail(x) SPICE_STMT_START {                      \
     if SPICE_LIKELY(x) { } else {                                       \
@@ -81,7 +83,7 @@ void spice_log(const char *log_domain,
 
 #ifndef spice_printerr
 #define spice_printerr(format, ...) SPICE_STMT_START {                  \
-    fprintf(stderr, "%s: " format "\n", __FUNCTION__, ## __VA_ARGS__);  \
+    fprintf(stderr, "%s %s: " format "\n", spice_log_date(), __FUNCTION__, ## __VA_ARGS__);  \
 } SPICE_STMT_END
 #endif
 
