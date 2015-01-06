@@ -19,7 +19,7 @@
 #ifndef SSL_VERIFY_H
 #define SSL_VERIFY_H
 
-#if defined(WIN32) && !defined(__MINGW32__)
+#if defined(WIN32)
 #include <windows.h>
 #include <wincrypt.h>
 #endif
