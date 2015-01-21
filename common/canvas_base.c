@@ -141,9 +141,7 @@ typedef struct CanvasBase {
     int height;
     pixman_region32_t canvas_region;
 
-#if defined(SW_CANVAS_CACHE) || defined(SW_CANVAS_IMAGE_CACHE)
     SpiceImageCache *bits_cache;
-#endif
 #ifdef SW_CANVAS_CACHE
     SpicePaletteCache *palette_cache;
 #endif
@@ -1059,7 +1057,6 @@ static int image_has_palette_to_cache(SpiceImage *image)
 }
 #endif
 
-#if defined(SW_CANVAS_CACHE) || defined(SW_CANVAS_IMAGE_CACHE)
 //#define DEBUG_LZ
 
 /* If real get is FALSE, then only do whatever is needed but don't return an image. For instance,
@@ -1252,36 +1249,6 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
 
     return surface;
 }
-
-#else
-
-static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage *image,
-                                                 int want_original, int real_get)
-{
-    SpiceImageDescriptor *descriptor = &image->descriptor;
-    pixman_format_code_t format;
-
-    /* When touching, never load image. */
-    if (!real_get) {
-        return NULL;
-    }
-
-    switch (descriptor->type) {
-    case SPICE_IMAGE_TYPE_QUIC: {
-        return canvas_get_quic(canvas, image, 0);
-    }
-    case SPICE_IMAGE_TYPE_BITMAP: {
-        return canvas_get_bits(canvas, &image->u.bitmap, want_original, &format);
-    }
-    default:
-        spice_warn_if_reached();
-        return NULL;
-    }
-
-    return NULL;
-}
-
-#endif
 
 static SpiceCanvas *canvas_get_surface_mask(CanvasBase *canvas, SpiceImage *image)
 {
@@ -1582,7 +1549,6 @@ static pixman_image_t *canvas_get_mask(CanvasBase *canvas, SpiceQMask *mask, int
         return NULL;
     }
 
-#if defined(SW_CANVAS_CACHE) || defined(SW_CANVAS_IMAGE_CACHE)
     if (cache_me) {
         canvas->bits_cache->ops->put(canvas->bits_cache, image->descriptor.id, surface);
     }
@@ -1597,7 +1563,7 @@ static pixman_image_t *canvas_get_mask(CanvasBase *canvas, SpiceQMask *mask, int
             surface = inv_surf;
         }
     }
-#endif
+
     return surface;
 }
 
@@ -3581,9 +3547,7 @@ static int canvas_base_init(CanvasBase *canvas, SpiceCanvasOps *ops,
                               canvas->width,
                               canvas->height);
 
-#if defined(SW_CANVAS_CACHE) || defined(SW_CANVAS_IMAGE_CACHE)
     canvas->bits_cache = bits_cache;
-#endif
 #ifdef SW_CANVAS_CACHE
     canvas->palette_cache = palette_cache;
 #endif
