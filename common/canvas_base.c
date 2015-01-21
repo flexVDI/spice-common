@@ -375,7 +375,7 @@ static pixman_format_code_t canvas_get_target_format(CanvasBase *canvas,
 }
 
 static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
-                                       int invers, int want_original)
+                                       int want_original)
 {
     pixman_image_t *surface = NULL;
     QuicData *quic_data = &canvas->quic_data;
@@ -452,20 +452,6 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
         return NULL;
     }
 
-    if (invers) {
-        uint8_t *end = dest + height * stride;
-        for (; dest != end; dest += stride) {
-            uint32_t *pix;
-            uint32_t *end_pix;
-
-            pix = (uint32_t *)dest;
-            end_pix = pix + width;
-            for (; pix < end_pix; pix++) {
-                *pix ^= 0xffffffff;
-            }
-        }
-    }
-
 #ifdef DEBUG_DUMP_COMPRESS
     dump_surface(surface, 0);
 #endif
@@ -497,7 +483,7 @@ static void dump_jpeg(uint8_t* data, int data_size)
 }
 #endif
 
-static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image, int invers)
+static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image)
 {
     pixman_image_t *surface = NULL;
     int stride;
@@ -527,19 +513,6 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image, in
 
     canvas->jpeg->ops->decode(canvas->jpeg, dest, stride, SPICE_BITMAP_FMT_32BIT);
 
-    if (invers) {
-        uint8_t *end = dest + height * stride;
-        for (; dest != end; dest += stride) {
-            uint32_t *pix;
-            uint32_t *end_pix;
-
-            pix = (uint32_t *)dest;
-            end_pix = pix + width;
-            for (; pix < end_pix; pix++) {
-                *pix ^= 0x00ffffff;
-            }
-        }
-    }
 #ifdef DUMP_JPEG
     dump_jpeg(image->u.jpeg.data, image->u.jpeg.data_size);
 #endif
@@ -547,7 +520,7 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image, in
 }
 
 #ifdef USE_LZ4
-static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image, int invers)
+static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
 {
     pixman_image_t *surface = NULL;
     int dec_size, enc_size;
@@ -604,8 +577,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image, int
 }
 #endif
 
-static pixman_image_t *canvas_get_jpeg_alpha(CanvasBase *canvas,
-                                             SpiceImage *image, int invers)
+static pixman_image_t *canvas_get_jpeg_alpha(CanvasBase *canvas, SpiceImage *image)
 {
     pixman_image_t *surface = NULL;
     int stride;
@@ -667,19 +639,6 @@ static pixman_image_t *canvas_get_jpeg_alpha(CanvasBase *canvas,
     }
     lz_decode(lz_data->lz, LZ_IMAGE_TYPE_XXXA, decomp_alpha_buf);
 
-    if (invers) {
-        uint8_t *end = dest + height * stride;
-        for (; dest != end; dest += stride) {
-            uint32_t *pix;
-            uint32_t *end_pix;
-
-            pix = (uint32_t *)dest;
-            end_pix = pix + width;
-            for (; pix < end_pix; pix++) {
-                *pix ^= 0x00ffffff;
-            }
-        }
-    }
 #ifdef DUMP_JPEG
     dump_jpeg(image->u.jpeg_alpha.data, image->u.jpeg_alpha.jpeg_size);
 #endif
@@ -779,7 +738,7 @@ static inline SpicePalette *canvas_get_localized_palette(CanvasBase *canvas, Spi
     return copy;
 }
 
-static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image, int invers,
+static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
                                      int want_original)
 {
     LzData *lz_data = &canvas->lz_data;
@@ -880,21 +839,6 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image, int 
     }
 
     lz_decode(lz_data->lz, as_type, decomp_buf);
-
-    if (invers) {
-        uint8_t *line = src;
-        uint8_t *end = src + height * stride;
-        for (; line != end; line += stride) {
-            uint32_t *pix;
-            uint32_t *end_pix;
-
-            pix = (uint32_t *)line;
-            end_pix = pix + width;
-            for (; pix < end_pix; pix++) {
-                *pix ^= 0xffffffff;
-            }
-        }
-    }
 
     if (free_palette)  {
         free(palette);
@@ -1159,30 +1103,30 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
 
     switch (descriptor->type) {
     case SPICE_IMAGE_TYPE_QUIC: {
-        surface = canvas_get_quic(canvas, image, 0, want_original);
+        surface = canvas_get_quic(canvas, image, want_original);
         break;
     }
 #if defined(SW_CANVAS_CACHE)
     case SPICE_IMAGE_TYPE_LZ_PLT: {
-        surface = canvas_get_lz(canvas, image, 0, want_original);
+        surface = canvas_get_lz(canvas, image, want_original);
         break;
     }
     case SPICE_IMAGE_TYPE_LZ_RGB: {
-        surface = canvas_get_lz(canvas, image, 0, want_original);
+        surface = canvas_get_lz(canvas, image, want_original);
         break;
     }
 #endif
     case SPICE_IMAGE_TYPE_JPEG: {
-        surface = canvas_get_jpeg(canvas, image, 0);
+        surface = canvas_get_jpeg(canvas, image);
         break;
     }
     case SPICE_IMAGE_TYPE_JPEG_ALPHA: {
-        surface = canvas_get_jpeg_alpha(canvas, image, 0);
+        surface = canvas_get_jpeg_alpha(canvas, image);
         break;
     }
     case SPICE_IMAGE_TYPE_LZ4: {
 #ifdef USE_LZ4
-        surface = canvas_get_lz4(canvas, image, 0);
+        surface = canvas_get_lz4(canvas, image);
 #else
         spice_warning("Lz4 compression algorithm not supported.\n");
         surface = NULL;
