@@ -28,11 +28,9 @@
 SPICE_BEGIN_DECLS
 
 SpiceCanvas *gl_canvas_create(int width, int height, uint32_t format
+                           , SpiceImageCache *bits_cache
 #ifdef SW_CANVAS_CACHE
-                           , SpiceImageCache *bits_cache
                            , SpicePaletteCache *palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                           , SpiceImageCache *bits_cache
 #endif
                            , SpiceImageSurfaces *surfaces
                            , SpiceGlzDecoder *glz_decoder

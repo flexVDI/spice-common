@@ -3530,11 +3530,9 @@ inline static void canvas_base_init_ops(SpiceCanvasOps *ops)
 
 static int canvas_base_init(CanvasBase *canvas, SpiceCanvasOps *ops,
                             int width, int height, uint32_t format
+                            , SpiceImageCache *bits_cache
 #ifdef SW_CANVAS_CACHE
-                            , SpiceImageCache *bits_cache
                             , SpicePaletteCache *palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                            , SpiceImageCache *bits_cache
 #endif
                             , SpiceImageSurfaces *surfaces
                             , SpiceGlzDecoder *glz_decoder

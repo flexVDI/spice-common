@@ -1193,11 +1193,9 @@ static SpiceCanvasOps sw_canvas_ops;
 
 static SpiceCanvas *canvas_create_common(pixman_image_t *image,
                                          uint32_t format
+                           , SpiceImageCache *bits_cache
 #ifdef SW_CANVAS_CACHE
-                           , SpiceImageCache *bits_cache
                            , SpicePaletteCache *palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                           , SpiceImageCache *bits_cache
 #endif
                            , SpiceImageSurfaces *surfaces
                            , SpiceGlzDecoder *glz_decoder
@@ -1218,11 +1216,9 @@ static SpiceCanvas *canvas_create_common(pixman_image_t *image,
                                pixman_image_get_width (image),
                                pixman_image_get_height (image),
                                format
+                               , bits_cache
 #ifdef SW_CANVAS_CACHE
-                               , bits_cache
                                , palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                               , bits_cache
 #endif
                                , surfaces
                                , glz_decoder
@@ -1238,11 +1234,9 @@ static SpiceCanvas *canvas_create_common(pixman_image_t *image,
 }
 
 SpiceCanvas *canvas_create(int width, int height, uint32_t format
+                           , SpiceImageCache *bits_cache
 #ifdef SW_CANVAS_CACHE
-                           , SpiceImageCache *bits_cache
                            , SpicePaletteCache *palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                           , SpiceImageCache *bits_cache
 #endif
                            , SpiceImageSurfaces *surfaces
                            , SpiceGlzDecoder *glz_decoder
@@ -1256,11 +1250,9 @@ SpiceCanvas *canvas_create(int width, int height, uint32_t format
                                      width, height, NULL, 0);
 
     return canvas_create_common(image, format
+                                , bits_cache
 #ifdef SW_CANVAS_CACHE
-                                , bits_cache
                                 , palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                                , bits_cache
 #endif
                                 , surfaces
                                 , glz_decoder
@@ -1271,11 +1263,9 @@ SpiceCanvas *canvas_create(int width, int height, uint32_t format
 
 SpiceCanvas *canvas_create_for_data(int width, int height, uint32_t format,
                                     uint8_t *data, int stride
+                           , SpiceImageCache *bits_cache
 #ifdef SW_CANVAS_CACHE
-                           , SpiceImageCache *bits_cache
                            , SpicePaletteCache *palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                           , SpiceImageCache *bits_cache
 #endif
                            , SpiceImageSurfaces *surfaces
                            , SpiceGlzDecoder *glz_decoder
@@ -1289,11 +1279,9 @@ SpiceCanvas *canvas_create_for_data(int width, int height, uint32_t format,
                                      width, height, (uint32_t *)data, stride);
 
     return canvas_create_common(image, format
+                                , bits_cache
 #ifdef SW_CANVAS_CACHE
-                                , bits_cache
                                 , palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                                , bits_cache
 #endif
                                 , surfaces
                                 , glz_decoder
