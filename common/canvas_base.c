@@ -1575,12 +1575,10 @@ static pixman_image_t *canvas_get_mask(CanvasBase *canvas, SpiceQMask *mask, int
         surface = canvas_get_bitmap_mask(canvas, &image->u.bitmap, is_invers);
         break;
     }
-#if defined(SW_CANVAS_CACHE) || defined(SW_CANVAS_IMAGE_CACHE)
     case SPICE_IMAGE_TYPE_FROM_CACHE:
         surface = canvas->bits_cache->ops->get(canvas->bits_cache, image->descriptor.id);
         is_invers = 0;
         break;
-#endif
 #ifdef SW_CANVAS_CACHE
     case SPICE_IMAGE_TYPE_FROM_CACHE_LOSSLESS:
         surface = canvas->bits_cache->ops->get_lossless(canvas->bits_cache, image->descriptor.id);
