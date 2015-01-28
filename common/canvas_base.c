@@ -522,8 +522,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
 {
     pixman_image_t *surface = NULL;
     int dec_size, enc_size, available;
-    int stride;
-    int stride_abs;
+    int stride, stride_abs, stride_encoded;
     uint8_t *dest, *data, *data_end;
     int width, height, top_down;
     LZ4_streamDecode_t *stream;
@@ -534,19 +533,23 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     data = image->u.lz4.data->chunk[0].data;
     data_end = data + image->u.lz4.data->chunk[0].len;
     width = image->descriptor.width;
+    stride_encoded = width;
     height = image->descriptor.height;
     top_down = *(data++);
     spice_format = *(data++);
     switch (spice_format) {
         case SPICE_BITMAP_FMT_16BIT:
             format = PIXMAN_x1r5g5b5;
+            stride_encoded *= 2;
             break;
         case SPICE_BITMAP_FMT_24BIT:
         case SPICE_BITMAP_FMT_32BIT:
             format = PIXMAN_x8r8g8b8;
+            stride_encoded *= 4;
             break;
         case SPICE_BITMAP_FMT_RGBA:
             format = PIXMAN_a8r8g8b8;
+            stride_encoded *= 4;
             break;
         default:
             spice_warning("Unsupported bitmap format %d with LZ4\n", spice_format);
@@ -589,6 +592,21 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
         available -= dec_size;
         data += enc_size;
     } while (data < data_end);
+
+    if (stride_abs > stride_encoded) {
+        // Fix the row alignment
+        int row;
+        dest = (uint8_t *)pixman_image_get_data(surface);
+        if (!top_down) {
+            dest -= (stride_abs * (height - 1));
+        }
+        for (row = height - 1; row > 0; --row) {
+            uint32_t *dest_aligned, *dest_misaligned;
+            dest_aligned = (uint32_t *)(dest + stride_abs*row);
+            dest_misaligned = (uint32_t*)(dest + stride_encoded*row);
+            memmove(dest_aligned, dest_misaligned, stride_encoded);
+        }
+    }
 
     LZ4_freeStreamDecode(stream);
     return surface;
