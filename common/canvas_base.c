@@ -525,7 +525,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     int stride;
     int stride_abs;
     uint8_t *dest, *data, *data_end;
-    int width, height, direction;
+    int width, height, top_down;
     LZ4_streamDecode_t *stream;
 
     spice_chunks_linearize(image->u.lz4.data);
@@ -533,14 +533,14 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     data_end = data + image->u.lz4.data->chunk[0].len;
     width = image->descriptor.width;
     height = image->descriptor.height;
-    direction = *(data++);
+    top_down = *(data++);
 
     surface = surface_create(
 #ifdef WIN32
                              canvas->dc,
 #endif
                              PIXMAN_a8r8g8b8,
-                             width, height, direction == 0);
+                             width, height, top_down);
     if (surface == NULL) {
         spice_warning("create surface failed");
         return NULL;
@@ -551,7 +551,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     stride = pixman_image_get_stride(surface);
     stride_abs = abs(stride);
     available = height * stride_abs;
-    if (direction == 1) {
+    if (!top_down) {
         dest -= (stride_abs * (height - 1));
     }
 
