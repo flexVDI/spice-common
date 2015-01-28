@@ -521,7 +521,7 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image)
 static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
 {
     pixman_image_t *surface = NULL;
-    int dec_size, enc_size;
+    int dec_size, enc_size, available;
     int stride;
     int stride_abs;
     uint8_t *dest, *data, *data_end;
@@ -550,6 +550,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     dest = (uint8_t *)pixman_image_get_data(surface);
     stride = pixman_image_get_stride(surface);
     stride_abs = abs(stride);
+    available = height * stride_abs;
     if (direction == 1) {
         dest -= (stride_abs * (height - 1));
     }
@@ -559,7 +560,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
         enc_size = ntohl(*((uint32_t *)data));
         data += 4;
         dec_size = LZ4_decompress_safe_continue(stream, (const char *) data,
-                                                (char *) dest, enc_size, height * stride_abs);
+                                                (char *) dest, enc_size, available);
         if (dec_size <= 0) {
             spice_warning("Error decoding LZ4 block\n");
             pixman_image_unref(surface);
@@ -567,6 +568,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
             break;
         }
         dest += dec_size;
+        available -= dec_size;
         data += enc_size;
     } while (data < data_end);
 
