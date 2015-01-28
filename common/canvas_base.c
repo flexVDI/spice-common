@@ -527,6 +527,8 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     uint8_t *dest, *data, *data_end;
     int width, height, top_down;
     LZ4_streamDecode_t *stream;
+    uint8_t spice_format;
+    pixman_format_code_t format;
 
     spice_chunks_linearize(image->u.lz4.data);
     data = image->u.lz4.data->chunk[0].data;
@@ -534,12 +536,28 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     width = image->descriptor.width;
     height = image->descriptor.height;
     top_down = *(data++);
+    spice_format = *(data++);
+    switch (spice_format) {
+        case SPICE_BITMAP_FMT_16BIT:
+            format = PIXMAN_x1r5g5b5;
+            break;
+        case SPICE_BITMAP_FMT_24BIT:
+        case SPICE_BITMAP_FMT_32BIT:
+            format = PIXMAN_x8r8g8b8;
+            break;
+        case SPICE_BITMAP_FMT_RGBA:
+            format = PIXMAN_a8r8g8b8;
+            break;
+        default:
+            spice_warning("Unsupported bitmap format %d with LZ4\n", spice_format);
+            return NULL;
+    }
 
     surface = surface_create(
 #ifdef WIN32
                              canvas->dc,
 #endif
-                             PIXMAN_a8r8g8b8,
+                             format,
                              width, height, top_down);
     if (surface == NULL) {
         spice_warning("create surface failed");
