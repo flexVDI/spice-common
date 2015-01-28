@@ -543,6 +543,9 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
             stride_encoded *= 2;
             break;
         case SPICE_BITMAP_FMT_24BIT:
+            format = PIXMAN_r8g8b8;
+            stride_encoded *= 3;
+            break;
         case SPICE_BITMAP_FMT_32BIT:
             format = PIXMAN_x8r8g8b8;
             stride_encoded *= 4;
