@@ -27,7 +27,9 @@
 #include <math.h>
 
 #ifdef USE_LZ4
+#ifndef WIN32
 #include <arpa/inet.h>
+#endif
 #include <lz4.h>
 #endif
 #include <spice/macros.h>
