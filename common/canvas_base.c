@@ -1035,7 +1035,7 @@ static void dump_surface(pixman_image_t *surface, int cache)
     uint8_t *data = (uint8_t *)pixman_image_get_data(surface);
     int width = pixman_image_get_width(surface);
     int height = pixman_image_get_height(surface);
-    int stride = pixman_image_surface_get_stride(surface);
+    int stride = pixman_image_get_stride(surface);
 
     uint32_t id = ++file_id;
 #ifdef WIN32
