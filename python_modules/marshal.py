@@ -1,6 +1,6 @@
-from __future__ import with_statement
-import ptypes
-import codegen
+
+from . import ptypes
+from . import codegen
 
 def write_includes(writer):
     writer.header.writeln("#include <spice/protocol.h>")
@@ -112,7 +112,7 @@ def write_marshal_ptr_function(writer, target_type, is_helper=True):
     names = target_type.get_pointer_names(False)
     names_args = ""
     if len(names) > 0:
-        n = map(lambda name: ", SpiceMarshaller **%s_out" % name, names)
+        n = [", SpiceMarshaller **%s_out" % name for name in names]
         names_args = "".join(n)
 
     header = writer.header
@@ -345,7 +345,7 @@ def write_message_marshaller(writer, message, is_server, private):
     names = message.get_pointer_names(False)
     names_args = ""
     if len(names) > 0:
-        n = map(lambda name: ", SpiceMarshaller **%s_out" % name, names)
+        n = [", SpiceMarshaller **%s_out" % name for name in names]
         names_args = "".join(n)
 
     if not private:
@@ -383,9 +383,9 @@ def write_protocol_marshaller(writer, proto, is_server, private_marshallers):
             for m in channel.client_messages:
                 message = m.message_type
                 f = write_message_marshaller(writer, message, is_server, private_marshallers)
-                if channel.has_attr("ifdef") and not functions.has_key(f):
+                if channel.has_attr("ifdef") and f not in functions:
                     functions[f] = channel.attributes["ifdef"][0]
-                elif message.has_attr("ifdef") and not functions.has_key(f):
+                elif message.has_attr("ifdef") and f not in functions:
                     functions[f] = message.attributes["ifdef"][0]
                 else:
                     functions[f] = True
@@ -393,9 +393,9 @@ def write_protocol_marshaller(writer, proto, is_server, private_marshallers):
             for m in channel.server_messages:
                 message = m.message_type
                 f = write_message_marshaller(writer, message, is_server, private_marshallers)
-                if channel.has_attr("ifdef") and not functions.has_key(f):
+                if channel.has_attr("ifdef") and f not in functions:
                     functions[f] = channel.attributes["ifdef"][0]
-                elif message.has_attr("ifdef") and not functions.has_key(f):
+                elif message.has_attr("ifdef") and f not in functions:
                     functions[f] = message.attributes["ifdef"][0]
                 else:
                     functions[f] = True
