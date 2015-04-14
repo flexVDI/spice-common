@@ -265,10 +265,10 @@ if options.keep_identical_file:
         pass
 
 f = open(dest_file, 'wb')
-if six.PY2:
-    f.write(content)
-else:
+if six.PY3:
     f.write(bytes(content, 'UTF-8'))
+else:
+    f.write(content)
 f.close()
 
 six.print_("Wrote %s" % dest_file)

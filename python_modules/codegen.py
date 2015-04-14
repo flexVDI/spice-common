@@ -121,10 +121,10 @@ class CodeWriter:
 
     def write(self, s):
         # Ensure its a unicode string
-        if six.PY2:
-            s = unicode(s)
-        else:
+        if six.PY3:
             s = str(s)
+        else:
+            s = unicode(s)
 
         if len(s) == 0:
             return
