@@ -630,6 +630,10 @@ typedef struct SpiceMsgcPortEvent {
     uint8_t event;
 } SpiceMsgcPortEvent;
 
+typedef struct SpiceMsgcDisplayPreferredCompression {
+    uint8_t image_compression;
+} SpiceMsgcDisplayPreferredCompression;
+
 SPICE_END_DECLS
 
 #endif /* _H_SPICE_PROTOCOL */

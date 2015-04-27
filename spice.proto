@@ -361,6 +361,17 @@ enum8 image_type {
     LZ4,
 };
 
+enum8 image_compress {
+    INVALID  = 0,
+    OFF,
+    AUTO_GLZ,
+    AUTO_LZ,
+    QUIC,
+    GLZ,
+    LZ,
+    LZ4,
+};
+
 flags8 image_flags {
     CACHE_ME,
     HIGH_BITS_SET,
@@ -922,6 +933,10 @@ channel DisplayChannel : BaseChannel {
         int32 last_frame_delay;
         uint32 audio_delay;
     } stream_report;
+
+    message {
+        uint8 image_compression;
+    } preferred_compression;
 };
 
 flags16 keyboard_modifier_flags {
