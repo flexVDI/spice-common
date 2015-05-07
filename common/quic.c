@@ -540,30 +540,10 @@ static inline void encode_ones(Encoder *encoder, unsigned int n)
 
 #define MELCSTATES 32 /* number of melcode states */
 
-static int zeroLUT[256]; /* table to find out number of leading zeros */
-
 static int J[MELCSTATES] = {
     0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7,
     7, 8, 9, 10, 11, 12, 13, 14, 15
 };
-
-/* creates the bit counting look-up table. */
-static void init_zeroLUT(void)
-{
-    int i, j, k, l;
-
-    j = k = 1;
-    l = 8;
-    for (i = 0; i < 256; ++i) {
-        zeroLUT[i] = l;
-        --k;
-        if (k == 0) {
-            k = j;
-            --l;
-            j *= 2;
-        }
-    }
-}
 
 static void encoder_init_rle(CommonState *state)
 {
@@ -645,7 +625,7 @@ static int decode_run(Encoder *encoder)
 
     do {
         register int temp, hits;
-        temp = zeroLUT[(BYTE)(~(encoder->io_word >> 24))];/* number of leading ones in the
+        temp = lzeroes[(BYTE)(~(encoder->io_word >> 24))];/* number of leading ones in the
                                                                       input stream, up to 8 */
         for (hits = 1; hits <= temp; hits++) {
             runlen += encoder->rgb_state.melcorder;
@@ -686,7 +666,7 @@ static int decode_channel_run(Encoder *encoder, Channel *channel)
 
     do {
         register int temp, hits;
-        temp = zeroLUT[(BYTE)(~(encoder->io_word >> 24))];/* number of leading ones in the
+        temp = lzeroes[(BYTE)(~(encoder->io_word >> 24))];/* number of leading ones in the
                                                                       input stream, up to 8 */
         for (hits = 1; hits <= temp; hits++) {
             runlen += channel->state.melcorder;
@@ -1709,7 +1689,4 @@ void quic_init(void)
 
     family_init(&family_8bpc, 8, DEFmaxclen);
     family_init(&family_5bpc, 5, DEFmaxclen);
-#if defined(RLE) && defined(RLE_STAT)
-    init_zeroLUT();
-#endif
 }
