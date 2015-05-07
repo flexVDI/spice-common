@@ -394,9 +394,9 @@ static void family_init(QuicFamily *family, int bpc, int limit)
         altcodewords = bppmask[bpc] + 1 - (altprefixlen << l);
 
         family->nGRcodewords[l] = (altprefixlen << l);
-        family->notGRcwlen[l] = altprefixlen + ceil_log_2(altcodewords);
-        family->notGRprefixmask[l] = bppmask[32 - altprefixlen]; /* needed for decoding only */
         family->notGRsuffixlen[l] = ceil_log_2(altcodewords); /* needed for decoding only */
+        family->notGRcwlen[l] = altprefixlen + family->notGRsuffixlen[l];
+        family->notGRprefixmask[l] = bppmask[32 - altprefixlen]; /* needed for decoding only */
 
         for (b = 0; b < 256; b++) {
             unsigned int code, len;
