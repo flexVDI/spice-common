@@ -173,3 +173,27 @@ AC_DEFUN([SPICE_CHECK_PYTHON_MODULES], [
         AX_PYTHON_MODULE([pyparsing], [1])
     fi
 ])
+
+
+# SPICE_CHECK_LZ4(PREFIX)
+# -----------------------------
+# Adds a --enable-lz4 switch in order to enable/disable LZ4 compression
+# support, and checks if the needed libraries are available. If found, it will
+# append the flags to use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables, and
+# it will define a USE_LZ4 preprocessor symbol as well as a SUPPORT_LZ4 Makefile
+# conditional.
+#------------------------------
+AC_DEFUN([SPICE_CHECK_LZ4], [
+    AC_ARG_ENABLE([lz4],
+      AS_HELP_STRING([--enable-lz4=@<:@yes/no@:>@],
+                     [Enable LZ4 compression support @<:@default=no@:>@]),
+      [],
+      [enable_lz4="no"])
+
+    if test "x$enable_lz4" != "xno"; then
+      PKG_CHECK_MODULES([LZ4], [liblz4])
+      AC_DEFINE(USE_LZ4, [1], [Define to build with lz4 support])
+    fi
+    AS_VAR_APPEND([$1_CFLAGS], [" $LZ4_CFLAGS"])
+    AS_VAR_APPEND([$1_LIBS], [" $LZ4_LIBS"])
+])
