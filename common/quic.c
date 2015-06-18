@@ -23,6 +23,8 @@
 #include <config.h>
 #endif
 
+#include <glib.h>
+
 #include "quic.h"
 #include "spice_common.h"
 #include "bitops.h"
@@ -476,7 +478,7 @@ static inline void flush(Encoder *encoder)
 static void __read_io_word(Encoder *encoder)
 {
     more_io_words(encoder);
-    encoder->io_next_word = *(encoder->io_now++);
+    encoder->io_next_word = GUINT32_FROM_LE(*(encoder->io_now++));
 }
 
 static void (*__read_io_word_ptr)(Encoder *encoder) = __read_io_word;
@@ -489,7 +491,7 @@ static inline void read_io_word(Encoder *encoder)
         return;
     }
     spice_assert(encoder->io_now < encoder->io_end);
-    encoder->io_next_word = *(encoder->io_now++);
+    encoder->io_next_word = GUINT32_FROM_LE(*(encoder->io_now++));
 }
 
 static inline void decode_eatbits(Encoder *encoder, int len)
@@ -763,7 +765,7 @@ static inline unsigned int decode_run(Encoder *encoder)
 
 static inline void init_decode_io(Encoder *encoder)
 {
-    encoder->io_next_word = encoder->io_word = *(encoder->io_now++);
+    encoder->io_next_word = encoder->io_word = GUINT32_FROM_LE(*(encoder->io_now++));
     encoder->io_available_bits = 0;
 }
 
