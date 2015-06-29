@@ -37,7 +37,8 @@
 //#define RLE_PRED_3
 #define QUIC_RGB
 
-#define QUIC_MAGIC (*(uint32_t *)"QUIC")
+/* ASCII "QUIC" */
+#define QUIC_MAGIC 0x43495551
 #define QUIC_VERSION_MAJOR 0U
 #define QUIC_VERSION_MINOR 1U
 #define QUIC_VERSION ((QUIC_VERSION_MAJOR << 16) | (QUIC_VERSION_MAJOR & 0xffff))
