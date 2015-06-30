@@ -1,3 +1,8 @@
+# For autoconf < 2.63
+m4_ifndef([AS_VAR_APPEND],
+          AC_DEFUN([AS_VAR_APPEND], $1=$$1$2))
+
+
 # SPICE_CHECK_SYSDEPS()
 # ---------------------
 # Checks for header files and library functions needed by spice-common.
