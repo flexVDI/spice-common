@@ -28,9 +28,7 @@ AM_PROG_CC_C_O
 SPICE_CHECK_SYSDEPS
 
 # Checks for libraries
-AC_CONFIG_SUBDIRS([spice-protocol])
-PROTOCOL_CFLAGS='-I ${top_srcdir}/spice-protocol'
-AC_SUBST(PROTOCOL_CFLAGS)
+PKG_CHECK_MODULES([PROTOCOL], [spice-protocol])
 
 SPICE_CHECK_PYTHON_MODULES()
 
