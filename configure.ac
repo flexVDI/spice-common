@@ -28,7 +28,9 @@ AM_PROG_CC_C_O
 SPICE_CHECK_SYSDEPS
 
 # Checks for libraries
-PKG_CHECK_MODULES([PROTOCOL], [spice-protocol])
+PKG_CHECK_MODULES([PROTOCOL], [spice-protocol >= 0.12.10])
+CODE_GENERATOR_BASEDIR=`pkg-config --variable=codegendir spice-protocol`
+AC_SUBST([CODE_GENERATOR_BASEDIR])
 
 SPICE_CHECK_PYTHON_MODULES()
 

@@ -168,6 +168,7 @@ AC_DEFUN([SPICE_CHECK_GLIB2], [
 # tarballs so they are disabled by default.
 #---------------------------
 AC_DEFUN([SPICE_CHECK_PYTHON_MODULES], [
+    AM_PATH_PYTHON
     AC_ARG_ENABLE([python-checks],
         AS_HELP_STRING([--enable-python-checks=@<:@yes/no@:>@],
                        [Enable checks for Python modules needed to build from git @<:@default=no@:>@]),
