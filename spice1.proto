@@ -151,7 +151,7 @@ channel BaseChannel {
     Data migrate_data;
 
     message {
-    	uint64 time_stamp;
+	uint64 time_stamp;
 	link_err reason;
     } @ctype(SpiceMsgDisconnect) disconnecting;
 };
