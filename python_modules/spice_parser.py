@@ -58,7 +58,6 @@ def SPICE_BNF():
         uint64_    = Keyword("uint64").setParseAction(replaceWith(ptypes.uint64))
 
         # keywords
-        channel_   = Keyword("channel")
         enum32_    = Keyword("enum32").setParseAction(replaceWith(32))
         enum16_    = Keyword("enum16").setParseAction(replaceWith(16))
         enum8_     = Keyword("enum8").setParseAction(replaceWith(8))
