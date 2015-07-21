@@ -130,8 +130,7 @@ class CodeWriter:
             return
 
         if self.at_line_start:
-            for i in range(self.indentation):
-                self.out.write(u" ")
+            self.out.write(u" " * self.indentation)
             self.at_line_start = False
         self.out.write(s)
         return self
