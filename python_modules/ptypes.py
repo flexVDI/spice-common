@@ -62,11 +62,79 @@ class FixedSize:
 # other members
 propagated_attributes=["ptr_array", "nonnull", "chunk"]
 
+valid_attributes={
+    # embedded/appended at the end of the structure
+    'end',
+    # the C structure contains a pointer to data
+    # for instance we want to write an array to an allocated array
+    'to_ptr',
+    # write output to this C structure
+    'ctype',
+    # prefix for flags/values enumerations
+    'prefix',
+    # used in demarshaller to use directly data from message without a copy
+    'nocopy',
+    # store member array in a pointer
+    # similar to to_ptr but has an additional argument which is the name of a C
+    # field which will store the array length
+    'as_ptr',
+    # do not generate marshall code
+    # used for last members to be able to marshall them manually
+    'nomarshal',
+    # ??? not used by python code
+    'zero_terminated',
+    'marshall',
+    # this pointer member cannot be null
+    'nonnull',
+    # this flag member contains only a single flag
+    'unique_flag',
+    'ptr_array',
+    'outvar',
+    # C structure has an anonymous member (used in switch)
+    'anon',
+    'chunk',
+    # this channel is contained in an #ifdef section
+    # the argument specifies the preprocessor define to check
+    'ifdef',
+    # write this member as zero on network
+    'zero',
+    # specify minor version required for these members
+    'minor',
+    # this member contains the byte count for an array.
+    # the argument is the member name for item count (not bytes)
+    'bytes_count',
+    # this attribute does not exist on the network, fill just structure with the value
+    'virtual',
+    # for a switch this indicates that on network
+    # it will occupy always the same size (maximum size required for all members)
+    'fixedsize',
+    # use 32 bit pointer
+    'ptr32',
+}
+
+attributes_with_arguments={
+    'ctype',
+    'prefix',
+    'as_ptr',
+    'outvar',
+    'ifdef',
+    'minor',
+    'bytes_count',
+    'virtual',
+}
+
 def fix_attributes(attribute_list):
     attrs = {}
     for attr in attribute_list:
         name = attr[0][1:]
         lst = attr[1:]
+        if not name in valid_attributes:
+            raise Exception("Attribute %s not recognized" % name)
+        if not name in attributes_with_arguments:
+            if len(lst) > 0:
+                raise Exception("Attribute %s specified with options" % name)
+        elif len(lst) > 1:
+            raise Exception("Attribute %s has more than 1 argument" % name)
         attrs[name] = lst
     return attrs
 
@@ -139,6 +207,8 @@ class Type:
         _types_by_name[self.name] = self
 
     def has_attr(self, name):
+        if not name in valid_attributes:
+            raise Exception('attribute %s not expected' % name)
         return name in self.attributes
 
 class TypeRef(Type):
@@ -522,6 +592,8 @@ class Containee:
         return not self.is_switch() and self.member_type.is_primitive()
 
     def has_attr(self, name):
+        if not name in valid_attributes:
+            raise Exception('attribute %s not expected' % name)
         return name in self.attributes
 
     def has_minor_attr(self):
