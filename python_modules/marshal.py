@@ -380,25 +380,18 @@ def write_protocol_marshaller(writer, proto, is_server, private_marshallers):
             writer.ifdef(channel.attributes["ifdef"][0])
             writer.header.ifdef(channel.attributes["ifdef"][0])
         if is_server:
-            for m in channel.client_messages:
-                message = m.message_type
-                f = write_message_marshaller(writer, message, is_server, private_marshallers)
-                if channel.has_attr("ifdef") and f not in functions:
-                    functions[f] = channel.attributes["ifdef"][0]
-                elif message.has_attr("ifdef") and f not in functions:
-                    functions[f] = message.attributes["ifdef"][0]
-                else:
-                    functions[f] = True
+            messages = channel.client_messages
         else:
-            for m in channel.server_messages:
-                message = m.message_type
-                f = write_message_marshaller(writer, message, is_server, private_marshallers)
-                if channel.has_attr("ifdef") and f not in functions:
-                    functions[f] = channel.attributes["ifdef"][0]
-                elif message.has_attr("ifdef") and f not in functions:
-                    functions[f] = message.attributes["ifdef"][0]
-                else:
-                    functions[f] = True
+            messages = channel.server_messages
+        for m in messages:
+            message = m.message_type
+            f = write_message_marshaller(writer, message, is_server, private_marshallers)
+            if channel.has_attr("ifdef") and f not in functions:
+                functions[f] = channel.attributes["ifdef"][0]
+            elif message.has_attr("ifdef") and f not in functions:
+                functions[f] = message.attributes["ifdef"][0]
+            else:
+                functions[f] = True
         if channel.has_attr("ifdef"):
             writer.endif(channel.attributes["ifdef"][0])
             writer.header.endif(channel.attributes["ifdef"][0])
