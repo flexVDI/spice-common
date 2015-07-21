@@ -193,7 +193,7 @@ class CodeWriter:
     def unindent(self):
         self.indentation -= 4
         if self.indentation < 0:
-            self.indenttation = 0
+            self.indentation = 0
 
     def begin_block(self, prefix= "", comment = ""):
         if len(prefix) > 0:
