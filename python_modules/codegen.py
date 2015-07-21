@@ -81,6 +81,7 @@ class CodeWriter:
         self.has_error_check = False
         self.options = {}
         self.function_helper_writer = None
+        self.index_type = 'uint32_t'
 
     def set_option(self, opt, value = True):
         self.options[opt] = value
@@ -113,6 +114,7 @@ class CodeWriter:
         self.contents.append(self.out)
         writer.indentation = self.indentation
         writer.at_line_start = self.at_line_start
+        writer.index_type = self.index_type
         writer.generated = self.generated
         writer.options = self.options
         writer.public_prefix = self.public_prefix
@@ -353,7 +355,7 @@ class CodeWriter:
     def pop_index(self):
         index = self.indexes[self.current_index]
         self.current_index = self.current_index + 1
-        self.add_function_variable("uint32_t", index)
+        self.add_function_variable(self.index_type, index)
         return index
 
     def push_index(self):
