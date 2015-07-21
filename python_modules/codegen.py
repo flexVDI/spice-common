@@ -357,6 +357,7 @@ class CodeWriter:
         return index
 
     def push_index(self):
+        assert self.current_index > 0
         self.current_index = self.current_index - 1
 
     class Index:
