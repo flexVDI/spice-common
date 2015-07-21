@@ -62,6 +62,14 @@ class FixedSize:
 # other members
 propagated_attributes=["ptr_array", "nonnull", "chunk"]
 
+def fix_attributes(attribute_list):
+    attrs = {}
+    for attr in attribute_list:
+        name = attr[0][1:]
+        lst = attr[1:]
+        attrs[name] = lst
+    return attrs
+
 class Type:
     def __init__(self):
         self.attributes = {}
@@ -178,8 +186,7 @@ class TypeAlias(Type):
         Type.__init__(self)
         self.name = name
         self.the_type = the_type
-        for attr in attribute_list:
-            self.attributes[attr[0][1:]] = attr[1:]
+        self.attributes = fix_attributes(attribute_list)
 
     def get_type(self, recursive=False):
         if recursive:
@@ -288,8 +295,7 @@ class EnumType(EnumBaseType):
         self.names = names
         self.values = values
 
-        for attr in attribute_list:
-            self.attributes[attr[0][1:]] = attr[1:]
+        self.attributes = fix_attributes(attribute_list)
 
     def __str__(self):
         return "enum %s" % self.name
@@ -342,8 +348,7 @@ class FlagsType(EnumBaseType):
         self.names = names
         self.values = values
 
-        for attr in attribute_list:
-            self.attributes[attr[0][1:]] = attr[1:]
+        self.attributes = fix_attributes(attribute_list)
 
     def __str__(self):
         return "flags %s" % self.name
@@ -533,8 +538,7 @@ class Member(Containee):
         Containee.__init__(self)
         self.name = name
         self.member_type = member_type
-        for attr in attribute_list:
-            self.attributes[attr[0][1:]] = attr[1:]
+        self.attributes = fix_attributes(attribute_list)
 
     def resolve(self, container):
         self.container = container
@@ -636,8 +640,7 @@ class Switch(Containee):
         self.variable = variable
         self.name = name
         self.cases = cases
-        for attr in attribute_list:
-            self.attributes[attr[0][1:]] = attr[1:]
+        self.attributes = fix_attributes(attribute_list)
 
     def is_switch(self):
         return True
@@ -846,8 +849,7 @@ class StructType(ContainerType):
         self.members_by_name = {}
         for m in members:
             self.members_by_name[m.name] = m
-        for attr in attribute_list:
-            self.attributes[attr[0][1:]] = attr[1:]
+        self.attributes = fix_attributes(attribute_list)
 
     def __str__(self):
         if self.name == None:
@@ -869,8 +871,7 @@ class MessageType(ContainerType):
         for m in members:
             self.members_by_name[m.name] = m
         self.reverse_members = {} # ChannelMembers referencing this message
-        for attr in attribute_list:
-            self.attributes[attr[0][1:]] = attr[1:]
+        self.attributes = fix_attributes(attribute_list)
 
     def __str__(self):
         if self.name == None:
@@ -938,8 +939,7 @@ class ChannelType(Type):
         self.base = base
         self.member_name = None
         self.members = members
-        for attr in attribute_list:
-            self.attributes[attr[0][1:]] = attr[1:]
+        self.attributes = fix_attributes(attribute_list)
 
     def __str__(self):
         if self.name == None:
