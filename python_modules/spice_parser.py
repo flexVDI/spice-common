@@ -1,3 +1,5 @@
+import six
+
 try:
     from pyparsing import Literal, CaselessLiteral, Word, OneOrMore, ZeroOrMore, \
             Forward, delimitedList, Group, Optional, Combine, alphas, nums, restOfLine, cStyleComment, \
@@ -8,7 +10,6 @@ except ImportError:
 
 
 from . import ptypes
-import six
 import sys
 
 cvtInt = lambda toks: int(toks[0])
