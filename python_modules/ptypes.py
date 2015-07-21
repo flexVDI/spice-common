@@ -108,8 +108,6 @@ valid_attributes={
     # for a switch this indicates that on network
     # it will occupy always the same size (maximum size required for all members)
     'fixedsize',
-    # use 32 bit pointer
-    'ptr32',
 }
 
 attributes_with_arguments={
@@ -616,8 +614,6 @@ class Member(Containee):
         self.container = container
         self.member_type = self.member_type.resolve()
         self.member_type.register()
-        if self.has_attr("ptr32") and self.member_type.is_pointer():
-            self.member_type.set_ptr_size(4)
         for i in propagated_attributes:
             if self.has_attr(i):
                 self.member_type.attributes[i] = self.attributes[i]
