@@ -12,8 +12,8 @@ from python_modules import marshal
 import six
 
 def write_channel_enums(writer, channel, client, describe):
-    messages = filter(lambda m : m.channel == channel, \
-                          channel.client_messages if client else channel.server_messages)
+    messages = list(filter(lambda m : m.channel == channel, \
+                               channel.client_messages if client else channel.server_messages))
     if len(messages) == 0:
         return
     if client:
