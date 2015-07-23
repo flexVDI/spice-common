@@ -361,7 +361,7 @@ enum8 image_type {
     LZ4,
 };
 
-enum8 image_compress {
+enum8 image_compression {
     INVALID  = 0,
     OFF,
     AUTO_GLZ,
