@@ -935,7 +935,7 @@ channel DisplayChannel : BaseChannel {
     } stream_report;
 
     message {
-        uint8 image_compression;
+        image_compression image_compression;
     } preferred_compression;
 };
 
