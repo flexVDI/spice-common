@@ -62,7 +62,7 @@ class FixedSize:
 # other members
 propagated_attributes=["ptr_array", "nonnull", "chunk"]
 
-valid_attributes={
+valid_attributes=set([
     # embedded/appended at the end of the structure
     'end',
     # the C structure contains a pointer to data
@@ -108,9 +108,9 @@ valid_attributes={
     # for a switch this indicates that on network
     # it will occupy always the same size (maximum size required for all members)
     'fixedsize',
-}
+])
 
-attributes_with_arguments={
+attributes_with_arguments=set([
     'ctype',
     'prefix',
     'as_ptr',
@@ -119,7 +119,7 @@ attributes_with_arguments={
     'minor',
     'bytes_count',
     'virtual',
-}
+])
 
 def fix_attributes(attribute_list):
     attrs = {}
