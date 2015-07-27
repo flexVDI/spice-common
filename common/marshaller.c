@@ -419,7 +419,7 @@ uint8_t *spice_marshaller_linearize(SpiceMarshaller *m, size_t skip_bytes,
     /* Only supported for root marshaller */
     assert(m->data->marshallers == m);
 
-    if (m->n_items == 1) {
+    if (m->n_items == 1 && m->next == NULL) {
         *free_res = FALSE;
         if (m->items[0].len <= skip_bytes) {
             *len = 0;
