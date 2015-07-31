@@ -47,6 +47,7 @@ AC_SUBST(SPICE_COMMON_LIBS)
 AC_CONFIG_FILES([
   Makefile
   common/Makefile
+  tests/Makefile
 ])
 
 AH_BOTTOM([
