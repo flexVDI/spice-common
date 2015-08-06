@@ -80,7 +80,7 @@ struct SpiceMarshaller {
     MarshallerRef pointer_ref;
 
     int n_items;
-    int items_size; /* number of items availible in items */
+    int items_size; /* number of items available in items */
     MarshallerItem *items;
 
     MarshallerItem static_items[N_STATIC_ITEMS];
