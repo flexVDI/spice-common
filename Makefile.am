@@ -1,7 +1,7 @@
 NULL =
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = python_modules common
+SUBDIRS = common
 
 EXTRA_DIST =				\
 	spice_codegen.py		\

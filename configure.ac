@@ -47,7 +47,6 @@ AC_SUBST(SPICE_COMMON_LIBS)
 AC_CONFIG_FILES([
   Makefile
   common/Makefile
-  python_modules/Makefile
 ])
 
 AH_BOTTOM([

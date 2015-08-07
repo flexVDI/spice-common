@@ -8,8 +8,6 @@ test -z "$srcdir" && srcdir=.
 olddir=`pwd`
 cd "$srcdir"
 
-git submodule update --init
-
 mkdir -p m4
 autoreconf --verbose --force --install
 
