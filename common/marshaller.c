@@ -347,9 +347,12 @@ uint8_t *spice_marshaller_add(SpiceMarshaller *m, const uint8_t *data, size_t si
     return ptr;
 }
 
-uint8_t *spice_marshaller_add_ref(SpiceMarshaller *m, uint8_t *data, size_t size)
+uint8_t *spice_marshaller_add_ref(SpiceMarshaller *m, const uint8_t *data, size_t size)
 {
-    return spice_marshaller_add_ref_full(m, data, size, NULL, NULL);
+    /* the cast to no-const here is safe as data is used for writing only if
+     * free_data pointer is not NULL
+     */
+    return spice_marshaller_add_ref_full(m, (uint8_t *) data, size, NULL, NULL);
 }
 
 void spice_marshaller_add_ref_chunks(SpiceMarshaller *m, SpiceChunks *chunks)

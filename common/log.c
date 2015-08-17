@@ -43,7 +43,7 @@ static int abort_level = -1;
 
 static GLogLevelFlags spice_log_level_to_glib(SpiceLogLevel level)
 {
-    static GLogLevelFlags glib_levels[] = {
+    static const GLogLevelFlags glib_levels[] = {
         [ SPICE_LOG_LEVEL_ERROR ] = G_LOG_LEVEL_ERROR,
         [ SPICE_LOG_LEVEL_CRITICAL ] = G_LOG_LEVEL_CRITICAL,
         [ SPICE_LOG_LEVEL_WARNING ] = G_LOG_LEVEL_WARNING,
