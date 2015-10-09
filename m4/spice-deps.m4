@@ -1,8 +1,3 @@
-# For autoconf < 2.63
-m4_ifndef([AS_VAR_APPEND],
-          AC_DEFUN([AS_VAR_APPEND], $1=$$1$2))
-
-
 # SPICE_CHECK_SYSDEPS()
 # ---------------------
 # Checks for header files and library functions needed by spice-common.
@@ -33,13 +28,13 @@ AC_DEFUN([SPICE_CHECK_SYSDEPS], [
 ])
 
 
-# SPICE_CHECK_SMARTCARD(PREFIX)
-# -----------------------------
+# SPICE_CHECK_SMARTCARD
+# ---------------------
 # Adds a --enable-smartcard switch in order to enable/disable smartcard
 # support, and checks if the needed libraries are available. If found, it will
-# append the flags to use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables, and
+# return the flags to use in the SMARTCARD_CFLAGS and SMARTCARD_LIBS variables, and
 # it will define a USE_SMARTCARD preprocessor symbol.
-#------------------------------
+#----------------------
 AC_DEFUN([SPICE_CHECK_SMARTCARD], [
     AC_ARG_ENABLE([smartcard],
       AS_HELP_STRING([--enable-smartcard=@<:@yes/no/auto@:>@],
@@ -57,19 +52,17 @@ AC_DEFUN([SPICE_CHECK_SMARTCARD], [
         AC_DEFINE(USE_SMARTCARD, [1], [Define if supporting smartcard proxying])
       fi
     fi
-    AS_VAR_APPEND([$1_CFLAGS], [" $SMARTCARD_CFLAGS"])
-    AS_VAR_APPEND([$1_LIBS], [" $SMARTCARD_LIBS"])
 ])
 
 
-# SPICE_CHECK_CELT051(PREFIX)
-# ---------------------------
+# SPICE_CHECK_CELT051
+# -------------------
 # Adds a --disable-celt051 switch in order to enable/disable CELT 0.5.1
 # support, and checks if the needed libraries are available. If found, it will
-# append the flags to use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables, and
+# return the flags to use in the CELT051_CFLAGS and CELT051_LIBS variables, and
 # it will define a HAVE_CELT051 preprocessor symbol as well as a HAVE_CELT051
 # Makefile conditional.
-#----------------------------
+#--------------------
 AC_DEFUN([SPICE_CHECK_CELT051], [
     AC_ARG_ENABLE([celt051],
         [  --disable-celt051       Disable celt051 audio codec (enabled by default)],,
@@ -83,17 +76,15 @@ AC_DEFUN([SPICE_CHECK_CELT051], [
 
     AM_CONDITIONAL([HAVE_CELT051], [test "x$have_celt051" = "xyes"])
     AM_COND_IF([HAVE_CELT051], AC_DEFINE([HAVE_CELT051], 1, [Define if we have celt051 codec]))
-    AS_VAR_APPEND([$1_CFLAGS], [" $CELT051_CFLAGS"])
-    AS_VAR_APPEND([$1_LIBS], [" $CELT051_LIBS"])
 ])
 
 
-# SPICE_CHECK_OPUS(PREFIX)
-# ------------------------
-# Check for the availability of Opus. If found, it will append the flags to use
-# to the $PREFIX_CFLAGS and $PREFIX_LIBS variables, and it will define a
+# SPICE_CHECK_OPUS
+# ----------------
+# Check for the availability of Opus. If found, it will return the flags to use
+# in the OPUS_CFLAGS and OPUS_LIBS variables, and it will define a
 # HAVE_OPUS preprocessor symbol as well as a HAVE_OPUS Makefile conditional.
-#-------------------------
+# ----------------
 AC_DEFUN([SPICE_CHECK_OPUS], [
     PKG_CHECK_MODULES([OPUS], [opus >= 0.9.14], [have_opus=yes], [have_opus=no])
 
@@ -101,19 +92,17 @@ AC_DEFUN([SPICE_CHECK_OPUS], [
     if test "x$have_opus" = "xyes" ; then
       AC_DEFINE([HAVE_OPUS], [1], [Define if we have OPUS])
     fi
-    AS_VAR_APPEND([$1_CFLAGS], [" $OPUS_CFLAGS"])
-    AS_VAR_APPEND([$1_LIBS], [" $OPUS_LIBS"])
 ])
 
 
-# SPICE_CHECK_OPENGL(PREFIX)
-# --------------------------
+# SPICE_CHECK_OPENGL
+# ------------------
 # Adds a --disable-opengl switch in order to enable/disable OpenGL
 # support, and checks if the needed libraries are available. If found, it will
-# append the flags to use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables, and
+# return the flags to use in the GL_CFLAGS and GL_LIBS variables, and
 # it will define USE_OPENGL and GL_GLEXT_PROTOTYPES preprocessor symbol as well
 # as a SUPPORT_GL Makefile conditional.
-#---------------------------
+# ------------------
 AC_DEFUN([SPICE_CHECK_OPENGL], [
     AC_ARG_ENABLE([opengl],
         AS_HELP_STRING([--enable-opengl=@<:@yes/no@:>@],
@@ -132,32 +121,26 @@ AC_DEFUN([SPICE_CHECK_OPENGL], [
             AC_MSG_ERROR([GL libraries not available])
         fi
     fi
-    AS_VAR_APPEND([$1_CFLAGS], [" $GL_CFLAGS"])
-    AS_VAR_APPEND([$1_LIBS], [" $GL_LIBS"])
 ])
 
 
-# SPICE_CHECK_PIXMAN(PREFIX)
-# --------------------------
-# Check for the availability of pixman. If found, it will append the flags to
-# use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables.
-#---------------------------
+# SPICE_CHECK_PIXMAN
+# ------------------
+# Check for the availability of pixman. If found, it will return the flags to
+# use in the PIXMAN_CFLAGS and PIXMAN_LIBS variables.
+#-------------------
 AC_DEFUN([SPICE_CHECK_PIXMAN], [
     PKG_CHECK_MODULES(PIXMAN, pixman-1 >= 0.17.7)
-    AS_VAR_APPEND([$1_CFLAGS], [" $PIXMAN_CFLAGS"])
-    AS_VAR_APPEND([$1_LIBS], [" $PIXMAN_LIBS"])
 ])
 
 
-# SPICE_CHECK_GLIB2(PREFIX)
-# --------------------------
-# Check for the availability of glib2. If found, it will append the flags to
-# use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables.
-#---------------------------
+# SPICE_CHECK_GLIB2
+# -----------------
+# Check for the availability of glib2. If found, it will return the flags to
+# use in the GLIB2_CFLAGS and GLIB2_LIBS variables.
+#------------------
 AC_DEFUN([SPICE_CHECK_GLIB2], [
     PKG_CHECK_MODULES(GLIB2, glib-2.0)
-    AS_VAR_APPEND([$1_CFLAGS], [" $GLIB2_CFLAGS"])
-    AS_VAR_APPEND([$1_LIBS], [" $GLIB2_LIBS"])
 ])
 
 # SPICE_CHECK_PYTHON_MODULES()
@@ -181,14 +164,14 @@ AC_DEFUN([SPICE_CHECK_PYTHON_MODULES], [
 ])
 
 
-# SPICE_CHECK_LZ4(PREFIX)
-# -----------------------------
+# SPICE_CHECK_LZ4
+# ---------------
 # Adds a --enable-lz4 switch in order to enable/disable LZ4 compression
 # support, and checks if the needed libraries are available. If found, it will
-# append the flags to use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables, and
+# return the flags to use in the LZ4_CFLAGS and LZ4_LIBS variables, and
 # it will define a USE_LZ4 preprocessor symbol as well as a SUPPORT_LZ4 Makefile
 # conditional.
-#------------------------------
+# ---------------
 AC_DEFUN([SPICE_CHECK_LZ4], [
     AC_ARG_ENABLE([lz4],
       AS_HELP_STRING([--enable-lz4=@<:@yes/no@:>@],
@@ -200,6 +183,4 @@ AC_DEFUN([SPICE_CHECK_LZ4], [
       PKG_CHECK_MODULES([LZ4], [liblz4])
       AC_DEFINE(USE_LZ4, [1], [Define to build with lz4 support])
     fi
-    AS_VAR_APPEND([$1_CFLAGS], [" $LZ4_CFLAGS"])
-    AS_VAR_APPEND([$1_LIBS], [" $LZ4_LIBS"])
 ])
