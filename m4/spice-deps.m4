@@ -169,7 +169,7 @@ AC_DEFUN([SPICE_CHECK_PYTHON_MODULES], [
 # Adds a --enable-lz4 switch in order to enable/disable LZ4 compression
 # support, and checks if the needed libraries are available. If found, it will
 # return the flags to use in the LZ4_CFLAGS and LZ4_LIBS variables, and
-# it will define a USE_LZ4 preprocessor symbol as well as a SUPPORT_LZ4 Makefile
+# it will define a USE_LZ4 preprocessor symbol.
 # conditional.
 # ---------------
 AC_DEFUN([SPICE_CHECK_LZ4], [
