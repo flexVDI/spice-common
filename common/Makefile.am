@@ -79,7 +79,7 @@ libspice_common_server_la_SOURCES =		\
 
 libspice_common_server_la_CFLAGS = -DFIXME_SERVER_SMARTCARD
 
-if SUPPORT_GL
+if HAVE_GL
 libspice_common_la_SOURCES +=		\
 	gl_utils.h			\
 	glc.c				\

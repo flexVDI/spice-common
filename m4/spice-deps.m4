@@ -103,7 +103,7 @@ AC_DEFUN([SPICE_CHECK_OPUS], [
 # support, and checks if the needed libraries are available. If found, it will
 # return the flags to use in the GL_CFLAGS and GL_LIBS variables, and
 # it will define USE_OPENGL and GL_GLEXT_PROTOTYPES preprocessor symbol as well
-# as a SUPPORT_GL Makefile conditional.
+# as a HAVE_GL Makefile conditional.
 # ------------------
 AC_DEFUN([SPICE_CHECK_OPENGL], [
     AC_ARG_ENABLE([opengl],
@@ -111,7 +111,7 @@ AC_DEFUN([SPICE_CHECK_OPENGL], [
                        [Enable opengl support (not recommended) @<:@default=no@:>@]),
         [],
         [enable_opengl="no"])
-    AM_CONDITIONAL(SUPPORT_GL, test "x$enable_opengl" = "xyes")
+    AM_CONDITIONAL(HAVE_GL, test "x$enable_opengl" = "xyes")
 
     if test "x$enable_opengl" = "xyes"; then
         AC_CHECK_LIB(GL, glBlendFunc, GL_LIBS="$GL_LIBS -lGL", enable_opengl=no)
