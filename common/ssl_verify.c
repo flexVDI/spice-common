@@ -161,8 +161,6 @@ static int verify_hostname(X509* cert, const char *hostname)
 {
     GENERAL_NAMES* subject_alt_names;
     int found_dns_name = 0;
-    struct in_addr addr;
-    int addr_len = 0;
     int cn_match = 0;
     X509_NAME* subject;
 
@@ -171,11 +169,6 @@ static int verify_hostname(X509* cert, const char *hostname)
     if (!cert) {
         spice_debug("warning: no cert!");
         return 0;
-    }
-
-    // only IpV4 supported
-    if (inet_aton(hostname, &addr)) {
-        addr_len = sizeof(struct in_addr);
     }
 
     /* try matching against:
@@ -209,8 +202,16 @@ static int verify_hostname(X509* cert, const char *hostname)
                     return 1;
                 }
             } else if (name->type == GEN_IPADD) {
+                struct in_addr addr;
+                int addr_len = 0;
                 int alt_ip_len = ASN1_STRING_length(name->d.iPAddress);
                 found_dns_name = 1;
+
+                // only IpV4 supported
+                if (inet_aton(hostname, &addr)) {
+                    addr_len = sizeof(struct in_addr);
+                }
+
                 if ((addr_len == alt_ip_len)&&
                     !memcmp(ASN1_STRING_data(name->d.iPAddress), &addr, addr_len)) {
                     spice_debug("alt name IP match=%s",
