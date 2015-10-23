@@ -140,7 +140,7 @@ AC_DEFUN([SPICE_CHECK_PIXMAN], [
 # use in the GLIB2_CFLAGS and GLIB2_LIBS variables.
 #------------------
 AC_DEFUN([SPICE_CHECK_GLIB2], [
-    PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 2.22)
+    PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 2.22 gio-2.0 >= 2.22)
 ])
 
 # SPICE_CHECK_PYTHON_MODULES()
