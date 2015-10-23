@@ -200,8 +200,12 @@ static int verify_hostname(X509* cert, const char *hostname)
                 found_dns_name = 1;
 
                 ip = g_inet_address_new_from_string(hostname);
-                ip_len = g_inet_address_get_native_size(ip);
-                ip_binary = g_inet_address_to_bytes(ip);
+                if (ip != NULL) {
+                    ip_len = g_inet_address_get_native_size(ip);
+                    ip_binary = g_inet_address_to_bytes(ip);
+                } else {
+                    spice_warning("Could not parse hostname: %s", hostname);
+                }
 
                 alt_ip_len = ASN1_STRING_length(name->d.iPAddress);
 
