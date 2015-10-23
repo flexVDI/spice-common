@@ -190,9 +190,7 @@ static int verify_hostname(X509* cert, const char *hostname)
                     return 1;
                 }
             } else if (name->type == GEN_IPADD) {
-                GInetAddress * alt_ip = NULL;
                 GInetAddress * ip = NULL;
-                gchar * alt_ip_string = NULL;
                 const guint8 * ip_binary = NULL;
                 int alt_ip_len = 0;
                 int ip_len = 0;
@@ -211,14 +209,22 @@ static int verify_hostname(X509* cert, const char *hostname)
 
                 if ((ip_len == alt_ip_len) &&
                    (memcmp(ASN1_STRING_data(name->d.iPAddress), ip_binary, ip_len)) == 0) {
+                    GInetAddress * alt_ip = NULL;
+                    gchar * alt_ip_string = NULL;
+
                     alt_ip = g_inet_address_new_from_bytes(ASN1_STRING_data(name->d.iPAddress),
                                                            g_inet_address_get_family(ip));
                     alt_ip_string = g_inet_address_to_string(alt_ip);
                     spice_debug("alt name IP match=%s", alt_ip_string);
 
                     g_free(alt_ip_string);
+                    g_object_unref(alt_ip);
+                    g_object_unref(ip);
                     GENERAL_NAMES_free(subject_alt_names);
                     return 1;
+                }
+                if (ip != NULL) {
+                    g_object_unref(ip);
                 }
             }
         }
