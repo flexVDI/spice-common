@@ -35,7 +35,7 @@ AC_DEFUN([SPICE_CHECK_SYSDEPS], [
 # return the flags to use in the SMARTCARD_CFLAGS and SMARTCARD_LIBS variables, and
 # it will define a USE_SMARTCARD preprocessor symbol as well as a HAVE_SMARTCARD
 # Makefile conditional.
-----------------------
+#----------------------
 AC_DEFUN([SPICE_CHECK_SMARTCARD], [
     AC_ARG_ENABLE([smartcard],
       AS_HELP_STRING([--enable-smartcard=@<:@yes/no/auto@:>@],
