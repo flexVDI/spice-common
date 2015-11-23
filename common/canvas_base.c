@@ -1147,10 +1147,7 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
         break;
     }
 #if defined(SW_CANVAS_CACHE)
-    case SPICE_IMAGE_TYPE_LZ_PLT: {
-        surface = canvas_get_lz(canvas, image, want_original);
-        break;
-    }
+    case SPICE_IMAGE_TYPE_LZ_PLT:
     case SPICE_IMAGE_TYPE_LZ_RGB: {
         surface = canvas_get_lz(canvas, image, want_original);
         break;
