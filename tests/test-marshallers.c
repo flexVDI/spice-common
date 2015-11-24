@@ -1,8 +1,8 @@
 #include <glib.h>
 #include <string.h>
-#include <marshaller.h>
 
-#include <generated_test_marshallers.h>
+#include "common/marshaller.h"
+#include "generated_test_marshallers.h"
 
 static uint8_t expected_data[] = { 0x02, 0x00, 0x00, 0x00, /* data_size */
                                    0x08, 0x00, 0x00, 0x00, /* data offset */

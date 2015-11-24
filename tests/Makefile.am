@@ -9,7 +9,7 @@ test_marshallers_SOURCES =		\
 	test-marshallers.h		\
 	$(NULL)
 test_marshallers_CFLAGS =		\
-	-I$(top_srcdir)/common		\
+	-I$(top_srcdir)			\
 	$(GLIB2_CFLAGS)			\
 	$(PROTOCOL_CFLAGS)		\
 	$(NULL)
@@ -45,6 +45,7 @@ generated_test_marshallers.h: $(srcdir)/test-marshallers.proto $(MARSHALLERS_DEP
 
 EXTRA_DIST =				\
 	$(TEST_MARSHALLERS)		\
+	test-marshallers.proto		\
 	$(NULL)
 
 -include $(top_srcdir)/git.mk
