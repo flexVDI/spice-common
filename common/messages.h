@@ -38,8 +38,12 @@
 #include <spice/protocol.h>
 #include <spice/macros.h>
 
-#ifdef USE_SMARTCARD
+#ifdef USE_SMARTCARD_012
 #include <vscard_common.h>
+#else
+#ifdef USE_SMARTCARD
+#include <libcacard.h>
+#endif
 #endif
 
 #include "draw.h"

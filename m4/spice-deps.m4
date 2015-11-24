@@ -70,9 +70,15 @@ AC_DEFUN([SPICE_CHECK_SMARTCARD], [
 
     have_smartcard=no
     if test "x$enable_smartcard" != "xno"; then
-      PKG_CHECK_MODULES([SMARTCARD], [libcacard >= 0.1.2], [have_smartcard=yes], [have_smartcard=no])
+      PKG_CHECK_MODULES([SMARTCARD], [libcacard >= 2.5.1], [have_smartcard=yes], [have_smartcard=no])
+      if test "x$have_smartcard" = "xno"; then
+        PKG_CHECK_MODULES([SMARTCARD], [libcacard >= 0.1.2], [have_smartcard=yes have_smartcard_012=yes], [have_smartcard=no])
+      fi
       if test "x$enable_smartcard" != "xauto" && test "x$have_smartcard" = "xno"; then
         AC_MSG_ERROR("Smartcard support requested but libcacard could not be found")
+      fi
+      if test "x$have_smartcard_012" = "xyes"; then
+        AC_DEFINE(USE_SMARTCARD_012, [1], [Define if supporting smartcard proxying without libcacard.h])
       fi
       if test "x$have_smartcard" = "xyes"; then
         AC_DEFINE(USE_SMARTCARD, [1], [Define if supporting smartcard proxying])
