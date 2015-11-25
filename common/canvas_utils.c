@@ -162,10 +162,17 @@ pixman_image_t * surface_create(pixman_format_code_t format, int width, int heig
         switch (format) {
         case PIXMAN_a8r8g8b8:
         case PIXMAN_x8r8g8b8:
+#ifdef WORDS_BIGENDIAN
+        case PIXMAN_b8g8r8a8:
+        case PIXMAN_b8g8r8x8:
+#endif
             bitmap_info.inf.bmiHeader.biBitCount = 32;
             nstride = width * 4;
             break;
         case PIXMAN_r8g8b8:
+#ifdef WORDS_BIGENDIAN
+        case PIXMAN_b8g8r8:
+#endif
             bitmap_info.inf.bmiHeader.biBitCount = 24;
             nstride = SPICE_ALIGN(width * 3, 4);
             break;
@@ -235,9 +242,16 @@ pixman_image_t * surface_create(pixman_format_code_t format, int width, int heig
         switch (format) {
         case PIXMAN_a8r8g8b8:
         case PIXMAN_x8r8g8b8:
+#ifdef WORDS_BIGENDIAN
+        case PIXMAN_b8g8r8a8:
+        case PIXMAN_b8g8r8x8:
+#endif
             stride = width * 4;
             break;
         case PIXMAN_r8g8b8:
+#ifdef WORDS_BIGENDIAN
+        case PIXMAN_b8g8r8:
+#endif
             // NOTE: LZ4 also decodes to RGB24
             stride = SPICE_ALIGN(width * 3, 4);
             break;
