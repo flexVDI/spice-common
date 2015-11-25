@@ -40,13 +40,6 @@ typedef enum {
     SPICE_LOG_LEVEL_DEBUG,
 } SpiceLogLevel;
 
-void spice_logv(const char *log_domain,
-                SpiceLogLevel log_level,
-                const char *strloc,
-                const char *function,
-                const char *format,
-                va_list args) SPICE_ATTR_PRINTF(5, 0);
-
 void spice_log(const char *log_domain,
                SpiceLogLevel log_level,
                const char *strloc,
