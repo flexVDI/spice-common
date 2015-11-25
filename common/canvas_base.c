@@ -825,7 +825,7 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     switch (type) {
     case LZ_IMAGE_TYPE_RGBA:
         as_type = LZ_IMAGE_TYPE_RGBA;
-        pixman_format = PIXMAN_a8r8g8b8;
+        pixman_format = PIXMAN_LE_a8r8g8b8;
         break;
     case LZ_IMAGE_TYPE_RGB32:
     case LZ_IMAGE_TYPE_RGB24:
@@ -835,7 +835,7 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     case LZ_IMAGE_TYPE_PLT4_BE:
     case LZ_IMAGE_TYPE_PLT8:
         as_type = LZ_IMAGE_TYPE_RGB32;
-        pixman_format = PIXMAN_x8r8g8b8;
+        pixman_format = PIXMAN_LE_x8r8g8b8;
         break;
     case LZ_IMAGE_TYPE_A8:
         as_type = LZ_IMAGE_TYPE_A8;
@@ -846,7 +846,7 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
             (canvas->format == SPICE_SURFACE_FMT_32_xRGB ||
              canvas->format == SPICE_SURFACE_FMT_32_ARGB)) {
             as_type = LZ_IMAGE_TYPE_RGB32;
-            pixman_format = PIXMAN_x8r8g8b8;
+            pixman_format = PIXMAN_LE_x8r8g8b8;
         } else {
             as_type = LZ_IMAGE_TYPE_RGB16;
             pixman_format = PIXMAN_x1r5g5b5;
