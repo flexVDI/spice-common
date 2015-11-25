@@ -1003,25 +1003,13 @@ pixman_image_t *spice_bitmap_try_as_pixman(int src_format,
 
     switch (src_format) {
     case SPICE_BITMAP_FMT_32BIT:
-#ifdef WORDS_BIGENDIAN
-        pixman_format = PIXMAN_b8g8r8x8;
-#else
-        pixman_format = PIXMAN_x8r8g8b8;
-#endif
+        pixman_format = PIXMAN_LE_x8r8g8b8;
         break;
     case SPICE_BITMAP_FMT_RGBA:
-#ifdef WORDS_BIGENDIAN
-        pixman_format = PIXMAN_b8g8r8a8;
-#else
-        pixman_format = PIXMAN_a8r8g8b8;
-#endif
+        pixman_format = PIXMAN_LE_a8r8g8b8;
         break;
     case SPICE_BITMAP_FMT_24BIT:
-#ifdef WORDS_BIGENDIAN
-        pixman_format = PIXMAN_b8g8r8;
-#else
-        pixman_format = PIXMAN_r8g8b8;
-#endif
+        pixman_format = PIXMAN_LE_r8g8b8;
         break;
     case SPICE_BITMAP_FMT_16BIT:
 #ifdef WORDS_BIGENDIAN
