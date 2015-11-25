@@ -501,7 +501,7 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image)
 #ifdef WIN32
                              canvas->dc,
 #endif
-                             PIXMAN_x8r8g8b8,
+                             PIXMAN_LE_x8r8g8b8,
                              width, height, FALSE);
     if (surface == NULL) {
         spice_warning("create surface failed");
@@ -648,7 +648,7 @@ static pixman_image_t *canvas_get_jpeg_alpha(CanvasBase *canvas, SpiceImage *ima
 #ifdef WIN32
     lz_data->decode_data.dc = canvas->dc;
 #endif
-    surface = alloc_lz_image_surface(&lz_data->decode_data, PIXMAN_a8r8g8b8,
+    surface = alloc_lz_image_surface(&lz_data->decode_data, PIXMAN_LE_a8r8g8b8,
                                      width, height, width*height, alpha_top_down);
 
     if (surface == NULL) {
