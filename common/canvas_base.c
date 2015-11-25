@@ -406,19 +406,19 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
     switch (type) {
     case QUIC_IMAGE_TYPE_RGBA:
         as_type = QUIC_IMAGE_TYPE_RGBA;
-        pixman_format = PIXMAN_a8r8g8b8;
+        pixman_format = PIXMAN_LE_a8r8g8b8;
         break;
     case QUIC_IMAGE_TYPE_RGB32:
     case QUIC_IMAGE_TYPE_RGB24:
         as_type = QUIC_IMAGE_TYPE_RGB32;
-        pixman_format = PIXMAN_x8r8g8b8;
+        pixman_format = PIXMAN_LE_x8r8g8b8;
         break;
     case QUIC_IMAGE_TYPE_RGB16:
         if (!want_original &&
             (canvas->format == SPICE_SURFACE_FMT_32_xRGB ||
              canvas->format == SPICE_SURFACE_FMT_32_ARGB)) {
             as_type = QUIC_IMAGE_TYPE_RGB32;
-            pixman_format = PIXMAN_x8r8g8b8;
+            pixman_format = PIXMAN_LE_x8r8g8b8;
         } else {
             as_type = QUIC_IMAGE_TYPE_RGB16;
             pixman_format = PIXMAN_x1r5g5b5;
