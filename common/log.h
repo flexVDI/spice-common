@@ -95,12 +95,6 @@ void spice_log(const char *log_domain,
     }                                                   \
 } G_STMT_END
 
-#define spice_warn_if(x) G_STMT_START {                 \
-    if G_UNLIKELY(x) {                                  \
-        spice_warning("condition `%s' reached", #x);    \
-    }                                                   \
-} G_STMT_END
-
 #define spice_assert(x) G_STMT_START {                  \
     if G_LIKELY(x) { } else {                           \
         spice_error("assertion `%s' failed", #x);       \
