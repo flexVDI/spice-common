@@ -11,7 +11,7 @@ m4_ifndef([AS_VAR_COPY],
 # ----------------------
 # Collect warnings and print them at the end so they are clearly visible.
 # ---------------------
-AC_DEFUN([SPICE_WARNING],AS_VAR_APPEND([spice_warnings],["|$1"]))
+AC_DEFUN([SPICE_WARNING],[AS_VAR_APPEND([spice_warnings],["|$1"])])
 AC_DEFUN([SPICE_PRINT_MESSAGES],[
     ac_save_IFS="$IFS"
     IFS="|"
