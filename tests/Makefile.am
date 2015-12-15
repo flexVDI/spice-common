@@ -1,7 +1,22 @@
 NULL =
 
-TESTS = test_marshallers
+TESTS = test_logging test_marshallers
 noinst_PROGRAMS = $(TESTS)
+
+test_logging_SOURCES = test-logging.c
+test_logging_CFLAGS =			\
+	-I$(top_srcdir)			\
+	$(GLIB2_CFLAGS)			\
+	$(GIO_UNIX_CFLAGS)		\
+	$(PROTOCOL_CFLAGS)		\
+	$(NULL)
+test_logging_LDADD =					\
+	$(top_builddir)/common/libspice-common.la	\
+	$(GLIB2_LIBS)			\
+	$(GIO_UNIX_LIBS)		\
+	$(NULL)
+
+
 test_marshallers_SOURCES =		\
 	generated_test_marshallers.c	\
 	generated_test_marshallers.h	\
