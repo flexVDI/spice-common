@@ -19,11 +19,14 @@
 #include <config.h>
 #endif
 
+#include "log.h"
 #include "marshaller.h"
 #include "mem.h"
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <unistd.h>
+#include <stdio.h>
 
 #ifdef WORDS_BIGENDIAN
 #define write_int8(ptr,v) (*((int8_t *)(ptr)) = v)
@@ -84,6 +87,7 @@ struct SpiceMarshaller {
     MarshallerItem *items;
 
     MarshallerItem static_items[N_STATIC_ITEMS];
+    int fd;
 };
 
 struct SpiceMarshallerData {
@@ -111,6 +115,7 @@ static void spice_marshaller_init(SpiceMarshaller *m,
     m->n_items = 0;
     m->items_size = N_STATIC_ITEMS;
     m->items = m->static_items;
+    m->fd = -1;
 }
 
 SpiceMarshaller *spice_marshaller_new(void)
@@ -612,4 +617,23 @@ void *spice_marshaller_add_int8(SpiceMarshaller *m, int8_t v)
     ptr = spice_marshaller_reserve_space(m, sizeof(int8_t));
     write_int8(ptr, v);
     return (void *)ptr;
+}
+
+void spice_marshaller_add_fd(SpiceMarshaller *m, int fd)
+{
+    spice_assert(m->fd == -1);
+
+    m->fd = dup(fd);
+    if (m->fd == -1) {
+        perror("dup");
+    }
+}
+
+int spice_marshaller_get_fd(SpiceMarshaller *m)
+{
+    int fd = m->fd;
+
+    m->fd = -1;
+
+    return fd;
 }
