@@ -13,7 +13,7 @@ test_marshallers_CFLAGS =		\
 	$(GLIB2_CFLAGS)			\
 	$(PROTOCOL_CFLAGS)		\
 	$(NULL)
-test_marshallers_LDFLAGS =				\
+test_marshallers_LDADD =				\
 	$(top_builddir)/common/libspice-common.la	\
 	$(GLIB2_LIBS)			\
 	$(NULL)
