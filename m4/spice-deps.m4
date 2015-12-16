@@ -269,3 +269,30 @@ AS_IF([test "x$1" != x],
              [missing_gstreamer_elements="no"])
       ])
 ])
+
+# SPICE_CHECK_SASL
+# ----------------
+# Adds a --with-sasl switch to allow using SASL for authentication.
+# Checks whether the required library is available. If it is present,
+# it will return the flags to use in SASL_CFLAGS and SASL_LIBS variables,
+# and it will define a have_sasl configure variable and a HAVE_SASL preprocessor
+# symbol.
+# ----------------
+AC_DEFUN([SPICE_CHECK_SASL], [
+    AC_ARG_WITH([sasl],
+      [AS_HELP_STRING([--with-sasl=@<:@yes/no/auto@:>@],
+                      [use cyrus SASL for authentication @<:@default=auto@:>@])],
+                      [],
+                      [with_sasl="auto"])
+
+    have_sasl=no
+    if test "x$with_sasl" != "xno"; then
+      PKG_CHECK_MODULES([SASL], [libsasl2], [have_sasl=yes],[have_sasl=no])
+      if test "x$have_sasl" = "xno" && test "x$with_sasl" = "xyes"; then
+        AC_MSG_ERROR([Cyrus SASL support requested but libsasl2 could not be found])
+      fi
+      if test "x$have_sasl" = "xyes"; then
+        AC_DEFINE([HAVE_SASL], 1, [whether Cyrus SASL is available for authentication])
+      fi
+    fi
+])
