@@ -307,7 +307,7 @@ pixman_image_t *alloc_lz_image_surface(LzDecodeUsrData *canvas_data,
 
     /* pixman requires strides to be 4-byte aligned */
     stride = SPICE_ALIGN(stride, 4);
-    
+
     if (!top_down) {
         stride = -stride;
     }

@@ -95,7 +95,7 @@ static pixman_image_t *get_image(SpiceCanvas *canvas, int force_opaque)
         uint32_t *data;
         int stride;
         int width, height;
-        
+
         /* Remove alpha bits from format */
         format = (pixman_format_code_t)(((uint32_t)format) & ~(0xf << 12));
         data = pixman_image_get_data (sw_canvas->image);

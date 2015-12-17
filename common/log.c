@@ -52,7 +52,7 @@ static const char * spice_log_level_to_string(SpiceLogLevel level)
     };
 #endif
     const char *str = NULL;
- 
+
     if (level < SPICE_N_ELEMENTS(to_string)) {
         str = to_string[level];
     }
@@ -76,7 +76,7 @@ void spice_logv(const char *log_domain,
                 va_list args)
 {
     const char *level = spice_log_level_to_string(log_level);
-    
+
     if (debug_level == -1) {
         debug_level = getenv("SPICE_DEBUG_LEVEL") ? atoi(getenv("SPICE_DEBUG_LEVEL")) : SPICE_LOG_LEVEL_WARNING;
     }
