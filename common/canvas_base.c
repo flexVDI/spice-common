@@ -1264,6 +1264,9 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
            If so we convert here. */
 
         wanted_format = canvas_get_target_format(canvas,
+#ifdef WORDS_BIGENDIAN
+                                                 surface_format == PIXMAN_b8g8r8a8 ||
+#endif
                                                  surface_format == PIXMAN_a8r8g8b8);
 
         if (surface_format != wanted_format) {
