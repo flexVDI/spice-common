@@ -1119,6 +1119,14 @@ class ProtocolType(Type):
 
         return self
 
+class FdType(IntegerType):
+
+    def primitive_type(self):
+        return "fd"
+
+    def c_type(self):
+        return "int"
+
 int8 = IntegerType(8, True)
 uint8 = IntegerType(8, False)
 int16 = IntegerType(16, True)
@@ -1127,3 +1135,4 @@ int32 = IntegerType(32, True)
 uint32 = IntegerType(32, False)
 int64 = IntegerType(64, True)
 uint64 = IntegerType(64, False)
+unix_fd = FdType(1, True)

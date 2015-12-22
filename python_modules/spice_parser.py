@@ -56,6 +56,7 @@ def SPICE_BNF():
         uint32_    = Keyword("uint32").setParseAction(replaceWith(ptypes.uint32))
         int64_     = Keyword("int64").setParseAction(replaceWith(ptypes.int64))
         uint64_    = Keyword("uint64").setParseAction(replaceWith(ptypes.uint64))
+        unix_fd_   = Keyword("unix_fd").setParseAction(replaceWith(ptypes.unix_fd))
 
         # keywords
         enum32_    = Keyword("enum32").setParseAction(replaceWith(32))
@@ -108,7 +109,7 @@ def SPICE_BNF():
 
         # have to use longest match for type, in case a user-defined type name starts with a keyword type, like "channel_type"
         typeSpec << ( structSpec ^ int8_ ^ uint8_ ^ int16_ ^ uint16_ ^
-                     int32_ ^ uint32_ ^ int64_ ^ uint64_ ^
+                     int32_ ^ uint32_ ^ int64_ ^ uint64_ ^ unix_fd_ ^
                      typename).setName("type")
 
         flagsBody = enumBody = Group(lbrace + delimitedList(Group (enumname + Optional(equals + integer))) + Optional(comma) + rbrace)
