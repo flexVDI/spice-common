@@ -678,6 +678,10 @@ struct Head {
     uint32 flags;
 };
 
+flags32 gl_scanout_flags {
+    Y0TOP
+};
+
 channel DisplayChannel : BaseChannel {
  server:
     message {
@@ -915,6 +919,23 @@ channel DisplayChannel : BaseChannel {
         uint32 timeout_ms;
     } stream_activate_report;
 
+    message {
+        unix_fd drm_dma_buf_fd;
+        uint32 width;
+        uint32 height;
+        uint32 stride;
+        /* specifies the format of drm_dma_buf_fd defined in drm_fourcc.h */
+        uint32 drm_fourcc_format;
+        gl_scanout_flags flags;
+    } gl_scanout_unix;
+
+    message {
+        uint32 x;
+        uint32 y;
+        uint32 w;
+        uint32 h;
+    } gl_draw;
+
  client:
     message {
 	uint8 pixmap_cache_id;
@@ -937,6 +958,9 @@ channel DisplayChannel : BaseChannel {
     message {
         image_compression image_compression;
     } preferred_compression;
+
+    message {
+    } gl_draw_done;
 };
 
 flags16 keyboard_modifier_flags {
