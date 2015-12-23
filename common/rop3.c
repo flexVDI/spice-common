@@ -19,8 +19,6 @@
 #include <config.h>
 #endif
 
-#include <stdio.h>
-
 #include "rop3.h"
 #include "spice_common.h"
 

@@ -22,8 +22,6 @@
 #include "spice_common.h"
 #include "mem.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 #ifndef MALLOC_ERROR

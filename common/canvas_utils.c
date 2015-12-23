@@ -18,14 +18,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
 #include "spice_common.h"
-#include "canvas_utils.h"
 
-#ifdef __GNUC__
-#include <stdlib.h>
-#include <stdio.h>
-#endif
+#include "canvas_utils.h"
 #include "mem.h"
 
 #ifdef WIN32

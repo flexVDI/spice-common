@@ -18,14 +18,12 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include "spice_common.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 
 #include "ogl_ctx.h"
-#include "spice_common.h"
 
 enum {
     OGLCTX_TYPE_PBUF,

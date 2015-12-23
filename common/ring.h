@@ -19,7 +19,6 @@
 #ifndef _H_RING2
 #define _H_RING2
 
-#include <spice/macros.h>
 #include "spice_common.h"
 
 SPICE_BEGIN_DECLS

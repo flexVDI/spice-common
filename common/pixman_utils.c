@@ -18,14 +18,11 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include "spice_common.h"
 
 #include "pixman_utils.h"
-#include "spice_common.h"
-#include <spice/macros.h>
 
-#include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include "mem.h"
 
 /*

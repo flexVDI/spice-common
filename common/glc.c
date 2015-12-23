@@ -20,12 +20,10 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include "spice_common.h"
 
-#include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <math.h>
-#include <spice/macros.h>
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -39,7 +37,6 @@
 #include "mem.h"
 #include "glc.h"
 #include "gl_utils.h"
-#include "spice_common.h"
 
 #define TESS_VERTEX_ALLOC_BUNCH 20
 

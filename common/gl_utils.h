@@ -21,7 +21,6 @@
 #ifndef GL_UTILS_H
 #define GL_UTILS_H
 
-#include <spice/macros.h>
 #include "spice_common.h"
 
 SPICE_BEGIN_DECLS
