@@ -207,14 +207,20 @@ AC_DEFUN([SPICE_CHECK_PYTHON_MODULES], [
 # ---------------
 AC_DEFUN([SPICE_CHECK_LZ4], [
     AC_ARG_ENABLE([lz4],
-      AS_HELP_STRING([--enable-lz4=@<:@yes/no@:>@],
-                     [Enable LZ4 compression support @<:@default=no@:>@]),
+      AS_HELP_STRING([--enable-lz4=@<:@yes/no/auto@:>@],
+                     [Enable LZ4 compression support @<:@default=auto@:>@]),
       [],
-      [enable_lz4="no"])
+      [enable_lz4="auto"])
 
     if test "x$enable_lz4" != "xno"; then
-      PKG_CHECK_MODULES([LZ4], [liblz4])
-      AC_DEFINE(USE_LZ4, [1], [Define to build with lz4 support])
+      PKG_CHECK_MODULES([LZ4], [liblz4],
+        [enable_lz4=yes
+         AC_DEFINE(USE_LZ4, [1], [Define to build with lz4 support])
+        ],
+        [if test "x$enable_lz4" = "xyes"; then
+          AC_MSG_ERROR([lz4 support requested but liblz4 could not be found])
+        fi]
+      )
     fi
 ])
 
