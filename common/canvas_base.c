@@ -47,10 +47,6 @@
 
 #define ROUND(_x) ((int)floor((_x) + 0.5))
 
-#define IS_IMAGE_LOSSY(descriptor)                         \
-    (((descriptor)->type == SPICE_IMAGE_TYPE_JPEG) ||      \
-    ((descriptor)->type == SPICE_IMAGE_TYPE_JPEG_ALPHA))
-
  static inline int fix_to_int(SPICE_FIXED28_4 fixed)
 {
     int val, rem;
@@ -1219,7 +1215,7 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
 #endif
         descriptor->type != SPICE_IMAGE_TYPE_FROM_CACHE ) {
 #ifdef SW_CANVAS_CACHE
-        if (!IS_IMAGE_LOSSY(descriptor)) {
+        if (!spice_image_descriptor_is_lossy(descriptor)) {
             canvas->bits_cache->ops->put(canvas->bits_cache, descriptor->id, surface);
         } else {
             canvas->bits_cache->ops->put_lossy(canvas->bits_cache, descriptor->id, surface);
@@ -1232,7 +1228,7 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
 #endif
 #ifdef SW_CANVAS_CACHE
     } else if (descriptor->flags & SPICE_IMAGE_FLAGS_CACHE_REPLACE_ME) {
-        if (IS_IMAGE_LOSSY(descriptor)) {
+        if (spice_image_descriptor_is_lossy(descriptor)) {
             spice_warning("invalid cache replace request: the image is lossy");
             return NULL;
         }
