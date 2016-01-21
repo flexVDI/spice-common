@@ -1,7 +1,7 @@
 NULL =
 
 TESTS = test_marshallers
-check_PROGRAMS = test_marshallers
+noinst_PROGRAMS = $(TESTS)
 test_marshallers_SOURCES =		\
 	generated_test_marshallers.c	\
 	generated_test_marshallers.h	\
