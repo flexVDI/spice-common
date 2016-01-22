@@ -87,6 +87,7 @@ struct SpiceMarshaller {
     MarshallerItem *items;
 
     MarshallerItem static_items[N_STATIC_ITEMS];
+    bool has_fd;
     int fd;
 };
 
@@ -624,19 +625,25 @@ void *spice_marshaller_add_int8(SpiceMarshaller *m, int8_t v)
 
 void spice_marshaller_add_fd(SpiceMarshaller *m, int fd)
 {
-    spice_assert(m->fd == -1);
+    spice_assert(m->has_fd == false);
 
-    m->fd = dup(fd);
-    if (m->fd == -1) {
-        perror("dup");
+    m->has_fd = true;
+    if (fd != -1) {
+        m->fd = dup(fd);
+        if (m->fd == -1) {
+            perror("dup");
+        }
+    } else {
+        m->fd = -1;
     }
 }
 
-int spice_marshaller_get_fd(SpiceMarshaller *m)
+bool spice_marshaller_get_fd(SpiceMarshaller *m, int *fd)
 {
-    int fd = m->fd;
+    bool had_fd = m->has_fd;
 
-    m->fd = -1;
+    *fd = m->fd;
+    m->has_fd = false;
 
-    return fd;
+    return had_fd;
 }

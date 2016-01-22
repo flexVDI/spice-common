@@ -19,6 +19,7 @@
 #ifndef _H_MARSHALLER
 #define _H_MARSHALLER
 
+#include <stdbool.h>
 #include <spice/macros.h>
 #include <spice/types.h>
 #include "mem.h"
@@ -67,7 +68,7 @@ void *spice_marshaller_add_int8(SpiceMarshaller *m, int8_t v);
 void  spice_marshaller_set_uint32(SpiceMarshaller *m, void *ref, uint32_t v);
 
 void  spice_marshaller_add_fd(SpiceMarshaller *m, int fd);
-int   spice_marshaller_get_fd(SpiceMarshaller *m);
+bool  spice_marshaller_get_fd(SpiceMarshaller *m, int *fd);
 
 SPICE_END_DECLS
 
