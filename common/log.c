@@ -50,7 +50,8 @@ static GLogLevelFlags spice_log_level_to_glib(SpiceLogLevel level)
         [ SPICE_LOG_LEVEL_INFO ] = G_LOG_LEVEL_INFO,
         [ SPICE_LOG_LEVEL_DEBUG ] = G_LOG_LEVEL_DEBUG,
     };
-    g_return_val_if_fail ((level >= 0) || (level < G_N_ELEMENTS(glib_levels)), 0);
+    g_return_val_if_fail (level >= 0, G_LOG_LEVEL_ERROR);
+    g_return_val_if_fail (level < G_N_ELEMENTS(glib_levels), G_LOG_LEVEL_DEBUG);
 
     return glib_levels[level];
 }
