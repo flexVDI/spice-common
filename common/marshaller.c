@@ -117,6 +117,7 @@ static void spice_marshaller_init(SpiceMarshaller *m,
     m->items_size = N_STATIC_ITEMS;
     m->items = m->static_items;
     m->fd = -1;
+    m->has_fd = false;
 }
 
 SpiceMarshaller *spice_marshaller_new(void)
