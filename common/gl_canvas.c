@@ -908,6 +908,4 @@ void gl_canvas_init(void) //unsafe global function
     gl_canvas_ops.group_start = gl_canvas_group_start;
     gl_canvas_ops.group_end = gl_canvas_group_end;
     gl_canvas_ops.destroy = gl_canvas_destroy;
-
-    rop3_init();
 }

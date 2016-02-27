@@ -1634,13 +1634,11 @@ int quic_decode(QuicContext *quic, QuicImageType type, uint8_t *buf, int stride)
     return QUIC_OK;
 }
 
-static int need_init = TRUE;
-
 QuicContext *quic_create(QuicUsrContext *usr)
 {
     Encoder *encoder;
 
-    if (!usr || need_init || !usr->error || !usr->warn || !usr->info || !usr->malloc ||
+    if (!usr || !usr->error || !usr->warn || !usr->info || !usr->malloc ||
         !usr->free || !usr->more_space || !usr->more_lines) {
         return NULL;
     }
@@ -1671,13 +1669,8 @@ void quic_destroy(QuicContext *quic)
     encoder->usr->free(encoder->usr, encoder);
 }
 
-void quic_init(void)
+SPICE_CONSTRUCTOR_FUNC(quic_global_init)
 {
-    if (!need_init) {
-        return;
-    }
-    need_init = FALSE;
-
     family_init(&family_8bpc, 8, DEFmaxclen);
     family_init(&family_5bpc, 5, DEFmaxclen);
 }

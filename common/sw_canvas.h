@@ -52,7 +52,7 @@ SpiceCanvas *canvas_create_for_data(int width, int height, uint32_t format, uint
                            );
 
 
-void sw_canvas_init(void);
+static inline SPICE_GNUC_DEPRECATED void sw_canvas_init(void) {}
 
 SPICE_END_DECLS
 

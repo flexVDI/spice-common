@@ -1857,6 +1857,4 @@ void gdi_canvas_init(void) //unsafe global function
     gdi_canvas_ops.put_image = gdi_canvas_put_image;
     gdi_canvas_ops.clear = gdi_canvas_clear;
     gdi_canvas_ops.destroy = gdi_canvas_destroy;
-
-    rop3_init();
 }

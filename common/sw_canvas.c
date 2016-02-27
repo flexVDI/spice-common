@@ -1188,7 +1188,6 @@ static void canvas_destroy(SpiceCanvas *spice_canvas)
     free(canvas);
 }
 
-static int need_init = 1;
 static SpiceCanvasOps sw_canvas_ops;
 
 static SpiceCanvas *canvas_create_common(pixman_image_t *image,
@@ -1205,9 +1204,6 @@ static SpiceCanvas *canvas_create_common(pixman_image_t *image,
 {
     SwCanvas *canvas;
 
-    if (need_init) {
-        return NULL;
-    }
     spice_pixman_image_set_format(image,
                                   spice_surface_format_to_pixman (format));
 
@@ -1290,13 +1286,8 @@ SpiceCanvas *canvas_create_for_data(int width, int height, uint32_t format,
                                 );
 }
 
-void sw_canvas_init(void) //unsafe global function
+SPICE_CONSTRUCTOR_FUNC(sw_canvas_global_init) //unsafe global function
 {
-    if (!need_init) {
-        return;
-    }
-    need_init = 0;
-
     canvas_base_init_ops(&sw_canvas_ops);
     sw_canvas_ops.draw_text = canvas_draw_text;
     sw_canvas_ops.put_image = canvas_put_image;
@@ -1329,5 +1320,4 @@ void sw_canvas_init(void) //unsafe global function
     sw_canvas_ops.colorkey_scale_image_from_surface = colorkey_scale_image_from_surface;
     sw_canvas_ops.copy_region = copy_region;
     sw_canvas_ops.get_image = get_image;
-    rop3_init();
 }
