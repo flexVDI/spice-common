@@ -1,7 +1,15 @@
 NULL =
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = common tests
+SUBDIRS = python_modules common tests
+
+EXTRA_DIST =				\
+	spice_codegen.py		\
+	spice.proto			\
+	spice1.proto			\
+	$(NULL)
+
+DISTCLEANFILES = *.pyc
 
 MAINTAINERCLEANFILES =						\
 	$(srcdir)/INSTALL					\
