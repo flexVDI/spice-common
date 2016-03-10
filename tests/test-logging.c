@@ -262,6 +262,7 @@ static void test_log_levels(void)
 static void test_spice_debug_level(void)
 {
     if (g_test_subprocess()) {
+        g_unsetenv("G_MESSAGES_DEBUG");
         g_setenv("SPICE_DEBUG_LEVEL", "5", TRUE);
         g_test_expect_message(NULL,
                               G_LOG_LEVEL_WARNING,
