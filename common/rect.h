@@ -75,10 +75,10 @@ static inline int rect_is_same_size(const SpiceRect *r1, const SpiceRect *r2)
            r1->bottom - r1->top == r2->bottom - r2->top;
 }
 
-static inline int rect_contains(const SpiceRect *big, const SpiceRect *small)
+static inline int rect_contains(const SpiceRect *big_rect, const SpiceRect *small_rect)
 {
-    return big->left <= small->left && big->right >= small->right &&
-           big->top <= small->top && big->bottom >= small->bottom;
+    return (big_rect->left <= small_rect->left && big_rect->right >= small_rect->right &&
+           big_rect->top <= small_rect->top && big_rect->bottom >= small_rect->bottom);
 }
 
 static inline int rect_get_area(const SpiceRect *r)
