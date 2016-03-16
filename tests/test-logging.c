@@ -377,10 +377,18 @@ static void test_spice_g_messages_debug_all(void)
     g_test_trap_assert_stderr("*g_message\n*other_message\n");
 }
 
+static void handle_sigabrt(int sig)
+{
+    _Exit(1);
+}
 
 int main(int argc, char **argv)
 {
     GLogLevelFlags fatal_mask;
+
+    /* prevents core generations as this could cause some issues/timeout
+     * depending on system configuration */
+    signal(SIGABRT, handle_sigabrt);
 
     fatal_mask = (GLogLevelFlags)g_log_set_always_fatal((GLogLevelFlags) G_LOG_FATAL_MASK);
 
