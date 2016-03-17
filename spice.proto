@@ -113,6 +113,12 @@ enum16 pubkey_type {
     EC,
 };
 
+enum32 power_event {
+    RESET,
+    SHUTDOWN,
+    POWERDOWN,
+};
+
 message Empty {
 };
 
@@ -313,6 +319,10 @@ channel MainChannel : BaseChannel {
     } migrate_dst_do_seamless;
 
     Empty migrate_connected_seamless;
+
+    message {
+        uint32 event_id;
+    } power_event_request;
 };
 
 enum8 clip_type {
