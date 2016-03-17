@@ -82,6 +82,12 @@ enum16 pubkey_type {
     EC,
 };
 
+enum32 power_event {
+    RESET,
+    SHUTDOWN,
+    POWERDOWN,
+};
+
 message Empty {
 };
 
@@ -253,6 +259,10 @@ channel MainChannel : BaseChannel {
     message {
         uint32 num_tokens;
     } @ctype(SpiceMsgcMainAgentTokens) agent_token;
+
+    message {
+        uint32 event_id;
+    } power_event_request;
 };
 
 enum32 clip_type {

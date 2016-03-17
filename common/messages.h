@@ -669,6 +669,10 @@ typedef struct SpiceMsgDisplayGlDraw {
     uint32_t h;
 } SpiceMsgDisplayGlDraw;
 
+typedef struct SpiceMsgcMainPowerEventRequest {
+    uint32_t event_id;
+} SpiceMsgcMainPowerEventRequest;
+
 SPICE_END_DECLS
 
 #endif /* _H_SPICE_PROTOCOL */
