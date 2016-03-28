@@ -302,3 +302,12 @@ AC_DEFUN([SPICE_CHECK_SASL], [
       fi
     fi
 ])
+
+# SPICE_CHECK_OPENSSL
+# -----------------
+# Check for the availability of openssl. If found, it will return the flags to
+# use in the OPENSSL_CFLAGS and OPENSSL_LIBS variables.
+#------------------
+AC_DEFUN([SPICE_CHECK_OPENSSL], [
+    PKG_CHECK_MODULES(OPENSSL, openssl)
+])
