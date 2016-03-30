@@ -43,6 +43,7 @@ LOG_OTHER_HELPER(message, MESSAGE)
 LOG_OTHER_HELPER(warning, WARNING)
 LOG_OTHER_HELPER(critical, CRITICAL)
 
+#ifdef GLIB_CHECK_VERSION(2,38,0)
 /* Checks that spice_warning() aborts after changing SPICE_ABORT_LEVEL */
 static void test_spice_abort_level(void)
 {
@@ -376,6 +377,7 @@ static void test_spice_g_messages_debug_all(void)
     g_test_trap_assert_stdout("*spice_debug\n*spice_info\n*g_debug\n*g_info\n*other_debug\n*other_info\n");
     g_test_trap_assert_stderr("*g_message\n*other_message\n");
 }
+#endif /* GLIB_CHECK_VERSION(2,38,0) */
 
 static void handle_sigabrt(int sig)
 {
@@ -399,6 +401,7 @@ int main(int argc, char **argv)
      * test cases are going to test */
     g_log_set_always_fatal(fatal_mask & G_LOG_LEVEL_MASK);
 
+#ifdef GLIB_CHECK_VERSION(2,38,0)
     g_test_add_func("/spice-common/spice-abort-level", test_spice_abort_level);
     g_test_add_func("/spice-common/spice-abort-level-gwarning", test_spice_abort_level_g_warning);
     g_test_add_func("/spice-common/spice-debug-level", test_spice_debug_level);
@@ -412,6 +415,7 @@ int main(int argc, char **argv)
     g_test_add_func("/spice-common/spice-fatal-return-if-fail", test_spice_fatal_return_if_fail);
     g_test_add_func("/spice-common/spice-non-fatal-greturn-if-fail", test_spice_non_fatal_g_return_if_fail);
     g_test_add_func("/spice-common/spice-fatal-warning", test_spice_fatal_warning);
+#endif /* GLIB_CHECK_VERSION(2,38,0) */
 
     return g_test_run();
 }

@@ -4,6 +4,10 @@
 #include "common/marshaller.h"
 #include "generated_test_marshallers.h"
 
+#ifndef g_assert_true
+#define g_assert_true g_assert
+#endif
+
 static uint8_t expected_data[] = { 0x02, 0x00, 0x00, 0x00, /* data_size */
                                    0x08, 0x00, 0x00, 0x00, /* data offset */
                                    0xef, 0xcd, 0xab, 0x90, 0x78, 0x56, 0x34, 0x12, /* data */
