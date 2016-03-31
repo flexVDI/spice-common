@@ -43,7 +43,7 @@ LOG_OTHER_HELPER(message, MESSAGE)
 LOG_OTHER_HELPER(warning, WARNING)
 LOG_OTHER_HELPER(critical, CRITICAL)
 
-#ifdef GLIB_CHECK_VERSION(2,38,0)
+#if GLIB_CHECK_VERSION(2,38,0)
 /* Checks that spice_warning() aborts after changing SPICE_ABORT_LEVEL */
 static void test_spice_abort_level(void)
 {
@@ -401,7 +401,7 @@ int main(int argc, char **argv)
      * test cases are going to test */
     g_log_set_always_fatal(fatal_mask & G_LOG_LEVEL_MASK);
 
-#ifdef GLIB_CHECK_VERSION(2,38,0)
+#if GLIB_CHECK_VERSION(2,38,0)
     g_test_add_func("/spice-common/spice-abort-level", test_spice_abort_level);
     g_test_add_func("/spice-common/spice-abort-level-gwarning", test_spice_abort_level_g_warning);
     g_test_add_func("/spice-common/spice-debug-level", test_spice_debug_level);
