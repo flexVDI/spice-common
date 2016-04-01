@@ -776,6 +776,7 @@ static inline SpicePalette *canvas_get_localized_palette(CanvasBase *canvas, Spi
     case SPICE_SURFACE_FMT_16_565:
     default:
         spice_warn_if_reached();
+        free(copy);
         return NULL;
     }
     *free_palette = TRUE;
