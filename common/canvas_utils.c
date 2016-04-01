@@ -109,6 +109,7 @@ static inline pixman_image_t *__surface_create_stride(pixman_format_code_t forma
 
     if (surface == NULL) {
         free(data);
+        data = NULL;
         spice_error("create surface failed, out of memory");
     }
 
