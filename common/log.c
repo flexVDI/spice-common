@@ -59,7 +59,7 @@ static GLogLevelFlags spice_log_level_to_glib(SpiceLogLevel level)
 static void spice_log_set_debug_level(void)
 {
     if (glib_debug_level == 0) {
-        char *debug_str = getenv("SPICE_DEBUG_LEVEL");
+        const char *debug_str = g_getenv("SPICE_DEBUG_LEVEL");
         if (debug_str != NULL) {
             int debug_level;
             char *debug_env;
@@ -96,7 +96,7 @@ static void spice_log_set_debug_level(void)
 static void spice_log_set_abort_level(void)
 {
     if (abort_level == -1) {
-        char *abort_str = getenv("SPICE_ABORT_LEVEL");
+        const char *abort_str = g_getenv("SPICE_ABORT_LEVEL");
         if (abort_str != NULL) {
             GLogLevelFlags glib_abort_level;
 
