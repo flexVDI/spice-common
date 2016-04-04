@@ -323,18 +323,15 @@ match:        // RLE or dictionary (both are encoded by distance from ref (-1) a
             // TODO: maybe separate a run from the same seg or from different ones in order
             //       to spare ref < ref_limit and that way we can also perform 8 calls of
             //       (ref++ != ip++) outside a loop
-            for (;;) {
-                while ((ip < ip_bound) && (ref < ref_limit)) {
-                    if (!SAME_PIXEL(*ref, *ip)) {
-                        ref++;
-                        ip++;
-                        break;
-                    } else {
-                        ref++;
-                        ip++;
-                    }
+            while ((ip < ip_bound) && (ref < ref_limit)) {
+                if (!SAME_PIXEL(*ref, *ip)) {
+                    ref++;
+                    ip++;
+                    break;
+                } else {
+                    ref++;
+                    ip++;
                 }
-                break;
             }
         }
 
