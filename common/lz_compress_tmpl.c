@@ -214,9 +214,7 @@ static void FNAME(compress_seg)(Encoder *encoder, LzImageSegment *seg, PIXEL *fr
                 ip += 3;
                 ref = anchor + 2;
                 ref_limit = (PIXEL *)(seg->lines_end);
-#if defined(LZ_RGB16) || defined(LZ_RGB24) || defined(LZ_RGB32)
-                len = 3;
-#endif
+
                 goto match;
             }
         }
