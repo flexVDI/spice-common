@@ -412,7 +412,7 @@ miStepDash (int dist,           /* distance to step */
     totallen = 0;
     for (i = 0; i < numInDashList; i++)
         totallen += pDash[i];
-    if (totallen <= dist)
+    if (totallen > 0 && totallen <= dist)
         dist = dist % totallen;
     while (dist >= pDash[dashIndex]) {
         dist -= pDash[dashIndex];
