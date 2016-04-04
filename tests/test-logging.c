@@ -48,18 +48,15 @@ LOG_OTHER_HELPER(critical, CRITICAL)
 static void test_spice_abort_level(void)
 {
     if (g_test_subprocess()) {
-        /* 2 = SPICE_LOG_LEVEL_WARNING  */
-        g_setenv("SPICE_ABORT_LEVEL", "2", TRUE);
-        g_test_expect_message(NULL,
-                              G_LOG_LEVEL_WARNING,
-                              "*SPICE_ABORT_LEVEL*deprecated*");
-        spice_debug("trigger deprecation warning");
-        g_test_assert_expected_messages();
         spice_warning("spice_warning");
         return;
     }
+    /* 2 = SPICE_LOG_LEVEL_WARNING  */
+    g_setenv("SPICE_ABORT_LEVEL", "2", TRUE);
     g_test_trap_subprocess(NULL, 0, 0);
+    g_unsetenv("SPICE_ABORT_LEVEL");
     g_test_trap_assert_failed();
+    g_test_trap_assert_stderr("*SPICE_ABORT_LEVEL*deprecated*");
     g_test_trap_assert_stderr("*spice_warning*");
 }
 
@@ -67,18 +64,14 @@ static void test_spice_abort_level(void)
 static void test_spice_abort_level_g_warning(void)
 {
     if (g_test_subprocess()) {
-        /* 2 = SPICE_LOG_LEVEL_WARNING  */
-        g_setenv("SPICE_ABORT_LEVEL", "2", TRUE);
-        g_test_expect_message(NULL,
-                              G_LOG_LEVEL_WARNING,
-                              "*SPICE_ABORT_LEVEL*deprecated*");
-        spice_debug("trigger deprecation warning");
-        g_test_assert_expected_messages();
         g_warning("g_warning");
         return;
     }
+    g_setenv("SPICE_ABORT_LEVEL", "2", TRUE);
     g_test_trap_subprocess(NULL, 0, 0);
+    g_unsetenv("SPICE_ABORT_LEVEL");
     g_test_trap_assert_failed();
+    g_test_trap_assert_stderr("*SPICE_ABORT_LEVEL*deprecated*");
     g_test_trap_assert_stderr("*g_warning*");
 }
 
@@ -263,14 +256,6 @@ static void test_log_levels(void)
 static void test_spice_debug_level(void)
 {
     if (g_test_subprocess()) {
-        g_unsetenv("G_MESSAGES_DEBUG");
-        g_setenv("SPICE_DEBUG_LEVEL", "5", TRUE);
-        g_test_expect_message(NULL,
-                              G_LOG_LEVEL_WARNING,
-                              "*SPICE_DEBUG_LEVEL*deprecated*");
-        spice_debug("trigger deprecation warning");
-        g_test_assert_expected_messages();
-
         /* g_test_expected_message only checks whether the appropriate messages got up to g_log()
          * The following calls will be caught by the parent process to check what was (not) printed
          * to stdout/stderr
@@ -283,8 +268,12 @@ static void test_spice_debug_level(void)
         return;
     }
 
+    g_unsetenv("G_MESSAGES_DEBUG");
+    g_setenv("SPICE_DEBUG_LEVEL", "5", TRUE);
     g_test_trap_subprocess(NULL, 0, 0);
+    g_unsetenv("SPICE_DEBUG_LEVEL");
     g_test_trap_assert_passed();
+    g_test_trap_assert_stderr("*SPICE_DEBUG_LEVEL*deprecated*");
     g_test_trap_assert_stdout("*spice_info\n*g_debug\n*spice_debug\n");
 }
 
@@ -294,17 +283,6 @@ static void test_spice_debug_level(void)
 static void test_spice_debug_level_warning(void)
 {
     if (g_test_subprocess()) {
-        g_setenv("SPICE_ABORT_LEVEL", "0", TRUE);
-        g_setenv("SPICE_DEBUG_LEVEL", "1", TRUE);
-        g_test_expect_message(NULL,
-                              G_LOG_LEVEL_WARNING,
-                              "*SPICE_DEBUG_LEVEL*deprecated*");
-        g_test_expect_message(NULL,
-                              G_LOG_LEVEL_WARNING,
-                              "*SPICE_ABORT_LEVEL*deprecated*");
-        spice_debug("trigger deprecation warning");
-        g_test_assert_expected_messages();
-
         spice_info("spice_info");
         spice_debug("spice_debug");
         spice_warning("spice_warning");
@@ -323,8 +301,14 @@ static void test_spice_debug_level_warning(void)
         return;
     }
 
+    g_setenv("SPICE_ABORT_LEVEL", "0", TRUE);
+    g_setenv("SPICE_DEBUG_LEVEL", "1", TRUE);
     g_test_trap_subprocess(NULL, 0, 0);
+    g_unsetenv("SPICE_ABORT_LEVEL");
+    g_unsetenv("SPICE_DEBUG_LEVEL");
     g_test_trap_assert_passed();
+    g_test_trap_assert_stderr("*SPICE_DEBUG_LEVEL*deprecated*");
+    g_test_trap_assert_stderr("*SPICE_ABORT_LEVEL*deprecated*");
     g_test_trap_assert_stderr("*spice_critical\n*g_critical\n*other_message\n*other_warning\n*other_critical\n");
 }
 

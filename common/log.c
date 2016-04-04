@@ -130,18 +130,14 @@ static void spice_logger(const gchar *log_domain,
     g_log_default_handler(log_domain, log_level, message, NULL);
 }
 
-static inline void spice_log_init_once(void)
+SPICE_CONSTRUCTOR_FUNC(spice_log_init)
 {
-    static gsize logging_initialized = FALSE;
 
-    if (g_once_init_enter(&logging_initialized)) {
-        spice_log_set_debug_level();
-        spice_log_set_abort_level();
-        g_once_init_leave (&logging_initialized, TRUE);
-        g_log_set_handler(SPICE_LOG_DOMAIN,
-                          G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION,
-                          spice_logger, NULL);
-    }
+    spice_log_set_debug_level();
+    spice_log_set_abort_level();
+    g_log_set_handler(SPICE_LOG_DOMAIN,
+                      G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION,
+                      spice_logger, NULL);
 }
 
 static void spice_logv(const char *log_domain,
@@ -152,8 +148,6 @@ static void spice_logv(const char *log_domain,
                        va_list args)
 {
     GString *log_msg;
-
-    spice_log_init_once();
 
     g_return_if_fail(spice_log_level_to_glib(log_level) != 0);
 
