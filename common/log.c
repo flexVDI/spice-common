@@ -138,6 +138,14 @@ SPICE_CONSTRUCTOR_FUNC(spice_log_init)
     g_log_set_handler(SPICE_LOG_DOMAIN,
                       G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION,
                       spice_logger, NULL);
+    /* Threading is always enabled from 2.31.0 onwards */
+    /* Our logging is potentially used from different threads.
+     * Older glibs require that g_thread_init() is called when
+     * doing that. */
+#if !GLIB_CHECK_VERSION(2, 31, 0)
+    if (!g_thread_supported())
+        g_thread_init(NULL);
+#endif
 }
 
 static void spice_logv(const char *log_domain,
