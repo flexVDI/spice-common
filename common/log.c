@@ -67,6 +67,9 @@ static void spice_log_set_debug_level(void)
             /* FIXME: To be removed after enough deprecation time */
             g_warning("Setting SPICE_DEBUG_LEVEL is deprecated, use G_MESSAGES_DEBUG instead");
             debug_level = atoi(debug_str);
+            if (debug_level > SPICE_LOG_LEVEL_DEBUG) {
+                debug_level = SPICE_LOG_LEVEL_DEBUG;
+            }
             glib_debug_level = spice_log_level_to_glib(debug_level);
 
             /* If the debug level is too high, make sure we don't try to enable
