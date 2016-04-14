@@ -515,13 +515,30 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image)
     return surface;
 }
 
+static void canvas_fix_alignment(uint8_t *bits,
+                                 int stride_encoded, int stride_pixman,
+                                 int height)
+{
+    if (stride_pixman > stride_encoded) {
+        // Fix the row alignment
+        int row;
+        uint8_t *dest = bits;
+        for (row = height - 1; row > 0; --row) {
+            uint32_t *dest_aligned, *dest_misaligned;
+            dest_aligned = (uint32_t *)(dest + stride_pixman*row);
+            dest_misaligned = (uint32_t*)(dest + stride_encoded*row);
+            memmove(dest_aligned, dest_misaligned, stride_encoded);
+        }
+    }
+}
+
 #ifdef USE_LZ4
 static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
 {
     pixman_image_t *surface = NULL;
     int dec_size, enc_size, available;
     int stride, stride_abs, stride_encoded;
-    uint8_t *dest, *data, *data_end;
+    uint8_t *dest, *data, *data_end, *bits;
     int width, height, top_down;
     LZ4_streamDecode_t *stream;
     uint8_t spice_format;
@@ -576,6 +593,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     if (!top_down) {
         dest -= (stride_abs * (height - 1));
     }
+    bits = dest;
 
     do {
         // Read next compressed block
@@ -594,20 +612,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
         data += enc_size;
     } while (data < data_end);
 
-    if (stride_abs > stride_encoded) {
-        // Fix the row alignment
-        int row;
-        dest = (uint8_t *)pixman_image_get_data(surface);
-        if (!top_down) {
-            dest -= (stride_abs * (height - 1));
-        }
-        for (row = height - 1; row > 0; --row) {
-            uint32_t *dest_aligned, *dest_misaligned;
-            dest_aligned = (uint32_t *)(dest + stride_abs*row);
-            dest_misaligned = (uint32_t*)(dest + stride_encoded*row);
-            memmove(dest_aligned, dest_misaligned, stride_encoded);
-        }
-    }
+    canvas_fix_alignment(bits, stride_encoded, stride_abs, height);
 
     LZ4_freeStreamDecode(stream);
     return surface;
@@ -782,7 +787,6 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     uint8_t *comp_buf = NULL;
     int comp_size;
     uint8_t    *decomp_buf = NULL;
-    uint8_t    *src;
     pixman_format_code_t pixman_format;
     LzImageType type, as_type;
     SpicePalette *palette;
@@ -790,6 +794,7 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     int width;
     int height;
     int top_down;
+    int stride_encoded;
     int stride;
     int free_palette;
 
@@ -818,10 +823,12 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     lz_decode_begin(lz_data->lz, comp_buf, comp_size, &type,
                     &width, &height, &n_comp_pixels, &top_down, palette);
 
+    stride_encoded = width;
     switch (type) {
     case LZ_IMAGE_TYPE_RGBA:
         as_type = LZ_IMAGE_TYPE_RGBA;
         pixman_format = PIXMAN_LE_a8r8g8b8;
+        stride_encoded *= 4;
         break;
     case LZ_IMAGE_TYPE_RGB32:
     case LZ_IMAGE_TYPE_RGB24:
@@ -832,6 +839,7 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     case LZ_IMAGE_TYPE_PLT8:
         as_type = LZ_IMAGE_TYPE_RGB32;
         pixman_format = PIXMAN_LE_x8r8g8b8;
+        stride_encoded *= 4;
         break;
     case LZ_IMAGE_TYPE_A8:
         as_type = LZ_IMAGE_TYPE_A8;
@@ -843,9 +851,11 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
              canvas->format == SPICE_SURFACE_FMT_32_ARGB)) {
             as_type = LZ_IMAGE_TYPE_RGB32;
             pixman_format = PIXMAN_LE_x8r8g8b8;
+            stride_encoded *= 4;
         } else {
             as_type = LZ_IMAGE_TYPE_RGB16;
             pixman_format = PIXMAN_x1r5g5b5;
+            stride_encoded *= 2;
         }
         break;
     default:
@@ -865,17 +875,17 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     alloc_lz_image_surface(&lz_data->decode_data, pixman_format,
                            width, height, n_comp_pixels, top_down);
 
-    src = (uint8_t *)pixman_image_get_data(lz_data->decode_data.out_surface);
+    stride = pixman_image_get_stride(lz_data->decode_data.out_surface);
+    stride = abs(stride);
 
-    stride = (n_comp_pixels / height) * 4;
+    decomp_buf = (uint8_t *)pixman_image_get_data(lz_data->decode_data.out_surface);
     if (!top_down) {
-        stride = -stride;
-        decomp_buf = src + stride * (height - 1);
-    } else {
-        decomp_buf = src;
+        decomp_buf -= stride * (height - 1);
     }
 
     lz_decode(lz_data->lz, as_type, decomp_buf);
+
+    canvas_fix_alignment(decomp_buf, stride_encoded, stride, height);
 
     if (free_palette)  {
         free(palette);
