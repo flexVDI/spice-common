@@ -145,6 +145,8 @@ AC_DEFUN([SPICE_CHECK_OPENGL], [
     AM_CONDITIONAL(HAVE_GL, test "x$enable_opengl" = "xyes")
 
     if test "x$enable_opengl" = "xyes"; then
+        AC_SUBST(GL_CFLAGS)
+        AC_SUBST(GL_LIBS)
         AC_CHECK_LIB(GL, glBlendFunc, GL_LIBS="$GL_LIBS -lGL", enable_opengl=no)
         AC_CHECK_LIB(GLU, gluSphere, GL_LIBS="$GL_LIBS -lGLU", enable_opengl=no)
         AC_DEFINE([USE_OPENGL], [1], [Define to build with OpenGL support])
