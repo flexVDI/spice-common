@@ -515,6 +515,7 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image)
     return surface;
 }
 
+#if defined(USE_LZ4) || defined(SW_CANVAS_CACHE)
 static void canvas_fix_alignment(uint8_t *bits,
                                  int stride_encoded, int stride_pixman,
                                  int height)
@@ -531,6 +532,7 @@ static void canvas_fix_alignment(uint8_t *bits,
         }
     }
 }
+#endif
 
 #ifdef USE_LZ4
 static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
