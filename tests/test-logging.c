@@ -22,6 +22,7 @@
 #define SPICE_LOG_DOMAIN G_LOG_DOMAIN
 
 #include <glib.h>
+#include <stdlib.h>
 
 #include "common/log.h"
 
