@@ -94,17 +94,6 @@ static inline uint32_t canvas_16bpp_to_32bpp(uint32_t color)
 
     return ret;
 }
-#if defined(WIN32) && defined(GDI_CANVAS)
-static HDC create_compatible_dc()
-{
-    HDC dc = CreateCompatibleDC(NULL);
-
-    spice_return_val_if_fail(dc != NULL, NULL);
-
-    return dc;
-}
-
-#endif
 
 typedef struct LzData {
     LzUsrContext usr;
@@ -1446,11 +1435,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
 
     if (invers) {
         switch (bitmap->format) {
-#if defined(GDI_CANVAS)
-        case SPICE_BITMAP_FMT_1BIT_BE:
-#else
         case SPICE_BITMAP_FMT_1BIT_LE:
-#endif
             for (; src_line != end_line; src_line += src_stride, dest_line += dest_stride) {
                 uint8_t *dest = dest_line;
                 uint8_t *now = src_line;
@@ -1460,11 +1445,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
                 }
             }
             break;
-#if defined(GDI_CANVAS)
-        case SPICE_BITMAP_FMT_1BIT_LE:
-#else
         case SPICE_BITMAP_FMT_1BIT_BE:
-#endif
             for (; src_line != end_line; src_line += src_stride, dest_line += dest_stride) {
                 uint8_t *dest = dest_line;
                 uint8_t *now = src_line;
@@ -1483,20 +1464,12 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
         }
     } else {
         switch (bitmap->format) {
-#if defined(GDI_CANVAS)
-        case SPICE_BITMAP_FMT_1BIT_BE:
-#else
         case SPICE_BITMAP_FMT_1BIT_LE:
-#endif
             for (; src_line != end_line; src_line += src_stride, dest_line += dest_stride) {
                 memcpy(dest_line, src_line, line_size);
             }
             break;
-#if defined(GDI_CANVAS)
-        case SPICE_BITMAP_FMT_1BIT_LE:
-#else
         case SPICE_BITMAP_FMT_1BIT_BE:
-#endif
             for (; src_line != end_line; src_line += src_stride, dest_line += dest_stride) {
                 uint8_t *dest = dest_line;
                 uint8_t *now = src_line;
@@ -1905,9 +1878,6 @@ static void canvas_base_destroy(CanvasBase *canvas)
 {
     quic_destroy(canvas->quic_data.quic);
     lz_destroy(canvas->lz_data.lz);
-#ifdef GDI_CANVAS
-    DeleteDC(canvas->dc);
-#endif
 }
 
 static void canvas_clip_pixman(CanvasBase *canvas,
@@ -3540,12 +3510,5 @@ static int canvas_base_init(CanvasBase *canvas, SpiceCanvasOps *ops,
     canvas->dc = NULL;
 #endif
 
-#ifdef GDI_CANVAS
-    canvas->dc = create_compatible_dc();
-    if (!canvas->dc) {
-        lz_destroy(canvas->lz_data.lz);
-        return 0;
-    }
-#endif
     return 1;
 }
