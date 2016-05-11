@@ -1443,11 +1443,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
 
     dest_stride = pixman_image_get_stride(surface);
     dest_line = (uint8_t *)pixman_image_get_data(surface);
-#if defined(GL_CANVAS)
-    if ((bitmap->flags & SPICE_BITMAP_FLAGS_TOP_DOWN)) {
-#else
     if (!(bitmap->flags & SPICE_BITMAP_FLAGS_TOP_DOWN)) {
-#endif
         spice_return_val_if_fail(bitmap->y > 0, NULL);
         dest_line += dest_stride * ((int)bitmap->y - 1);
         dest_stride = -dest_stride;
@@ -1455,7 +1451,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
 
     if (invers) {
         switch (bitmap->format) {
-#if defined(GL_CANVAS) || defined(GDI_CANVAS)
+#if defined(GDI_CANVAS)
         case SPICE_BITMAP_FMT_1BIT_BE:
 #else
         case SPICE_BITMAP_FMT_1BIT_LE:
@@ -1469,7 +1465,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
                 }
             }
             break;
-#if defined(GL_CANVAS) || defined(GDI_CANVAS)
+#if defined(GDI_CANVAS)
         case SPICE_BITMAP_FMT_1BIT_LE:
 #else
         case SPICE_BITMAP_FMT_1BIT_BE:
@@ -1492,7 +1488,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
         }
     } else {
         switch (bitmap->format) {
-#if defined(GL_CANVAS) || defined(GDI_CANVAS)
+#if defined(GDI_CANVAS)
         case SPICE_BITMAP_FMT_1BIT_BE:
 #else
         case SPICE_BITMAP_FMT_1BIT_LE:
@@ -1501,7 +1497,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
                 memcpy(dest_line, src_line, line_size);
             }
             break;
-#if defined(GL_CANVAS) || defined(GDI_CANVAS)
+#if defined(GDI_CANVAS)
         case SPICE_BITMAP_FMT_1BIT_LE:
 #else
         case SPICE_BITMAP_FMT_1BIT_BE:
@@ -1627,28 +1623,6 @@ static inline void canvas_raster_glyph_box(const SpiceRasterGlyph *glyph, SpiceR
     r->right = r->left + glyph->width;
 }
 
-#ifdef GL_CANVAS
-static inline void __canvas_put_bits(uint8_t *dest, int offset, uint8_t val, int n)
-{
-    uint8_t mask;
-    int now;
-
-    dest = dest + (offset >> 3);
-    offset &= 0x07;
-    now = MIN(8 - offset, n);
-
-    mask = ~((1 << (8 - now)) - 1);
-    mask >>= offset;
-    *dest = ((val >> offset) & mask) | *dest;
-
-    if ((n = n - now)) {
-        mask = ~((1 << (8 - n)) - 1);
-        dest++;
-        *dest = ((val << now) & mask) | *dest;
-    }
-}
-
-#else
 static inline void __canvas_put_bits(uint8_t *dest, int offset, uint8_t val, int n)
 {
     uint8_t mask;
@@ -1670,8 +1644,6 @@ static inline void __canvas_put_bits(uint8_t *dest, int offset, uint8_t val, int
         *dest = ((val >> now) & mask) | *dest;
     }
 }
-
-#endif
 
 static inline void canvas_put_bits(uint8_t *dest, int dest_offset, uint8_t *src, int n)
 {
@@ -1792,12 +1764,7 @@ static pixman_image_t *canvas_get_str_mask(CanvasBase *canvas, SpiceString *str,
     dest_stride = pixman_image_get_stride(str_mask);
     for (i = 0; i < str->length; i++) {
         glyph = str->glyphs[i];
-#if defined(GL_CANVAS)
-        canvas_put_glyph_bits(glyph, bpp, dest + (bounds.bottom - bounds.top - 1) * dest_stride,
-                              -dest_stride, &bounds);
-#else
         canvas_put_glyph_bits(glyph, bpp, dest, dest_stride, &bounds);
-#endif
     }
 
     pos->x = bounds.left;

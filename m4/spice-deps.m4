@@ -128,37 +128,6 @@ AC_DEFUN([SPICE_CHECK_OPUS], [
 ])
 
 
-# SPICE_CHECK_OPENGL
-# ------------------
-# Adds a --disable-opengl switch in order to enable/disable OpenGL
-# support, and checks if the needed libraries are available. If found, it will
-# return the flags to use in the GL_CFLAGS and GL_LIBS variables, and
-# it will define USE_OPENGL and GL_GLEXT_PROTOTYPES preprocessor symbol as well
-# as a HAVE_GL Makefile conditional.
-# ------------------
-AC_DEFUN([SPICE_CHECK_OPENGL], [
-    AC_ARG_ENABLE([opengl],
-        AS_HELP_STRING([--enable-opengl=@<:@yes/no@:>@],
-                       [Enable opengl support (not recommended) @<:@default=no@:>@]),
-        [],
-        [enable_opengl="no"])
-    AM_CONDITIONAL(HAVE_GL, test "x$enable_opengl" = "xyes")
-
-    if test "x$enable_opengl" = "xyes"; then
-        AC_SUBST(GL_CFLAGS)
-        AC_SUBST(GL_LIBS)
-        AC_CHECK_LIB(GL, glBlendFunc, GL_LIBS="$GL_LIBS -lGL", enable_opengl=no)
-        AC_CHECK_LIB(GLU, gluSphere, GL_LIBS="$GL_LIBS -lGLU", enable_opengl=no)
-        AC_DEFINE([USE_OPENGL], [1], [Define to build with OpenGL support])
-        AC_DEFINE([GL_GLEXT_PROTOTYPES], [], [Enable GLExt prototypes])
-
-        if test "x$enable_opengl" = "xno"; then
-            AC_MSG_ERROR([GL libraries not available])
-        fi
-    fi
-])
-
-
 # SPICE_CHECK_PIXMAN
 # ------------------
 # Check for the availability of pixman. If found, it will return the flags to

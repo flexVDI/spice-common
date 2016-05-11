@@ -79,16 +79,6 @@ libspice_common_server_la_SOURCES =		\
 
 libspice_common_server_la_CFLAGS = -DFIXME_SERVER_SMARTCARD
 
-if HAVE_GL
-libspice_common_la_SOURCES +=		\
-	gl_utils.h			\
-	glc.c				\
-	glc.h				\
-	ogl_ctx.c			\
-	ogl_ctx.h			\
-	$(NULL)
-endif
-
 AM_CPPFLAGS =				\
 	-I$(top_srcdir)			\
 	$(SPICE_COMMON_CFLAGS)		\
@@ -140,8 +130,6 @@ EXTRA_DIST =				\
 	canvas_base.h			\
 	gdi_canvas.c			\
 	gdi_canvas.h			\
-	gl_canvas.c			\
-	gl_canvas.h			\
 	lz_compress_tmpl.c		\
 	lz_decompress_tmpl.c		\
 	quic_family_tmpl.c		\
