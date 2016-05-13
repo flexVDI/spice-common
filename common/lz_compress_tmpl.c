@@ -403,27 +403,23 @@ match:        // RLE or dictionary (both are encoded by distance from ref (-1) a
 
         /* update the hash at match boundary */
 #if defined(LZ_RGB16) || defined(LZ_RGB24) || defined(LZ_RGB32)
-        if (ip > anchor) {
+        if (ip > anchor)
 #endif
-        HASH_FUNC(hval, ip);
-        encoder->htab[hval].ref = (uint8_t *)ip;
+        {
+            HASH_FUNC(hval, ip);
+            encoder->htab[hval].ref = (uint8_t *)ip;
+            encoder->htab[hval].image_seg = seg;
+        }
         ip++;
-        encoder->htab[hval].image_seg = seg;
-#if defined(LZ_RGB16) || defined(LZ_RGB24) || defined(LZ_RGB32)
-    } else {ip++;
-    }
-#endif
 #if defined(LZ_RGB24) || defined(LZ_RGB32)
-        if (ip > anchor) {
+        if (ip > anchor)
 #endif
-        HASH_FUNC(hval, ip);
-        encoder->htab[hval].ref = (uint8_t *)ip;
+        {
+            HASH_FUNC(hval, ip);
+            encoder->htab[hval].ref = (uint8_t *)ip;
+            encoder->htab[hval].image_seg = seg;
+        }
         ip++;
-        encoder->htab[hval].image_seg = seg;
-#if defined(LZ_RGB24) || defined(LZ_RGB32)
-    } else {ip++;
-    }
-#endif
         /* assuming literal copy */
         encode_copy_count(encoder, MAX_COPY - 1);
         continue;
