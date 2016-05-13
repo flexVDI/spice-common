@@ -1334,7 +1334,7 @@ channel SmartcardChannel : BaseChannel {
 	vsc_message_type type;
 	uint32 reader_id;
 	uint32 length;
-	uint8 data[] @end;
+	uint8 data[length] @end @nomarshal;
     } @ctype(SpiceMsgSmartcard) data = 101;
 
  client:
