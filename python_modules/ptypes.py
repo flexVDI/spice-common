@@ -686,6 +686,7 @@ class SwitchCase:
             if v == None:
                 return "1"
             elif var_type.is_enum():
+                assert v[0] == "", "Negation of enumeration in switch is not supported"
                 checks.append("%s == %s" % (var_cname, var_type.c_enumname_by_name(v[1])))
             else:
                 checks.append("%s(%s & %s)" % (v[0], var_cname, var_type.c_enumname_by_name(v[1])))
