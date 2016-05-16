@@ -63,7 +63,7 @@ class FixedSize:
 propagated_attributes=["ptr_array", "nonnull", "chunk"]
 
 valid_attributes=set([
-    # embedded/appended at the end of the structure
+    # embedded/appended at the end of the resulting C structure
     'end',
     # the C structure contains a pointer to data
     # for instance we want to write an array to an allocated array
