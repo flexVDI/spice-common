@@ -223,7 +223,7 @@ class TypeRef(Type):
         return _types_by_name[self.name]
 
     def register(self):
-        assert True, "Can't register TypeRef!"
+        assert False, "Can't register TypeRef!"
 
 
 class IntegerType(Type):
