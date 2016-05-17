@@ -333,7 +333,7 @@ def write_container_marshaller(writer, container, src):
             writer.out_prefix = saved_out_prefix
             write_member_marshaller(writer, container, m, src, scope)
 
-def write_message_marshaller(writer, message, is_server, private):
+def write_message_marshaller(writer, message, private):
     if message.has_attr("ifdef"):
         writer.ifdef(message.attributes["ifdef"][0])
     writer.out_prefix = ""
@@ -385,7 +385,7 @@ def write_protocol_marshaller(writer, proto, is_server, private_marshallers):
             messages = channel.server_messages
         for m in messages:
             message = m.message_type
-            f = write_message_marshaller(writer, message, is_server, private_marshallers)
+            f = write_message_marshaller(writer, message, private_marshallers)
             if channel.has_attr("ifdef") and f not in functions:
                 functions[f] = channel.attributes["ifdef"][0]
             elif message.has_attr("ifdef") and f not in functions:
