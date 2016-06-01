@@ -1,6 +1,6 @@
-from __future__ import with_statement
-import ptypes
-import codegen
+
+from . import ptypes
+from . import codegen
 
 # The handling of sizes is somewhat complex, as there are several types of size:
 # * nw_size
@@ -104,7 +104,7 @@ def write_parser_helpers(writer):
             scope = writer.function("SPICE_GNUC_UNUSED consume_%s" % type, ctype, "uint8_t **ptr", True)
             scope.variable_def(ctype, "val")
             writer.assign("val", "read_%s(*ptr)" % type)
-            writer.increment("*ptr", size / 8)
+            writer.increment("*ptr", size // 8)
             writer.statement("return val")
             writer.end_block()
 
@@ -1155,7 +1155,7 @@ def write_channel_parser(writer, channel, server):
     ids2 = ids.copy()
     while len(ids2) > 0:
         end = start = min(ids2.keys())
-        while ids2.has_key(end):
+        while end in ids2:
             del ids2[end]
             end = end + 1
 
@@ -1217,7 +1217,7 @@ def write_get_channel_parser(writer, channel_parsers, max_channel, is_server):
     writer.begin_block()
     channel = None
     for i in range(0, max_channel + 1):
-        if channel_parsers.has_key(i):
+        if i in channel_parsers:
             channel = channel_parsers[i][0]
             if channel.has_attr("ifdef"):
                 writer.ifdef(channel.attributes["ifdef"][0])

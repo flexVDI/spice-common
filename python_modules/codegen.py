@@ -1,5 +1,6 @@
-from __future__ import with_statement
-from cStringIO import StringIO
+
+import six
+from io import StringIO
 
 def camel_to_underscores(s, upper = False):
     res = ""
@@ -85,10 +86,10 @@ class CodeWriter:
         self.options[opt] = value
 
     def has_option(self, opt):
-        return self.options.has_key(opt)
+        return opt in self.options
 
     def set_is_generated(self, kind, name):
-        if not self.generated.has_key(kind):
+        if kind not in self.generated:
             v = {}
             self.generated[kind] = v
         else:
@@ -96,13 +97,13 @@ class CodeWriter:
         v[name] = 1
 
     def is_generated(self, kind, name):
-        if not self.generated.has_key(kind):
+        if kind not in self.generated:
             return False
         v = self.generated[kind]
-        return v.has_key(name)
+        return name in v
 
     def getvalue(self):
-        strs = map(lambda writer: writer.getvalue(), self.contents)
+        strs = [writer.getvalue() for writer in self.contents]
         return "".join(strs)
 
     def get_subwriter(self):
@@ -119,21 +120,24 @@ class CodeWriter:
         return writer
 
     def write(self, s):
-        # Ensure its a string
-        s = str(s)
+        # Ensure its a unicode string
+        if six.PY3:
+            s = str(s)
+        else:
+            s = unicode(s)
 
         if len(s) == 0:
             return
 
         if self.at_line_start:
             for i in range(self.indentation):
-                self.out.write(" ")
+                self.out.write(u" ")
             self.at_line_start = False
         self.out.write(s)
         return self
 
     def newline(self):
-        self.out.write("\n")
+        self.out.write(u"\n")
         self.at_line_start = True
         return self
 
@@ -341,7 +345,7 @@ class CodeWriter:
         self.indentation = indentation
 
     def add_function_variable(self, ctype, name):
-        if self.function_variables.has_key(name):
+        if name in self.function_variables:
             assert(self.function_variables[name] == ctype)
         else:
             self.function_variables[name] = ctype

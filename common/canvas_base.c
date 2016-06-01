@@ -1035,7 +1035,7 @@ static void dump_surface(pixman_image_t *surface, int cache)
     uint8_t *data = (uint8_t *)pixman_image_get_data(surface);
     int width = pixman_image_get_width(surface);
     int height = pixman_image_get_height(surface);
-    int stride = pixman_image_surface_get_stride(surface);
+    int stride = pixman_image_get_stride(surface);
 
     uint32_t id = ++file_id;
 #ifdef WIN32
@@ -1575,12 +1575,10 @@ static pixman_image_t *canvas_get_mask(CanvasBase *canvas, SpiceQMask *mask, int
         surface = canvas_get_bitmap_mask(canvas, &image->u.bitmap, is_invers);
         break;
     }
-#if defined(SW_CANVAS_CACHE) || defined(SW_CANVAS_IMAGE_CACHE)
     case SPICE_IMAGE_TYPE_FROM_CACHE:
         surface = canvas->bits_cache->ops->get(canvas->bits_cache, image->descriptor.id);
         is_invers = 0;
         break;
-#endif
 #ifdef SW_CANVAS_CACHE
     case SPICE_IMAGE_TYPE_FROM_CACHE_LOSSLESS:
         surface = canvas->bits_cache->ops->get_lossless(canvas->bits_cache, image->descriptor.id);
@@ -3532,11 +3530,9 @@ inline static void canvas_base_init_ops(SpiceCanvasOps *ops)
 
 static int canvas_base_init(CanvasBase *canvas, SpiceCanvasOps *ops,
                             int width, int height, uint32_t format
+                            , SpiceImageCache *bits_cache
 #ifdef SW_CANVAS_CACHE
-                            , SpiceImageCache *bits_cache
                             , SpicePaletteCache *palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                            , SpiceImageCache *bits_cache
 #endif
                             , SpiceImageSurfaces *surfaces
                             , SpiceGlzDecoder *glz_decoder

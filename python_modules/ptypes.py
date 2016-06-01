@@ -1,4 +1,4 @@
-import codegen
+from . import codegen
 import types
 
 _types_by_name = {}
@@ -7,7 +7,7 @@ _types = []
 default_pointer_size = 4
 
 def type_exists(name):
-    return _types_by_name.has_key(name)
+    return name in _types_by_name
 
 def lookup_type(name):
     return _types_by_name[name]
@@ -24,7 +24,7 @@ class FixedSize:
             self.vals[minor] = val
 
     def __add__(self, other):
-        if isinstance(other, types.IntType):
+        if isinstance(other, int):
             other = FixedSize(other)
 
         new = FixedSize()
@@ -125,13 +125,13 @@ class Type:
         if self.registred or self.name == None:
             return
         self.registred = True
-        if _types_by_name.has_key(self.name):
-            raise Exception, "Type %s already defined" % self.name
+        if self.name in _types_by_name:
+            raise Exception("Type %s already defined" % self.name)
         _types.append(self)
         _types_by_name[self.name] = self
 
     def has_attr(self, name):
-        return self.attributes.has_key(name)
+        return name in self.attributes
 
 class TypeRef(Type):
     def __init__(self, name):
@@ -142,8 +142,8 @@ class TypeRef(Type):
         return "ref to %s" % (self.name)
 
     def resolve(self):
-        if not _types_by_name.has_key(self.name):
-            raise Exception, "Unknown type %s" % self.name
+        if self.name not in _types_by_name:
+            raise Exception("Unknown type %s" % self.name)
         return _types_by_name[self.name]
 
     def register(self):
@@ -168,7 +168,7 @@ class IntegerType(Type):
         return self.name + "_t"
 
     def get_fixed_nw_size(self):
-        return self.bits / 8
+        return self.bits // 8
 
     def is_primitive(self):
         return True
@@ -245,14 +245,14 @@ class EnumBaseType(Type):
         return True
 
     def get_fixed_nw_size(self):
-        return self.bits / 8
+        return self.bits // 8
 
     # generates a value-name table suitable for use with the wireshark protocol
     # dissector
     def c_describe(self, writer):
         writer.write("static const value_string %s_vs[] = " % codegen.prefix_underscore_lower(self.name))
         writer.begin_block()
-        values = self.names.keys()
+        values = list(self.names.keys())
         values.sort()
         for i in values:
             writer.write("{ ")
@@ -281,7 +281,7 @@ class EnumType(EnumBaseType):
                 value = last + 1
             last = value
 
-            assert not names.has_key(value)
+            assert value not in names
             names[value] = name
             values[name] = value
 
@@ -298,7 +298,7 @@ class EnumType(EnumBaseType):
         writer.write("typedef enum ")
         writer.write(self.c_name())
         writer.begin_block()
-        values = self.names.keys()
+        values = list(self.names.keys())
         values.sort()
         current_default = 0
         for i in values:
@@ -335,7 +335,7 @@ class FlagsType(EnumBaseType):
                 value = last + 1
             last = value
 
-            assert not names.has_key(value)
+            assert value not in names
             names[value] = name
             values[name] = value
 
@@ -352,7 +352,7 @@ class FlagsType(EnumBaseType):
         writer.write("typedef enum ")
         writer.write(self.c_name())
         writer.begin_block()
-        values = self.names.keys()
+        values = list(self.names.keys())
         values.sort()
         mask = 0
         for i in values:
@@ -392,26 +392,26 @@ class ArrayType(Type):
         return self
 
     def is_constant_length(self):
-        return isinstance(self.size, types.IntType)
+        return isinstance(self.size, int)
 
     def is_remaining_length(self):
-        return isinstance(self.size, types.StringType) and len(self.size) == 0
+        return isinstance(self.size, str) and len(self.size) == 0
 
     def is_identifier_length(self):
-        return isinstance(self.size, types.StringType) and len(self.size) > 0
+        return isinstance(self.size, str) and len(self.size) > 0
 
     def is_image_size_length(self):
-        if isinstance(self.size, types.IntType) or isinstance(self.size, types.StringType):
+        if isinstance(self.size, int) or isinstance(self.size, str):
             return False
         return self.size[0] == "image_size"
 
     def is_bytes_length(self):
-        if isinstance(self.size, types.IntType) or isinstance(self.size, types.StringType):
+        if isinstance(self.size, int) or isinstance(self.size, str):
             return False
         return self.size[0] == "bytes"
 
     def is_cstring_length(self):
-        if isinstance(self.size, types.IntType) or isinstance(self.size, types.StringType):
+        if isinstance(self.size, int) or isinstance(self.size, str):
             return False
         return self.size[0] == "cstring"
 
@@ -423,7 +423,7 @@ class ArrayType(Type):
 
     def get_fixed_nw_size(self):
         if not self.is_fixed_nw_size():
-            raise Exception, "Not a fixed size type"
+            raise Exception("Not a fixed size type")
 
         return self.element_type.get_fixed_nw_size() * self.size
 
@@ -433,13 +433,13 @@ class ArrayType(Type):
             return 0
         if self.is_constant_length(self):
             return element_count * self.size
-        raise Exception, "Pointers in dynamic arrays not supported"
+        raise Exception("Pointers in dynamic arrays not supported")
 
     def get_pointer_names(self, marshalled):
         element_count = self.element_type.get_num_pointers()
         if element_count  == 0:
             return []
-        raise Exception, "Pointer names in arrays not supported"
+        raise Exception("Pointer names in arrays not supported")
 
     def is_extra_size(self):
         return self.has_attr("ptr_array")
@@ -517,7 +517,7 @@ class Containee:
         return not self.is_switch() and self.member_type.is_primitive()
 
     def has_attr(self, name):
-        return self.attributes.has_key(name)
+        return name in self.attributes
 
     def has_minor_attr(self):
         return self.has_attr("minor")
@@ -599,7 +599,7 @@ class Member(Containee):
             names = self.member_type.get_pointer_names(marshalled)
         if self.has_attr("outvar"):
             prefix = self.attributes["outvar"][0]
-            names = map(lambda name: prefix + "_" + name, names)
+            names = [prefix + "_" + name for name in names]
         return names
 
 class SwitchCase:
@@ -656,7 +656,7 @@ class Switch(Containee):
 
     def resolve(self, container):
         self.container = container
-        self.cases = map(lambda c : c.resolve(self), self.cases)
+        self.cases = [c.resolve(self) for c in self.cases]
         return self
 
     def __repr__(self):
@@ -703,7 +703,7 @@ class Switch(Containee):
 
     def get_fixed_nw_size(self):
         if not self.is_fixed_nw_size():
-            raise Exception, "Not a fixed size type"
+            raise Exception("Not a fixed size type")
         size = 0
         for c in self.cases:
             size = max(size, c.member.get_fixed_nw_size())
@@ -774,7 +774,7 @@ class ContainerType(Type):
         return size
 
     def resolve(self):
-        self.members = map(lambda m : m.resolve(self), self.members)
+        self.members = [m.resolve(self) for m in self.members]
         return self
 
     def get_num_pointers(self):
@@ -819,7 +819,7 @@ class ContainerType(Type):
             name = name[:dot]
 
         member = None
-        if self.members_by_name.has_key(name):
+        if name in self.members_by_name:
             member = self.members_by_name[name]
         else:
             for m in self.members:
@@ -831,7 +831,7 @@ class ContainerType(Type):
                     break
 
         if member == None:
-            raise Exception, "No member called %s found" % name
+            raise Exception("No member called %s found" % name)
 
         if rest != None:
             return member.member_type.lookup_member(rest)
@@ -880,7 +880,7 @@ class MessageType(ContainerType):
 
     def c_name(self):
         if self.name == None:
-            cms = self.reverse_members.keys()
+            cms = list(self.reverse_members.keys())
             if len(cms) != 1:
                 raise "Unknown typename for message"
             cm = cms[0]
@@ -900,7 +900,7 @@ class MessageType(ContainerType):
         if self.has_attr("ctype"):
             return self.attributes["ctype"][0]
         if self.name == None:
-            cms = self.reverse_members.keys()
+            cms = list(self.reverse_members.keys())
             if len(cms) != 1:
                 raise "Unknown typename for message"
             cm = cms[0]

@@ -813,11 +813,9 @@ static int need_init = 1;
 static SpiceCanvasOps gl_canvas_ops;
 
 SpiceCanvas *gl_canvas_create(int width, int height, uint32_t format
+                              , SpiceImageCache *bits_cache
 #ifdef SW_CANVAS_CACHE
-                              , SpiceImageCache *bits_cache
                               , SpicePaletteCache *palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                              , SpiceImageCache *bits_cache
 #endif
                               , SpiceImageSurfaces *surfaces
                               , SpiceGlzDecoder *glz_decoder
@@ -839,11 +837,9 @@ SpiceCanvas *gl_canvas_create(int width, int height, uint32_t format
     canvas->private_data = NULL;
     init_ok = canvas_base_init(&canvas->base, &gl_canvas_ops,
                                width, height, format
+                               , bits_cache
 #ifdef SW_CANVAS_CACHE
-                               , bits_cache
                                , palette_cache
-#elif defined(SW_CANVAS_IMAGE_CACHE)
-                               , bits_cache
 #endif
                                , surfaces
                                , glz_decoder

@@ -3,6 +3,7 @@
 # Checks for header files and library functions needed by spice-common.
 # ---------------------
 AC_DEFUN([SPICE_CHECK_SYSDEPS], [
+    AC_C_BIGENDIAN
     AC_FUNC_ALLOCA
     AC_CHECK_HEADERS([arpa/inet.h malloc.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/socket.h unistd.h])
 
@@ -140,4 +141,35 @@ AC_DEFUN([SPICE_CHECK_PIXMAN], [
     PKG_CHECK_MODULES(PIXMAN, pixman-1 >= 0.17.7)
     AS_VAR_APPEND([$1_CFLAGS], [" $PIXMAN_CFLAGS"])
     AS_VAR_APPEND([$1_LIBS], [" $PIXMAN_LIBS"])
+])
+
+
+# SPICE_CHECK_GLIB2(PREFIX)
+# --------------------------
+# Check for the availability of glib2. If found, it will append the flags to
+# use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables.
+#---------------------------
+AC_DEFUN([SPICE_CHECK_GLIB2], [
+    PKG_CHECK_MODULES(GLIB2, glib-2.0)
+    AS_VAR_APPEND([$1_CFLAGS], [" $GLIB2_CFLAGS"])
+    AS_VAR_APPEND([$1_LIBS], [" $GLIB2_LIBS"])
+])
+
+# SPICE_CHECK_PYTHON_MODULES()
+# --------------------------
+# Adds a --enable-python-checks configure flags as well as checks for the
+# availability of the python modules needed by the python scripts generating
+# C code from spice.proto. These checks are not needed when building from
+# tarballs so they are disabled by default.
+#---------------------------
+AC_DEFUN([SPICE_CHECK_PYTHON_MODULES], [
+    AC_ARG_ENABLE([python-checks],
+        AS_HELP_STRING([--enable-python-checks=@<:@yes/no@:>@],
+                       [Enable checks for Python modules needed to build from git @<:@default=no@:>@]),
+                       [],
+                       [enable_python_checks="no"])
+    if test "x$enable_python_checks" != "xno"; then
+        AX_PYTHON_MODULE([six], [1])
+        AX_PYTHON_MODULE([pyparsing], [1])
+    fi
 ])

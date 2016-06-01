@@ -47,6 +47,8 @@
 #include <config.h>
 #endif
 
+#include <glib.h>
+
 #include "spice_common.h"
 #include "lz.h"
 
@@ -537,7 +539,7 @@ int lz_encode(LzContext *lz, LzImageType type, int width, int height, int top_do
         encoder->usr->error(encoder->usr, "lz encoder reading image segments failed\n");
     }
 
-    encode_32(encoder, LZ_MAGIC);
+    encode_32(encoder, GUINT32_TO_LE(LZ_MAGIC));
     encode_32(encoder, LZ_VERSION);
     encode_32(encoder, type);
     encode_32(encoder, width);
