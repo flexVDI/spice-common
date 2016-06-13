@@ -120,6 +120,28 @@ message Data {
     uint8 data[] @end @ctype(uint8_t);
 } @nocopy;
 
+enum8 data_compression_type {
+    NONE,
+    LZ4,
+};
+
+struct EmptyStructure {
+};
+
+message CompressedData {
+    data_compression_type type;
+    switch (type) {
+    /* we cannot use !NONE (works only with flags) */
+    case NONE:
+        /* due to the way cases are defined after NONE we must have something */
+        /* due to a bug we cannot use @virtual to write 0 to compressed_size */
+        EmptyStructure empty;
+    default:
+        uint32 uncompressed_size;
+    } u @anon;
+    uint8 compressed_data[] @as_ptr(compressed_size);
+} @ctype(SpiceMsgCompressedData);
+
 struct ChannelWait {
     uint8 channel_type;
     uint8 channel_id;
@@ -1373,8 +1395,10 @@ channel SmartcardChannel : BaseChannel {
 channel SpicevmcChannel : BaseChannel {
 server:
     Data data = 101;
+    CompressedData compressed_data = 102;
 client:
     Data data = 101;
+    CompressedData compressed_data = 102;
 };
 
 channel UsbredirChannel : SpicevmcChannel {

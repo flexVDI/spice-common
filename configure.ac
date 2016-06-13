@@ -28,7 +28,7 @@ AM_PROG_CC_C_O
 SPICE_CHECK_SYSDEPS
 
 # Checks for libraries
-PKG_CHECK_MODULES([PROTOCOL], [spice-protocol >= 0.12.10])
+PKG_CHECK_MODULES([PROTOCOL], [spice-protocol >= 0.12.12])
 
 SPICE_CHECK_PYTHON_MODULES()
 

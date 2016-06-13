@@ -33,6 +33,7 @@ SPICE_BEGIN_DECLS
 typedef struct {
     void (*msg_SpiceMsgEmpty)(SpiceMarshaller *m, SpiceMsgEmpty *msg);
     void (*msg_SpiceMsgData)(SpiceMarshaller *m, SpiceMsgData *msg);
+    void (*msg_SpiceMsgCompressedData)(SpiceMarshaller *m, SpiceMsgCompressedData *msg);
     void (*msgc_ack_sync)(SpiceMarshaller *m, SpiceMsgcAckSync *msg);
     void (*msgc_pong)(SpiceMarshaller *m, SpiceMsgPing *msg);
     void (*msgc_disconnecting)(SpiceMarshaller *m, SpiceMsgDisconnect *msg);

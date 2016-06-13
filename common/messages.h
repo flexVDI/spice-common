@@ -55,6 +55,13 @@ typedef struct SpiceMsgData {
     uint8_t data[0];
 } SpiceMsgData;
 
+typedef struct SpiceMsgCompressedData {
+    uint8_t type;
+    uint32_t uncompressed_size;
+    uint32_t compressed_size;
+    uint8_t *compressed_data;
+} SpiceMsgCompressedData;
+
 typedef struct SpiceMsgEmpty {
     uint8_t padding;
 } SpiceMsgEmpty;
