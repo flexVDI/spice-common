@@ -1073,7 +1073,7 @@ static int init_encoder(Encoder *encoder, QuicUsrContext *usr)
 
 static int encoder_reste(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_end)
 {
-    spice_assert(((unsigned long)io_ptr % 4) == ((unsigned long)io_ptr_end % 4));
+    spice_assert(((uintptr_t)io_ptr % 4) == ((uintptr_t)io_ptr_end % 4));
     spice_assert(io_ptr <= io_ptr_end);
 
     encoder->rgb_state.waitcnt = 0;
