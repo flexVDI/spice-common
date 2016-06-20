@@ -155,9 +155,7 @@ static inline unsigned int ring_get_length(Ring *ring)
     RingItem *i;
     unsigned int ret = 0;
 
-    for (i = ring_get_head(ring);
-         i != NULL;
-         i = ring_next(ring, i))
+    RING_FOREACH(i, ring)
         ret++;
 
     return ret;
