@@ -25,55 +25,11 @@
 
 #include <spice/protocol.h>
 
+#include "generated_client_marshallers.h"
 #include "marshaller.h"
 #include "messages.h"
 
 SPICE_BEGIN_DECLS
-
-typedef struct {
-    void (*msg_SpiceMsgEmpty)(SpiceMarshaller *m, SpiceMsgEmpty *msg);
-    void (*msg_SpiceMsgData)(SpiceMarshaller *m, SpiceMsgData *msg);
-    void (*msg_SpiceMsgCompressedData)(SpiceMarshaller *m, SpiceMsgCompressedData *msg);
-    void (*msgc_ack_sync)(SpiceMarshaller *m, SpiceMsgcAckSync *msg);
-    void (*msgc_pong)(SpiceMarshaller *m, SpiceMsgPing *msg);
-    void (*msgc_disconnecting)(SpiceMarshaller *m, SpiceMsgDisconnect *msg);
-    void (*msgc_main_client_info)(SpiceMarshaller *m, SpiceMsgcClientInfo *msg);
-    void (*msgc_main_mouse_mode_request)(SpiceMarshaller *m, SpiceMsgcMainMouseModeRequest *msg);
-    void (*msgc_main_agent_start)(SpiceMarshaller *m, SpiceMsgcMainAgentStart *msg);
-    void (*msgc_main_agent_token)(SpiceMarshaller *m, SpiceMsgcMainAgentTokens *msg);
-    void (*msgc_main_migrate_dst_do_seamless)(SpiceMarshaller *m, SpiceMsgcMainMigrateDstDoSeamless *msg);
-    void (*msgc_display_init)(SpiceMarshaller *m, SpiceMsgcDisplayInit *msg);
-    void (*msgc_display_stream_report)(SpiceMarshaller *m, SpiceMsgcDisplayStreamReport *msg);
-    void (*msgc_display_gl_draw_done)(SpiceMarshaller *m, SpiceMsgcDisplayGlDrawDone *msg);
-    void (*msgc_inputs_key_down)(SpiceMarshaller *m, SpiceMsgcKeyDown *msg);
-    void (*msgc_inputs_key_up)(SpiceMarshaller *m, SpiceMsgcKeyUp *msg);
-    void (*msgc_inputs_key_modifiers)(SpiceMarshaller *m, SpiceMsgcKeyModifiers *msg);
-    void (*msgc_inputs_mouse_motion)(SpiceMarshaller *m, SpiceMsgcMouseMotion *msg);
-    void (*msgc_inputs_mouse_position)(SpiceMarshaller *m, SpiceMsgcMousePosition *msg);
-    void (*msgc_inputs_mouse_press)(SpiceMarshaller *m, SpiceMsgcMousePress *msg);
-    void (*msgc_inputs_mouse_release)(SpiceMarshaller *m, SpiceMsgcMouseRelease *msg);
-    void (*msgc_record_data)(SpiceMarshaller *m, SpiceMsgcRecordPacket *msg);
-    void (*msgc_record_mode)(SpiceMarshaller *m, SpiceMsgcRecordMode *msg);
-    void (*msgc_record_start_mark)(SpiceMarshaller *m, SpiceMsgcRecordStartMark *msg);
-    void (*msgc_tunnel_service_add)(SpiceMarshaller *m, SpiceMsgcTunnelAddGenericService *msg, SpiceMarshaller **name_out, SpiceMarshaller **description_out);
-    void (*msgc_tunnel_service_remove)(SpiceMarshaller *m, SpiceMsgcTunnelRemoveService *msg);
-    void (*msgc_tunnel_socket_open_ack)(SpiceMarshaller *m, SpiceMsgcTunnelSocketOpenAck *msg);
-    void (*msgc_tunnel_socket_open_nack)(SpiceMarshaller *m, SpiceMsgcTunnelSocketOpenNack *msg);
-    void (*msgc_tunnel_socket_fin)(SpiceMarshaller *m, SpiceMsgcTunnelSocketFin *msg);
-    void (*msgc_tunnel_socket_closed)(SpiceMarshaller *m, SpiceMsgcTunnelSocketClosed *msg);
-    void (*msgc_tunnel_socket_closed_ack)(SpiceMarshaller *m, SpiceMsgcTunnelSocketClosedAck *msg);
-    void (*msgc_tunnel_socket_data)(SpiceMarshaller *m, SpiceMsgcTunnelSocketData *msg);
-    void (*msgc_tunnel_socket_token)(SpiceMarshaller *m, SpiceMsgcTunnelSocketTokens *msg);
-#ifdef USE_SMARTCARD
-    void (*msgc_smartcard_atr)(SpiceMarshaller *m, VSCMsgATR *msg);
-    void (*msgc_smartcard_error)(SpiceMarshaller *m, VSCMsgError *msg);
-    void (*msgc_smartcard_header)(SpiceMarshaller *m, VSCMsgHeader *msg);
-    void (*msgc_smartcard_data)(SpiceMarshaller *m, SpiceMsgcSmartcard *msg, SpiceMarshaller **reader_name_out);
-    void (*msgc_smartcard_reader_add)(SpiceMarshaller *m, VSCMsgReaderAdd *msg);
-#endif
-    void (*msgc_port_event)(SpiceMarshaller *m, SpiceMsgcPortEvent *msg);
-    void (*msgc_display_preferred_compression)(SpiceMarshaller *m, SpiceMsgcDisplayPreferredCompression *msg);
-} SpiceMessageMarshallers;
 
 SpiceMessageMarshallers *spice_message_marshallers_get(void);
 SpiceMessageMarshallers *spice_message_marshallers_get1(void);

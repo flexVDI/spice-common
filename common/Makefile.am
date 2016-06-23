@@ -5,6 +5,7 @@ CLIENT_MARSHALLERS =				\
 	generated_client_demarshallers.c	\
 	generated_client_demarshallers1.c	\
 	generated_client_marshallers.c		\
+	generated_client_marshallers.h		\
 	generated_client_marshallers1.c		\
 	$(NULL)
 
@@ -107,8 +108,11 @@ generated_client_demarshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
 generated_client_demarshallers1.c: $(top_srcdir)/spice1.proto $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-demarshallers --client --include common/messages.h --prefix 1 --ptrsize 8 $< $@ >/dev/null
 
+generated_client_marshallers.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers -P --client --include common/messages.h -H $< $@ >/dev/null
+
 generated_client_marshallers.c: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
-	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers -P --include common/messages.h --include client_marshallers.h --client $< $@ >/dev/null
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers -P --include client_marshallers.h --client $< $@ >/dev/null
 
 generated_client_marshallers1.c: $(top_srcdir)/spice1.proto $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers -P --include common/messages.h --include client_marshallers.h --client --prefix 1 --ptrsize 8 $< $@ >/dev/null
