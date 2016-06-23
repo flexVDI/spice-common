@@ -139,7 +139,7 @@ def fix_attributes(attribute_list):
 class Type:
     def __init__(self):
         self.attributes = {}
-        self.registred = False
+        self.registered = False
         self.name = None
 
     def has_name(self):
@@ -196,9 +196,9 @@ class Type:
         return self
 
     def register(self):
-        if self.registred or self.name == None:
+        if self.registered or self.name == None:
             return
-        self.registred = True
+        self.registered = True
         if self.name in _types_by_name:
             raise Exception("Type %s already defined" % self.name)
         _types.append(self)
