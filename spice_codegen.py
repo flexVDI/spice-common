@@ -210,8 +210,8 @@ if options.print_error:
 
 if options.includes:
     for i in options.includes:
-        writer.header.writeln('#include <%s>' % i)
-        writer.writeln('#include <%s>' % i)
+        writer.header.writeln('#include "%s"' % i)
+        writer.writeln('#include "%s"' % i)
 
 if options.generate_enums or options.generate_dissector:
     write_enums(writer, options.generate_dissector)
