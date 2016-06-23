@@ -1,13 +1,22 @@
 
 from . import ptypes
 from . import codegen
+import re
 
 def write_includes(writer):
     writer.header.writeln("#include <spice/protocol.h>")
     writer.header.writeln('#include "common/marshaller.h"')
     writer.header.newline()
-    writer.header.writeln("#ifndef _GENERATED_HEADERS_H")
-    writer.header.writeln("#define _GENERATED_HEADERS_H")
+    if writer.header.has_option("dest_file"):
+        src = writer.header.options["dest_file"]
+    else:
+        src = "generated_headers.h"
+    src = re.sub(r'[^a-z0-9]+', '_', src, flags=re.IGNORECASE)
+    src = src.upper()
+    if src.endswith("_H"):
+        src = "_H_"+src[:-2]
+    writer.header.writeln("#ifndef %s" % src)
+    writer.header.writeln("#define %s" % src)
 
     writer.writeln("#include <string.h>")
     writer.writeln("#include <assert.h>")

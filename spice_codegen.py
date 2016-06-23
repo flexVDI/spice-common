@@ -170,6 +170,7 @@ if proto == None:
 codegen.set_prefix(proto.name)
 writer = codegen.CodeWriter()
 writer.header = codegen.CodeWriter()
+writer.header.set_option("dest_file", dest_file)
 writer.set_option("source", os.path.basename(proto_file))
 
 license = """/*
