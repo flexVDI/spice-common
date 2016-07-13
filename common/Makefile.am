@@ -82,6 +82,7 @@ libspice_common_server_la_CFLAGS = -DFIXME_SERVER_SMARTCARD
 
 AM_CPPFLAGS =				\
 	-I$(top_srcdir)			\
+	-I$(top_builddir)		\
 	$(SPICE_COMMON_CFLAGS)		\
 	$(PROTOCOL_CFLAGS)		\
 	$(NULL)

@@ -25,7 +25,7 @@
 
 #include <spice/protocol.h>
 
-#include "generated_client_marshallers.h"
+#include "common/generated_client_marshallers.h"
 #include "marshaller.h"
 #include "messages.h"
 
