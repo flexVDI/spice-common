@@ -1098,8 +1098,7 @@ def write_msg_parser(writer, message):
     writer.newline()
     if writer.has_error_check:
         writer.label("error")
-        with writer.block("if (data != NULL)"):
-            writer.statement("free(data)")
+        writer.statement("free(data)")
         writer.statement("return NULL")
     writer.end_block()
 
