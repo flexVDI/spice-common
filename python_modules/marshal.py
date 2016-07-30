@@ -11,7 +11,7 @@ def write_includes(writer):
         src = writer.header.options["dest_file"]
     else:
         src = "generated_headers.h"
-    src = re.sub(r'[^a-z0-9]+', '_', src, flags=re.IGNORECASE)
+    src = re.sub(r'(?i)[^a-z0-9]+', '_', src)
     src = src.upper()
     if src.endswith("_H"):
         src = "_H_"+src[:-2]
