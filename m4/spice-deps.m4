@@ -185,7 +185,7 @@ AC_DEFUN([SPICE_CHECK_LZ4], [
 
     have_lz4="no"
     if test "x$enable_lz4" != "xno"; then
-      PKG_CHECK_MODULES([LZ4], [liblz4], [have_lz4="yes"], [have_lz4="no"])
+      PKG_CHECK_MODULES([LZ4], [liblz4 >= 129], [have_lz4="yes"], [have_lz4="no"])
 
       if test "x$have_lz4" = "xyes"; then
         AC_DEFINE(USE_LZ4, [1], [Define to build with lz4 support])
