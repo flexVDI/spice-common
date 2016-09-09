@@ -1,2 +1,50 @@
 Spice protocol format file
 ==========================
+
+Copyright (C) 2016 Red Hat, Inc.
+Licensed under a Creative Commons Attribution-Share Alike 3.0
+United States License (see http://creativecommons.org/licenses/by-sa/3.0/us/legalcode).
+
+Basic
+-----
+The spice protocol format file defines the network protocol used by spice.
+It resemble the C format.
+
+    file ::= <definitions> <protocol> ;
+    definitions ::= <definition>|<definitions><definition> ;
+    definition ::= <typedef>|<structure>|<enum>|<flag>|<message>|<channel> ;
+    protocol ::= "protocol" <identifier> "{" <protocol_channels> "}" ";" ;
+    protocol_channels ::= <protocol_channel>|<protocol_channels><protocol_channel> ;
+    protocol_channel ::= <identifier> <identifier> [ "=" <integer> ] ";" ;
+    integer ::= <hex>|<dec> ;
+    dec ::= [+-][0-9]+ ;
+    hex ::= "0x" [0-9a-f]+ ;
+    identifier ::= [a-z][a-z0-9_]* ;
+
+(here BNF with some regular expression is used).
+
+Example:
+
+    channel ExampleChannel {
+       message {
+          uint32 dummy;
+       } Dummy;
+    };
+
+    protocol Example {
+        ExampleChannel first = 1001;
+    };
+
+As you can see brackets like C are used and structures looks like C but you
+can also see that keyworks like `channel`, `protocol`, `message` or some
+predefined types like `uint32` are proper of the protocol.
+
+Comments
+--------
+Both C and C++ style comments are supported
+
+    // this is a comment
+    /* this is a comment too
+       but can be split in multiple lines */
+
+
