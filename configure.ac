@@ -17,6 +17,7 @@ AM_INIT_AUTOMAKE([1.11 dist-xz no-dist-gzip tar-ustar foreign -Wall -Werror])
 AM_MAINTAINER_MODE
 AM_SILENT_RULES([yes])
 LT_INIT
+SPICE_MANUAL
 
 AC_PROG_CC
 AC_PROG_CC_C99
@@ -50,6 +51,7 @@ AC_CONFIG_FILES([
   common/Makefile
   python_modules/Makefile
   tests/Makefile
+  docs/Makefile
 ])
 
 AH_BOTTOM([
