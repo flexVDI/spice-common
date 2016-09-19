@@ -336,12 +336,21 @@ TODO
 nomarshal
 ~~~~~~~~~
 
-TODO
+Do not generate code for marshalling this variable.
+Usually used on last array element to make possible to manually feed data.
+
+Example:
+    struct Data {
+        uint32 data_size;
+        uint8 data[data_size] @nomarshal;
+    };
 
 zero_terminated
 ~~~~~~~~~~~~~~~
 
-TODO
+The field should terminated by zero.
+Actually it's not used by python code so it's not enforced and no
+code is generated.
 
 marshall
 ~~~~~~~~
@@ -351,12 +360,16 @@ TODO
 nonnull
 ~~~~~~~
 
-TODO
+This pointer field cannot be NULL. This means that marshaller assume C structure
+contain not NULL pointer and demarshaller will fail to demarshall message if offset
+is 0.
 
 unique_flag
 ~~~~~~~~~~~
 
-TODO
+This flag field should contain just a single flag.
+Actually it's not used by python code so it's not enforced and no
+code is generated.
 
 ptr_array
 ~~~~~~~~~
