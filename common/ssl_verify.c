@@ -33,6 +33,13 @@
 #include <string.h>
 #include <gio/gio.h>
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000
+static const unsigned char *ASN1_STRING_get0_data(const ASN1_STRING *asn1)
+{
+    return M_ASN1_STRING_data(asn1);
+}
+#endif
+
 static int verify_pubkey(X509* cert, const char *key, size_t key_size)
 {
     EVP_PKEY* cert_pubkey = NULL;
@@ -182,10 +189,10 @@ static int verify_hostname(X509* cert, const char *hostname)
             const GENERAL_NAME* name = sk_GENERAL_NAME_value(subject_alt_names, i);
             if (name->type == GEN_DNS) {
                 found_dns_name = 1;
-                if (_gnutls_hostname_compare((char *)ASN1_STRING_data(name->d.dNSName),
+                if (_gnutls_hostname_compare((const char *)ASN1_STRING_get0_data(name->d.dNSName),
                                              ASN1_STRING_length(name->d.dNSName),
                                              hostname)) {
-                    spice_debug("alt name match=%s", ASN1_STRING_data(name->d.dNSName));
+                    spice_debug("alt name match=%s", ASN1_STRING_get0_data(name->d.dNSName));
                     GENERAL_NAMES_free(subject_alt_names);
                     return 1;
                 }
@@ -208,11 +215,11 @@ static int verify_hostname(X509* cert, const char *hostname)
                 alt_ip_len = ASN1_STRING_length(name->d.iPAddress);
 
                 if ((ip_len == alt_ip_len) &&
-                   (memcmp(ASN1_STRING_data(name->d.iPAddress), ip_binary, ip_len)) == 0) {
+                   (memcmp(ASN1_STRING_get0_data(name->d.iPAddress), ip_binary, ip_len)) == 0) {
                     GInetAddress * alt_ip = NULL;
                     gchar * alt_ip_string = NULL;
 
-                    alt_ip = g_inet_address_new_from_bytes(ASN1_STRING_data(name->d.iPAddress),
+                    alt_ip = g_inet_address_new_from_bytes(ASN1_STRING_get0_data(name->d.iPAddress),
                                                            g_inet_address_get_family(ip));
                     alt_ip_string = g_inet_address_to_string(alt_ip);
                     spice_debug("alt name IP match=%s", alt_ip_string);
@@ -253,10 +260,10 @@ static int verify_hostname(X509* cert, const char *hostname)
                 continue;
             }
 
-            if (_gnutls_hostname_compare((char*)ASN1_STRING_data(cn_asn1),
+            if (_gnutls_hostname_compare((const char*)ASN1_STRING_get0_data(cn_asn1),
                                          ASN1_STRING_length(cn_asn1),
                                          hostname)) {
-                spice_debug("common name match=%s", (char*)ASN1_STRING_data(cn_asn1));
+                spice_debug("common name match=%s", (char*)ASN1_STRING_get0_data(cn_asn1));
                 cn_match = 1;
                 break;
             }
