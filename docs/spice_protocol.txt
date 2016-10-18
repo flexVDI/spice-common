@@ -216,7 +216,51 @@ Example:
 Channels
 --------
 
-TODO
+    channel ::= "channel" <identifier> [ ":" <identifier> ] "{" <channel_messages> "}" <attributes> ";" ;
+    channel_messages ::= <channel_message>|<channel_messages><channel_message> ;
+    channel_message ::= "server:" | "client:" | "message" <identifier> [ "=" <integer> ] ;
+
+Example:
+
+    channel ExampleChannel {
+    server:
+       message {
+          uint32 dummy;
+       } Dummy;
+    };
+
+Note that every message is associated with a number which is used in the protocol.
+The assignment work in a similar way to enumeration in C beside first message is
+assigned 1 value and not 0. So first message (if no integer is specified) is assigned
+1, second 2 and so on.
+
+`server:` or `client:` specify the direction of messages following, `server` specify
+messages from server while `client` from client. If not specified is assumed from
+server.
+
+For each channel you can specify a parent channel. Derived channel inherite all
+messages specified in the parent.
+Note that messages from parent can be overrided by derived channels.
+
+Protocol
+--------
+
+    protocol ::= "protocol" <identifier> "{" <protocol_channels> "}" ";" ;
+    protocol_channels ::= <protocol_channel>|<protocol_channels><protocol_channel> ;
+    protocol_channel ::= <identifier> <identifier> [ "=" <integer> ] ";" ;
+
+Example:
+
+    protocol Example {
+        ExampleChannel first = 1001;
+    };
+
+Protocol specify the list of channel supported. Channel have an associated number
+assigned in a similar way of channels (incremented from one to the next with
+first starting from 0 if not specified).
+
+*NOTE*: Due to the way currently code is generate you should use
+small numbers.
 
 Attributes
 ----------
