@@ -176,9 +176,9 @@ Structures
 The simpler coumpound type is the structure. As in C is defined as a list of fields (any variable or swicth).
 But as a protocol definition there are no alignment or padding and every field (beside pointer values) follow each other.
 
-    <struct> ::= "struct" <identifier> "{" [ <fields> ] "}" <attributes> ";" ;
-    <fields> ::= <field>|<fields><field> ;
-    <field> ::= <variable>|<switch>
+    struct ::= "struct" <identifier> "{" [ <fields> ] "}" <attributes> ";" ;
+    fields ::= <field>|<fields><field> ;
+    field ::= <variable>|<switch>
 
 Example:
 
@@ -193,7 +193,7 @@ Messages
 Messages have the same syntax of structure (beside `message`) with the different that they can
 be used directly inside channels.
 
-    <message> ::= "message" <identifier> "{" [ <fields> ] "}" <attributes> ";" ;
+    message ::= "message" <identifier> "{" [ <fields> ] "}" <attributes> ";" ;
 
 Switches
 --------
@@ -205,7 +205,7 @@ Type definitions
 
 Like C type definition allow to short types defining new ones.
 
-    <typedef> ::= "typedef" <identifier> <type>`<attributes> ;
+    typedef ::= "typedef" <identifier> <type> <attributes> ;
 
 note that unlike C name came before the type.
 
