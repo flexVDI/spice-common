@@ -13,5 +13,6 @@ spice_protocol.html: spice_protocol.txt
 	$(AM_V_GEN) $(ASCIIDOC) -n $(ASCIIDOC_FLAGS) -o $@ $<
 endif
 
-clean-local:
-	rm -f spice_protocol.html
+CLEANFILES = spice_protocol.html
+
+-include $(top_srcdir)/git.mk
