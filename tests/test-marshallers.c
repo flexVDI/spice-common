@@ -14,7 +14,7 @@ static uint8_t expected_data[] = { 0x02, 0x00, 0x00, 0x00, /* data_size */
                                    0xef, 0xcd, 0xab, 0x90, 0x78, 0x56, 0x34, 0x12, /* data */
 };
 
-int main(int argc, char **argv)
+int main(int argc G_GNUC_UNUSED, char **argv G_GNUC_UNUSED)
 {
     SpiceMarshaller *marshaller;
     SpiceMsgMainShortDataSubMarshall *msg;

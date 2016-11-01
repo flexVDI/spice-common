@@ -121,7 +121,7 @@ static void spice_log_set_abort_level(void)
 static void spice_logger(const gchar *log_domain,
                          GLogLevelFlags log_level,
                          const gchar *message,
-                         gpointer user_data)
+                         gpointer user_data G_GNUC_UNUSED)
 {
     if (glib_debug_level != 0) {
         if ((log_level & G_LOG_LEVEL_MASK) > glib_debug_level)

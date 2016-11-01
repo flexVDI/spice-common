@@ -364,7 +364,7 @@ static void test_spice_g_messages_debug_all(void)
 }
 #endif /* GLIB_CHECK_VERSION(2,38,0) */
 
-static void handle_sigabrt(int sig)
+static void handle_sigabrt(int sig G_GNUC_UNUSED)
 {
     _Exit(1);
 }

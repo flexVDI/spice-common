@@ -72,7 +72,7 @@ def write_parser_helpers(writer):
             writer.statement("return val")
             writer.end_block()
 
-    writer.function("SPICE_GNUC_UNUSED consume_fd", "int", "uint8_t **ptr", True)
+    writer.function("SPICE_GNUC_UNUSED consume_fd", "int", "uint8_t **ptr SPICE_GNUC_UNUSED", True)
     writer.statement("return -1")
     writer.end_block()
 
