@@ -1,3 +1,8 @@
+# For autoconf < 2.63
+m4_ifndef([AS_VAR_APPEND],
+          AC_DEFUN([AS_VAR_APPEND], $1=$$1$2))
+
+
 # SPICE_CHECK_SYSDEPS()
 # ---------------------
 # Checks for header files and library functions needed by spice-common.
@@ -163,6 +168,7 @@ AC_DEFUN([SPICE_CHECK_GLIB2], [
 # tarballs so they are disabled by default.
 #---------------------------
 AC_DEFUN([SPICE_CHECK_PYTHON_MODULES], [
+    AM_PATH_PYTHON
     AC_ARG_ENABLE([python-checks],
         AS_HELP_STRING([--enable-python-checks=@<:@yes/no@:>@],
                        [Enable checks for Python modules needed to build from git @<:@default=no@:>@]),
@@ -172,4 +178,28 @@ AC_DEFUN([SPICE_CHECK_PYTHON_MODULES], [
         AX_PYTHON_MODULE([six], [1])
         AX_PYTHON_MODULE([pyparsing], [1])
     fi
+])
+
+
+# SPICE_CHECK_LZ4(PREFIX)
+# -----------------------------
+# Adds a --enable-lz4 switch in order to enable/disable LZ4 compression
+# support, and checks if the needed libraries are available. If found, it will
+# append the flags to use to the $PREFIX_CFLAGS and $PREFIX_LIBS variables, and
+# it will define a USE_LZ4 preprocessor symbol as well as a SUPPORT_LZ4 Makefile
+# conditional.
+#------------------------------
+AC_DEFUN([SPICE_CHECK_LZ4], [
+    AC_ARG_ENABLE([lz4],
+      AS_HELP_STRING([--enable-lz4=@<:@yes/no@:>@],
+                     [Enable LZ4 compression support @<:@default=no@:>@]),
+      [],
+      [enable_lz4="no"])
+
+    if test "x$enable_lz4" != "xno"; then
+      PKG_CHECK_MODULES([LZ4], [liblz4])
+      AC_DEFINE(USE_LZ4, [1], [Define to build with lz4 support])
+    fi
+    AS_VAR_APPEND([$1_CFLAGS], [" $LZ4_CFLAGS"])
+    AS_VAR_APPEND([$1_LIBS], [" $LZ4_LIBS"])
 ])

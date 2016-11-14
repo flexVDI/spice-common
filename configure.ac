@@ -12,10 +12,6 @@ AC_CONFIG_AUX_DIR([build-aux])
 # For automake >= 1.12
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
-# For autoconf <= 2.63
-m4_ifndef([AS_VAR_APPEND],
-          AC_DEFUN([AS_VAR_APPEND], $1=$$1$2))
-
 # Checks for programs
 AM_INIT_AUTOMAKE([1.11 dist-xz no-dist-gzip tar-ustar foreign -Wall -Werror])
 AM_MAINTAINER_MODE
@@ -32,9 +28,9 @@ AM_PROG_CC_C_O
 SPICE_CHECK_SYSDEPS
 
 # Checks for libraries
-AC_CONFIG_SUBDIRS([spice-protocol])
-PROTOCOL_CFLAGS='-I ${top_srcdir}/spice-protocol'
-AC_SUBST(PROTOCOL_CFLAGS)
+PKG_CHECK_MODULES([PROTOCOL], [spice-protocol >= 0.12.10])
+CODE_GENERATOR_BASEDIR=`pkg-config --variable=codegendir spice-protocol`
+AC_SUBST([CODE_GENERATOR_BASEDIR])
 
 SPICE_CHECK_PYTHON_MODULES()
 
@@ -51,7 +47,6 @@ AC_SUBST(SPICE_COMMON_LIBS)
 AC_CONFIG_FILES([
   Makefile
   common/Makefile
-  python_modules/Makefile
 ])
 
 AH_BOTTOM([

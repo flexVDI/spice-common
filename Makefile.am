@@ -1,16 +1,7 @@
 NULL =
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = python_modules common
-DIST_SUBDIRS = spice-protocol $(SUBDIRS)
-
-EXTRA_DIST =				\
-	spice_codegen.py		\
-	spice.proto			\
-	spice1.proto			\
-	$(NULL)
-
-DISTCLEANFILES = *.pyc
+SUBDIRS = common
 
 MAINTAINERCLEANFILES =						\
 	$(srcdir)/INSTALL					\
