@@ -19,6 +19,8 @@
 #ifndef __MACROS_H
 #define __MACROS_H
 
+#include "verify.h"
+
 #if    __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 5)
 #define SPICE_ATTR_NORETURN                                  \
     __attribute__((noreturn))
@@ -51,5 +53,6 @@
 #error Please implement SPICE_CONSTRUCTOR_FUNC and SPICE_DESTRUCTOR_FUNC for this compiler
 #endif
 
+#define SPICE_VERIFY(cond) verify_expr(cond, (void)1)
 
 #endif /* __MACROS_H */
