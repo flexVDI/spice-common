@@ -1123,6 +1123,16 @@ static pixman_image_t *get_surface_from_canvas(CanvasBase *canvas,
     case SPICE_IMAGE_TYPE_LZ_PLT:
     case SPICE_IMAGE_TYPE_LZ_RGB:
         return canvas_get_lz(canvas, image, want_original);
+
+    case SPICE_IMAGE_TYPE_GLZ_RGB:
+        return canvas_get_glz(canvas, image, want_original);
+
+    case SPICE_IMAGE_TYPE_ZLIB_GLZ_RGB:
+        return canvas_get_zlib_glz_rgb(canvas, image, want_original);
+
+    case SPICE_IMAGE_TYPE_FROM_CACHE_LOSSLESS:
+        return canvas->bits_cache->ops->get_lossless(canvas->bits_cache,
+                                                     image->descriptor.id);
 #endif
 
     case SPICE_IMAGE_TYPE_JPEG:
@@ -1139,23 +1149,9 @@ static pixman_image_t *get_surface_from_canvas(CanvasBase *canvas,
         return NULL;
 #endif
 
-#if defined(SW_CANVAS_CACHE)
-    case SPICE_IMAGE_TYPE_GLZ_RGB:
-        return canvas_get_glz(canvas, image, want_original);
-
-    case SPICE_IMAGE_TYPE_ZLIB_GLZ_RGB:
-        return canvas_get_zlib_glz_rgb(canvas, image, want_original);
-#endif
-
     case SPICE_IMAGE_TYPE_FROM_CACHE:
         return canvas->bits_cache->ops->get(canvas->bits_cache,
                                             image->descriptor.id);
-
-#ifdef SW_CANVAS_CACHE
-    case SPICE_IMAGE_TYPE_FROM_CACHE_LOSSLESS:
-        return canvas->bits_cache->ops->get_lossless(canvas->bits_cache,
-                                                     image->descriptor.id);
-#endif
 
     case SPICE_IMAGE_TYPE_BITMAP:
         return canvas_get_bits(canvas, &image->u.bitmap, want_original);
