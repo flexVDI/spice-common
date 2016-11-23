@@ -24,8 +24,6 @@
 
 #include <math.h>
 #include "sw_canvas.h"
-#define CANVAS_USE_PIXMAN
-#define CANVAS_SINGLE_INSTANCE
 #include "canvas_base.c"
 #include "rect.h"
 #include "region.h"
