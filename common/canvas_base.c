@@ -1111,6 +1111,61 @@ static int image_has_palette_to_cache(SpiceImage *image)
 
 //#define DEBUG_LZ
 
+static pixman_image_t *get_surface_from_canvas(CanvasBase *canvas,
+                                               SpiceImage *image,
+                                               int want_original)
+{
+    switch (image->descriptor.type) {
+    case SPICE_IMAGE_TYPE_QUIC:
+        return canvas_get_quic(canvas, image, want_original);
+
+#if defined(SW_CANVAS_CACHE)
+    case SPICE_IMAGE_TYPE_LZ_PLT:
+    case SPICE_IMAGE_TYPE_LZ_RGB:
+        return canvas_get_lz(canvas, image, want_original);
+#endif
+
+    case SPICE_IMAGE_TYPE_JPEG:
+        return canvas_get_jpeg(canvas, image);
+
+    case SPICE_IMAGE_TYPE_JPEG_ALPHA:
+        return canvas_get_jpeg_alpha(canvas, image);
+
+    case SPICE_IMAGE_TYPE_LZ4:
+#ifdef USE_LZ4
+        return canvas_get_lz4(canvas, image);
+#else
+        spice_warning("Lz4 compression algorithm not supported.\n");
+        return NULL;
+#endif
+
+#if defined(SW_CANVAS_CACHE)
+    case SPICE_IMAGE_TYPE_GLZ_RGB:
+        return canvas_get_glz(canvas, image, want_original);
+
+    case SPICE_IMAGE_TYPE_ZLIB_GLZ_RGB:
+        return canvas_get_zlib_glz_rgb(canvas, image, want_original);
+#endif
+
+    case SPICE_IMAGE_TYPE_FROM_CACHE:
+        return canvas->bits_cache->ops->get(canvas->bits_cache,
+                                            image->descriptor.id);
+
+#ifdef SW_CANVAS_CACHE
+    case SPICE_IMAGE_TYPE_FROM_CACHE_LOSSLESS:
+        return canvas->bits_cache->ops->get_lossless(canvas->bits_cache,
+                                                     image->descriptor.id);
+#endif
+
+    case SPICE_IMAGE_TYPE_BITMAP:
+        return canvas_get_bits(canvas, &image->u.bitmap, want_original);
+
+    default:
+        spice_warn_if_reached();
+        return NULL;
+    }
+}
+
 /* If real get is FALSE, then only do whatever is needed but don't return an image. For instance,
  *  if we need to read it to cache it we do.
  *
@@ -1150,61 +1205,7 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
         want_original = TRUE;
     }
 
-    switch (descriptor->type) {
-    case SPICE_IMAGE_TYPE_QUIC: {
-        surface = canvas_get_quic(canvas, image, want_original);
-        break;
-    }
-#if defined(SW_CANVAS_CACHE)
-    case SPICE_IMAGE_TYPE_LZ_PLT:
-    case SPICE_IMAGE_TYPE_LZ_RGB: {
-        surface = canvas_get_lz(canvas, image, want_original);
-        break;
-    }
-#endif
-    case SPICE_IMAGE_TYPE_JPEG: {
-        surface = canvas_get_jpeg(canvas, image);
-        break;
-    }
-    case SPICE_IMAGE_TYPE_JPEG_ALPHA: {
-        surface = canvas_get_jpeg_alpha(canvas, image);
-        break;
-    }
-    case SPICE_IMAGE_TYPE_LZ4: {
-#ifdef USE_LZ4
-        surface = canvas_get_lz4(canvas, image);
-#else
-        spice_warning("Lz4 compression algorithm not supported.\n");
-        surface = NULL;
-#endif
-        break;
-    }
-#if defined(SW_CANVAS_CACHE)
-    case SPICE_IMAGE_TYPE_GLZ_RGB: {
-        surface = canvas_get_glz(canvas, image, want_original);
-        break;
-    }
-    case SPICE_IMAGE_TYPE_ZLIB_GLZ_RGB: {
-        surface = canvas_get_zlib_glz_rgb(canvas, image, want_original);
-        break;
-    }
-#endif
-    case SPICE_IMAGE_TYPE_FROM_CACHE:
-        surface = canvas->bits_cache->ops->get(canvas->bits_cache, descriptor->id);
-        break;
-#ifdef SW_CANVAS_CACHE
-    case SPICE_IMAGE_TYPE_FROM_CACHE_LOSSLESS:
-        surface = canvas->bits_cache->ops->get_lossless(canvas->bits_cache, descriptor->id);
-        break;
-#endif
-    case SPICE_IMAGE_TYPE_BITMAP: {
-        surface = canvas_get_bits(canvas, &image->u.bitmap, want_original);
-        break;
-    }
-    default:
-        spice_warn_if_reached();
-        return NULL;
-    }
+    surface = get_surface_from_canvas(canvas, image, want_original);
 
     spice_return_val_if_fail(surface != NULL, NULL);
     spice_return_val_if_fail(spice_pixman_image_get_format(surface, &surface_format), NULL);
