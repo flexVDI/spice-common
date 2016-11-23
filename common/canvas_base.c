@@ -153,9 +153,6 @@ typedef struct CanvasBase {
     GlzData glz_data;
     SpiceJpegDecoder* jpeg;
     SpiceZlibDecoder* zlib;
-
-    void *usr_data;
-    spice_destroy_fn_t usr_data_destroy;
 } CanvasBase;
 
 typedef enum {
@@ -1909,37 +1906,7 @@ static void canvas_base_destroy(CanvasBase *canvas)
 #ifdef GDI_CANVAS
     DeleteDC(canvas->dc);
 #endif
-
-    if (canvas->usr_data && canvas->usr_data_destroy) {
-        canvas->usr_data_destroy (canvas->usr_data);
-        canvas->usr_data = NULL;
-    }
 }
-
-/* This is kind of lame, but it protects against multiple
-   instances of these functions. We really should stop including
-   canvas_base.c and build it separately instead */
-#ifdef  CANVAS_SINGLE_INSTANCE
-
-void spice_canvas_set_usr_data(SpiceCanvas *spice_canvas,
-                               void *data,
-                               spice_destroy_fn_t destroy_fn)
-{
-    CanvasBase *canvas = (CanvasBase *)spice_canvas;
-    if (canvas->usr_data && canvas->usr_data_destroy) {
-        canvas->usr_data_destroy (canvas->usr_data);
-    }
-    canvas->usr_data = data;
-    canvas->usr_data_destroy = destroy_fn;
-}
-
-void *spice_canvas_get_usr_data(SpiceCanvas *spice_canvas)
-{
-    CanvasBase *canvas = (CanvasBase *)spice_canvas;
-    return  canvas->usr_data;
-}
-#endif
-
 
 static void canvas_clip_pixman(CanvasBase *canvas,
                                pixman_region32_t *dest_region,

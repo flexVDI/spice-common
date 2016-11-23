@@ -310,9 +310,6 @@ typedef struct {
     pixman_image_t *(*get_image)(SpiceCanvas *canvas, int force_opaque);
 } SpiceCanvasOps;
 
-void spice_canvas_set_usr_data(SpiceCanvas *canvas, void *data, spice_destroy_fn_t destroy_fn);
-void *spice_canvas_get_usr_data(SpiceCanvas *canvas);
-
 struct _SpiceCanvas {
   SpiceCanvasOps *ops;
 };
