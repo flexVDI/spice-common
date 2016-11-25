@@ -184,12 +184,26 @@ AC_DEFUN([SPICE_CHECK_LZ4], [
 
     have_lz4="no"
     if test "x$enable_lz4" != "xno"; then
-      PKG_CHECK_MODULES([LZ4], [liblz4 >= 129], [have_lz4="yes"], [have_lz4="no"])
+      # LZ4_compress_default is available in liblz4 >= 129, however liblz has changed
+      # versioning scheme making the check failing. Rather check for function definition
+      PKG_CHECK_MODULES([LZ4], [liblz4], [have_lz4="yes"], [have_lz4="no"])
 
       if test "x$have_lz4" = "xyes"; then
-        AC_DEFINE(USE_LZ4, [1], [Define to build with lz4 support])
-      elif test "x$enable_lz4" = "xyes"; then
-        AC_MSG_ERROR([lz4 support requested but liblz4 could not be found])
+        # It is necessary to set LIBS and CFLAGS before AC_CHECK_FUNC
+        old_LIBS="$LIBS"
+        old_CFLAGS="$CFLAGS"
+        CFLAGS="$CFLAGS $LZ4_CFLAGS"
+        LIBS="$LIBS $LZ4_LIBS"
+
+        AC_CHECK_FUNC([LZ4_compress_default], [
+            AC_DEFINE(USE_LZ4, [1], [Define to build with lz4 support])],
+            [have_lz4="no"])
+
+        LIBS="$old_LIBS"
+        CFLAGS="$old_CFLAGS"
+      fi
+      if test "x$enable_lz4" = "xyes" && test "x$have_lz4" = "xno"; then
+        AC_MSG_ERROR([lz4 support requested but liblz4 >= 129 could not be found])
       fi
     fi
     AM_CONDITIONAL(HAVE_LZ4, test "x$have_lz4" = "xyes")
