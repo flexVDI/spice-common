@@ -155,15 +155,29 @@ AC_DEFUN([SPICE_CHECK_GLIB2], [
 # tarballs so they are disabled by default.
 #---------------------------
 AC_DEFUN([SPICE_CHECK_PYTHON_MODULES], [
-    AM_PATH_PYTHON
     AC_ARG_ENABLE([python-checks],
         AS_HELP_STRING([--enable-python-checks=@<:@yes/no@:>@],
                        [Enable checks for Python modules needed to build from git @<:@default=no@:>@]),
                        [],
                        [enable_python_checks="no"])
     if test "x$enable_python_checks" != "xno"; then
-        AX_PYTHON_MODULE([six], [1])
-        AX_PYTHON_MODULE([pyparsing], [1])
+        AS_IF([test -n "$PYTHON"], # already set required PYTHON version
+              [AM_PATH_PYTHON
+               AX_PYTHON_MODULE([six], [1])
+               AX_PYTHON_MODULE([pyparsing], [1])],
+              [PYTHON=python3
+               AX_PYTHON_MODULE([six])
+               AX_PYTHON_MODULE([pyparsing])
+               test "$HAVE_PYMOD_SIX" = "yes" && test "$HAVE_PYMOD_PYPARSING" = "yes"],
+              [AM_PATH_PYTHON([3])],
+              [PYTHON=python2
+               AX_PYTHON_MODULE([six])
+               AX_PYTHON_MODULE([pyparsing])
+               test "$HAVE_PYMOD_SIX" = "yes" && test "$HAVE_PYMOD_PYPARSING" = "yes"],
+              [AM_PATH_PYTHON([2])],
+              [AC_MSG_ERROR([Python modules six and pyparsing are required])])
+    else
+        AM_PATH_PYTHON
     fi
 ])
 
