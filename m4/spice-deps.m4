@@ -198,6 +198,7 @@ AC_DEFUN([SPICE_CHECK_LZ4], [
         AC_CHECK_FUNC([LZ4_compress_default], [
             AC_DEFINE(USE_LZ4, [1], [Define to build with lz4 support])],
             [have_lz4="no"])
+        AC_CHECK_FUNCS([LZ4_compress_fast_continue])
 
         LIBS="$old_LIBS"
         CFLAGS="$old_CFLAGS"
