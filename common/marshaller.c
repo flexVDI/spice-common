@@ -317,8 +317,8 @@ void spice_marshaller_unreserve_space(SpiceMarshaller *m, size_t size)
     item->len -= size;
 }
 
-uint8_t *spice_marshaller_add_ref_full(SpiceMarshaller *m, uint8_t *data, size_t size,
-                                       spice_marshaller_item_free_func free_data, void *opaque)
+uint8_t *spice_marshaller_add_by_ref_full(SpiceMarshaller *m, uint8_t *data, size_t size,
+                                          spice_marshaller_item_free_func free_data, void *opaque)
 {
     MarshallerItem *item;
     SpiceMarshallerData *d;
@@ -349,21 +349,21 @@ uint8_t *spice_marshaller_add(SpiceMarshaller *m, const uint8_t *data, size_t si
     return ptr;
 }
 
-uint8_t *spice_marshaller_add_ref(SpiceMarshaller *m, const uint8_t *data, size_t size)
+uint8_t *spice_marshaller_add_by_ref(SpiceMarshaller *m, const uint8_t *data, size_t size)
 {
     /* the cast to no-const here is safe as data is used for writing only if
      * free_data pointer is not NULL
      */
-    return spice_marshaller_add_ref_full(m, (uint8_t *) data, size, NULL, NULL);
+    return spice_marshaller_add_by_ref_full(m, (uint8_t *) data, size, NULL, NULL);
 }
 
-void spice_marshaller_add_ref_chunks(SpiceMarshaller *m, SpiceChunks *chunks)
+void spice_marshaller_add_chunks_by_ref(SpiceMarshaller *m, SpiceChunks *chunks)
 {
     unsigned int i;
 
     for (i = 0; i < chunks->num_chunks; i++) {
-        spice_marshaller_add_ref(m, chunks->chunk[i].data,
-                                 chunks->chunk[i].len);
+        spice_marshaller_add_by_ref(m, chunks->chunk[i].data,
+                                    chunks->chunk[i].len);
     }
 }
 

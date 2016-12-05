@@ -38,10 +38,23 @@ void spice_marshaller_destroy(SpiceMarshaller *m);
 uint8_t *spice_marshaller_reserve_space(SpiceMarshaller *m, size_t size);
 void spice_marshaller_unreserve_space(SpiceMarshaller *m, size_t size);
 uint8_t *spice_marshaller_add(SpiceMarshaller *m, const uint8_t *data, size_t size);
-uint8_t *spice_marshaller_add_ref(SpiceMarshaller *m, const uint8_t *data, size_t size);
-uint8_t *spice_marshaller_add_ref_full(SpiceMarshaller *m, uint8_t *data, size_t size,
-                                       spice_marshaller_item_free_func free_data, void *opaque);
-void     spice_marshaller_add_ref_chunks(SpiceMarshaller *m, SpiceChunks *chunks);
+uint8_t *spice_marshaller_add_by_ref(SpiceMarshaller *m, const uint8_t *data, size_t size);
+uint8_t *spice_marshaller_add_by_ref_full(SpiceMarshaller *m, uint8_t *data, size_t size,
+                                          spice_marshaller_item_free_func free_data, void *opaque);
+void spice_marshaller_add_chunks_by_ref(SpiceMarshaller *m, SpiceChunks *chunks);
+SPICE_GNUC_DEPRECATED inline uint8_t *spice_marshaller_add_ref(SpiceMarshaller *m, const uint8_t *data, size_t size)
+{
+    return spice_marshaller_add_by_ref(m, data, size);
+}
+SPICE_GNUC_DEPRECATED inline uint8_t *spice_marshaller_add_ref_full(SpiceMarshaller *m, uint8_t *data, size_t size,
+                                              spice_marshaller_item_free_func free_data, void *opaque)
+{
+    return spice_marshaller_add_by_ref_full(m, data, size, free_data, opaque);
+}
+SPICE_GNUC_DEPRECATED inline void spice_marshaller_add_ref_chunks(SpiceMarshaller *m, SpiceChunks *chunks)
+{
+    spice_marshaller_add_chunks_by_ref(m, chunks);
+}
 void spice_marshaller_flush(SpiceMarshaller *m);
 void spice_marshaller_set_base(SpiceMarshaller *m, size_t base);
 uint8_t *spice_marshaller_linearize(SpiceMarshaller *m, size_t skip,
