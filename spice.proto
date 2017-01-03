@@ -353,6 +353,7 @@ enum8 video_codec_type {
     MJPEG = 1,
     VP8,
     H264,
+    VP9,
 };
 
 flags8 stream_flags {
