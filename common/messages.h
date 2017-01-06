@@ -644,6 +644,11 @@ typedef struct SpiceMsgcPortEvent {
     uint8_t event;
 } SpiceMsgcPortEvent;
 
+typedef struct SpiceMsgcDisplayPreferredVideoCodecType {
+    uint8_t num_of_codecs;
+    uint8_t codecs[0];
+} SpiceMsgcDisplayPreferredVideoCodecType;
+
 typedef struct SpiceMsgcDisplayPreferredCompression {
     uint8_t image_compression;
 } SpiceMsgcDisplayPreferredCompression;

@@ -985,6 +985,11 @@ channel DisplayChannel : BaseChannel {
 
     message {
     } gl_draw_done;
+
+    message {
+        uint8 num_of_codecs;
+        video_codec_type codecs[num_of_codecs] @end;
+    } preferred_video_codec_type;
 };
 
 flags16 keyboard_modifier_flags {
