@@ -2,7 +2,6 @@ NULL =
 ASCIIDOC_FLAGS = -a icons -a toc
 
 EXTRA_DIST =					\
-	spice_protocol.html			\
 	spice_protocol.txt			\
 	$(NULL)
 
