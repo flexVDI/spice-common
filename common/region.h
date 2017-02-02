@@ -29,8 +29,11 @@ SPICE_BEGIN_DECLS
 
 typedef pixman_region32_t QRegion;
 
+/* the left region is not contained entirely within the right region */
 #define REGION_TEST_LEFT_EXCLUSIVE (1 << 0)
+/* the right region is not contained entirely within the left region */
 #define REGION_TEST_RIGHT_EXCLUSIVE (1 << 1)
+/* the regions overlap */
 #define REGION_TEST_SHARED (1 << 2)
 #define REGION_TEST_ALL \
     (REGION_TEST_LEFT_EXCLUSIVE | REGION_TEST_RIGHT_EXCLUSIVE | REGION_TEST_SHARED)
