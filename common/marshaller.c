@@ -52,9 +52,10 @@
 #if defined(__arm__) || defined(_M_ARM)
 // In ARM, there may be problems with unaligned accesses in 64 bit values
 #warning Compiling for little-endian ARM architecture
-#define write_int64(ptr,v) do { *((uint32_t *)(ptr)) = *((uint32_t *)(&v)); \
-    *((uint32_t *)(ptr)+1) = *((uint32_t *)(&v)+1); } while(0)
-#define write_uint64(ptr,v) write_int64(ptr,v)
+#define write_int64(ptr,v) do { int64_t tmp = v; \
+    memcpy((char *)ptr, &tmp, sizeof(int64_t)); } while (0)
+#define write_uint64(ptr,v) do { uint64_t tmp = v; \
+    memcpy((char *)ptr, &tmp, sizeof(uint64_t)); } while (0)
 #else
 #define write_int64(ptr,v) (*((int64_t *)(ptr)) = v)
 #define write_uint64(ptr,v) (*((uint64_t *)(ptr)) = v)
