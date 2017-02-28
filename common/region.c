@@ -452,6 +452,7 @@ void region_xor(QRegion *rgn, const QRegion *other_rgn)
 {
     pixman_region32_t intersection;
 
+    pixman_region32_init(&intersection);
     pixman_region32_copy(&intersection, rgn);
     pixman_region32_intersect(&intersection,
                               &intersection,
