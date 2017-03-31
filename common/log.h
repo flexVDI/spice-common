@@ -18,12 +18,11 @@
 #ifndef H_SPICE_LOG
 #define H_SPICE_LOG
 
-#include <stdio.h>
-
-#include <glib.h>
-
-#include <spice/macros.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <glib.h>
+#include <spice/macros.h>
+
 #include "macros.h"
 
 SPICE_BEGIN_DECLS
