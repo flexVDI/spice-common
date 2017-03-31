@@ -18,6 +18,8 @@
 #ifndef H_SPICE_LOG
 #define H_SPICE_LOG
 
+#include <stdio.h>
+
 #include <glib.h>
 
 #include <spice/macros.h>
