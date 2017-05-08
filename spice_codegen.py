@@ -150,7 +150,7 @@ parser.add_option("--prefix", dest="prefix",
 parser.add_option("--ptrsize", dest="ptrsize",
                   help="set default pointer size", default="4")
 parser.add_option("--license", dest="license",
-                  help="license to use for generated file(s) (LGPL/MIT)", default="LGPL")
+                  help="license to use for generated file(s) (LGPL/BSD)", default="LGPL")
 
 (options, args) = parser.parse_args()
 
@@ -194,7 +194,7 @@ if options.license == "LGPL":
 */
 
 """
-elif options.license == "MIT":
+elif options.license == "BSD":
     license = """/*
    Copyright (C) 2013 Red Hat, Inc.
 
