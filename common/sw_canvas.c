@@ -88,7 +88,7 @@ static pixman_image_t *get_image(SpiceCanvas *canvas, int force_opaque)
     SwCanvas *sw_canvas = (SwCanvas *)canvas;
     pixman_format_code_t format;
 
-    spice_pixman_image_get_format (sw_canvas->image, &format);
+    spice_pixman_image_get_format(sw_canvas->image, &format);
     if (force_opaque && PIXMAN_FORMAT_A (format) != 0) {
         uint32_t *data;
         int stride;
@@ -96,11 +96,11 @@ static pixman_image_t *get_image(SpiceCanvas *canvas, int force_opaque)
 
         /* Remove alpha bits from format */
         format = (pixman_format_code_t)(((uint32_t)format) & ~(0xf << 12));
-        data = pixman_image_get_data (sw_canvas->image);
-        stride = pixman_image_get_stride (sw_canvas->image);
-        width = pixman_image_get_width (sw_canvas->image);
-        height = pixman_image_get_height (sw_canvas->image);
-        return pixman_image_create_bits (format, width, height, data, stride);
+        data = pixman_image_get_data(sw_canvas->image);
+        stride = pixman_image_get_stride(sw_canvas->image);
+        width = pixman_image_get_width(sw_canvas->image);
+        height = pixman_image_get_height(sw_canvas->image);
+        return pixman_image_create_bits(format, width, height, data, stride);
     } else {
         pixman_image_ref(sw_canvas->image);
     }
@@ -484,8 +484,8 @@ static void __scale_image(SpiceCanvas *spice_canvas,
 
     pixman_transform_init_scale(&transform, fsx, fsy);
     pixman_transform_translate(&transform, NULL,
-                               pixman_int_to_fixed (src_x),
-                               pixman_int_to_fixed (src_y));
+                               pixman_int_to_fixed(src_x),
+                               pixman_int_to_fixed(src_y));
 
     pixman_image_set_transform(src, &transform);
     pixman_image_set_repeat(src, PIXMAN_REPEAT_NONE);
@@ -567,8 +567,8 @@ static void __scale_image_rop(SpiceCanvas *spice_canvas,
 
     pixman_transform_init_scale(&transform, fsx, fsy);
     pixman_transform_translate(&transform, NULL,
-                               pixman_int_to_fixed (src_x),
-                               pixman_int_to_fixed (src_y));
+                               pixman_int_to_fixed(src_x),
+                               pixman_int_to_fixed(src_y));
 
     pixman_image_set_transform(src, &transform);
     pixman_image_set_repeat(src, PIXMAN_REPEAT_NONE);
@@ -761,8 +761,8 @@ static void __blend_scale_image(SpiceCanvas *spice_canvas,
 
     pixman_transform_init_scale(&transform, fsx, fsy);
     pixman_transform_translate(&transform, NULL,
-                               pixman_int_to_fixed (src_x),
-                               pixman_int_to_fixed (src_y));
+                               pixman_int_to_fixed(src_x),
+                               pixman_int_to_fixed(src_y));
 
     mask = NULL;
     if (overall_alpha != 0xff) {
@@ -925,8 +925,8 @@ static void __colorkey_scale_image(SpiceCanvas *spice_canvas,
 
     pixman_transform_init_scale(&transform, fsx, fsy);
     pixman_transform_translate(&transform, NULL,
-                               pixman_int_to_fixed (src_x),
-                               pixman_int_to_fixed (src_y));
+                               pixman_int_to_fixed(src_x),
+                               pixman_int_to_fixed(src_y));
 
     pixman_image_set_transform(src, &transform);
     pixman_image_set_repeat(src, PIXMAN_REPEAT_NONE);
@@ -1189,36 +1189,34 @@ static void canvas_destroy(SpiceCanvas *spice_canvas)
 static SpiceCanvasOps sw_canvas_ops;
 
 static SpiceCanvas *canvas_create_common(pixman_image_t *image,
-                                         uint32_t format
-                           , SpiceImageCache *bits_cache
+                                         uint32_t format,
+                                         SpiceImageCache *bits_cache,
 #ifdef SW_CANVAS_CACHE
-                           , SpicePaletteCache *palette_cache
+                                         SpicePaletteCache *palette_cache,
 #endif
-                           , SpiceImageSurfaces *surfaces
-                           , SpiceGlzDecoder *glz_decoder
-                           , SpiceJpegDecoder *jpeg_decoder
-                           , SpiceZlibDecoder *zlib_decoder
-                           )
+                                         SpiceImageSurfaces *surfaces,
+                                         SpiceGlzDecoder *glz_decoder,
+                                         SpiceJpegDecoder *jpeg_decoder,
+                                         SpiceZlibDecoder *zlib_decoder)
 {
     SwCanvas *canvas;
 
     spice_pixman_image_set_format(image,
-                                  spice_surface_format_to_pixman (format));
+                                  spice_surface_format_to_pixman(format));
 
     canvas = spice_new0(SwCanvas, 1);
     canvas_base_init(&canvas->base, &sw_canvas_ops,
-                               pixman_image_get_width (image),
-                               pixman_image_get_height (image),
-                               format
-                               , bits_cache
+                     pixman_image_get_width(image),
+                     pixman_image_get_height(image),
+                     format,
+                     bits_cache,
 #ifdef SW_CANVAS_CACHE
-                               , palette_cache
+                     palette_cache,
 #endif
-                               , surfaces
-                               , glz_decoder
-                               , jpeg_decoder
-                               , zlib_decoder
-                               );
+                     surfaces,
+                     glz_decoder,
+                     jpeg_decoder,
+                     zlib_decoder);
     canvas->private_data = NULL;
     canvas->private_data_size = 0;
 
@@ -1227,61 +1225,58 @@ static SpiceCanvas *canvas_create_common(pixman_image_t *image,
     return (SpiceCanvas *)canvas;
 }
 
-SpiceCanvas *canvas_create(int width, int height, uint32_t format
-                           , SpiceImageCache *bits_cache
+SpiceCanvas *canvas_create(int width, int height, uint32_t format,
+                           SpiceImageCache *bits_cache,
 #ifdef SW_CANVAS_CACHE
-                           , SpicePaletteCache *palette_cache
+                           SpicePaletteCache *palette_cache,
 #endif
-                           , SpiceImageSurfaces *surfaces
-                           , SpiceGlzDecoder *glz_decoder
-                           , SpiceJpegDecoder *jpeg_decoder
-                           , SpiceZlibDecoder *zlib_decoder
-                           )
+                           SpiceImageSurfaces *surfaces,
+                           SpiceGlzDecoder *glz_decoder,
+                           SpiceJpegDecoder *jpeg_decoder,
+                           SpiceZlibDecoder *zlib_decoder)
 {
     pixman_image_t *image;
 
-    image = pixman_image_create_bits(spice_surface_format_to_pixman (format),
+    image = pixman_image_create_bits(spice_surface_format_to_pixman(format),
                                      width, height, NULL, 0);
 
-    return canvas_create_common(image, format
-                                , bits_cache
+    return canvas_create_common(image, format,
+                                bits_cache,
 #ifdef SW_CANVAS_CACHE
-                                , palette_cache
+                                palette_cache,
 #endif
-                                , surfaces
-                                , glz_decoder
-                                , jpeg_decoder
-                                , zlib_decoder
-                                );
+                                surfaces,
+                                glz_decoder,
+                                jpeg_decoder,
+                                zlib_decoder);
 }
 
 SpiceCanvas *canvas_create_for_data(int width, int height, uint32_t format,
-                                    uint8_t *data, int stride
-                           , SpiceImageCache *bits_cache
+                                    uint8_t *data, int stride,
+                                    SpiceImageCache *bits_cache,
 #ifdef SW_CANVAS_CACHE
-                           , SpicePaletteCache *palette_cache
+                                    SpicePaletteCache *palette_cache,
 #endif
-                           , SpiceImageSurfaces *surfaces
-                           , SpiceGlzDecoder *glz_decoder
-                           , SpiceJpegDecoder *jpeg_decoder
-                           , SpiceZlibDecoder *zlib_decoder
-                           )
+                                    SpiceImageSurfaces *surfaces,
+                                    SpiceGlzDecoder *glz_decoder,
+                                    SpiceJpegDecoder *jpeg_decoder,
+                                    SpiceZlibDecoder *zlib_decoder)
 {
     pixman_image_t *image;
 
-    image = pixman_image_create_bits(spice_surface_format_to_pixman (format),
-                                     width, height, (uint32_t *)data, stride);
 
-    return canvas_create_common(image, format
-                                , bits_cache
+    image = pixman_image_create_bits(spice_surface_format_to_pixman(format),
+                                     width, height, (uint32_t *) data, stride);
+
+    return canvas_create_common(image, format,
+                                bits_cache,
 #ifdef SW_CANVAS_CACHE
-                                , palette_cache
+                                palette_cache,
 #endif
-                                , surfaces
-                                , glz_decoder
-                                , jpeg_decoder
-                                , zlib_decoder
-                                );
+                                surfaces,
+                                glz_decoder,
+                                jpeg_decoder,
+                                zlib_decoder);
 }
 
 SPICE_CONSTRUCTOR_FUNC(sw_canvas_global_init) //unsafe global function

@@ -116,7 +116,7 @@ size_t spice_strnlen(const char *str, size_t max_len);
         __p;                                              \
     }))
 #  define _SPICE_RENEW(struct_type, mem, n_structs, func) \
-    (struct_type *) (__extension__ ({                             \
+    (struct_type *) (__extension__ ({                     \
         size_t __n = (size_t) (n_structs);                \
         size_t __s = sizeof (struct_type);                \
         void *__p = (void *) (mem);                       \
@@ -132,7 +132,6 @@ size_t spice_strnlen(const char *str, size_t max_len);
 #else
 
 /* Unoptimized version: always call the _n() function. */
-
 #define _SPICE_NEW(struct_type, n_structs, func)                        \
     ((struct_type *) spice_##func##_n ((n_structs), sizeof (struct_type)))
 #define _SPICE_RENEW(struct_type, mem, n_structs, func)                 \
