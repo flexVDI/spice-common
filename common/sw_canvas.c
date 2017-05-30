@@ -355,8 +355,8 @@ static void clear_dest_alpha(pixman_image_t *dest,
     }
 
     stride = pixman_image_get_stride(dest);
-    data = (uint32_t *) (
-        (uint8_t *)pixman_image_get_data(dest) + y * stride + 4 * x);
+    data = SPICE_ALIGNED_CAST(uint32_t *,
+                              (uint8_t *)pixman_image_get_data(dest) + y * stride + 4 * x);
 
     if ((*data & 0xff000000U) == 0xff000000U) {
         spice_pixman_fill_rect_rop(dest,
@@ -1010,7 +1010,7 @@ static void canvas_put_image(SpiceCanvas *spice_canvas,
     src = pixman_image_create_bits(PIXMAN_x8r8g8b8,
                                    src_width,
                                    src_height,
-                                   (uint32_t*)src_data,
+                                   SPICE_ALIGNED_CAST(uint32_t*,src_data),
                                    src_stride);
 
 
@@ -1264,9 +1264,10 @@ SpiceCanvas *canvas_create_for_data(int width, int height, uint32_t format,
 {
     pixman_image_t *image;
 
-
     image = pixman_image_create_bits(spice_surface_format_to_pixman(format),
-                                     width, height, (uint32_t *) data, stride);
+                                     width, height,
+                                     SPICE_ALIGNED_CAST(uint32_t *,data),
+                                     stride);
 
     return canvas_create_common(image, format,
                                 bits_cache,

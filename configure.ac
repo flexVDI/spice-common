@@ -28,6 +28,14 @@ AM_PROG_CC_C_O
 
 SPICE_CHECK_SYSDEPS
 
+AC_ARG_ENABLE([alignment-checks],
+  AS_HELP_STRING([--enable-alignment-checks],
+                 [Enable runtime checks for cast alignment @<:@default=no@:>@]),
+  [],
+  enable_alignment_checks="no")
+AS_IF([test "x$enable_alignment_checks" = "xyes"],
+      [AC_DEFINE([SPICE_DEBUG_ALIGNMENT], 1, [Enable runtime checks for cast alignment])])
+
 # Checks for libraries
 PKG_CHECK_MODULES([PROTOCOL], [spice-protocol >= 0.12.12])
 

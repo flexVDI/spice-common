@@ -389,7 +389,7 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
     quic_data->current_chunk = 0;
 
     if (quic_decode_begin(quic_data->quic,
-                          (uint32_t *)image->u.quic.data->chunk[0].data,
+                          SPICE_UNALIGNED_CAST(uint32_t *,image->u.quic.data->chunk[0].data),
                           image->u.quic.data->chunk[0].len >> 2,
                           &type, &width, &height) == QUIC_ERROR) {
         spice_warning("quic decode begin failed");
@@ -523,8 +523,8 @@ static void canvas_fix_alignment(uint8_t *bits,
         uint8_t *dest = bits;
         for (row = height - 1; row > 0; --row) {
             uint32_t *dest_aligned, *dest_misaligned;
-            dest_aligned = (uint32_t *)(dest + stride_pixman*row);
-            dest_misaligned = (uint32_t*)(dest + stride_encoded*row);
+            dest_aligned = SPICE_ALIGNED_CAST(uint32_t *,dest + stride_pixman*row);
+            dest_misaligned = SPICE_UNALIGNED_CAST(uint32_t*,dest + stride_encoded*row);
             memmove(dest_aligned, dest_misaligned, stride_encoded);
         }
     }
@@ -1889,7 +1889,8 @@ static int quic_usr_more_space(QuicUsrContext *usr, uint32_t **io_ptr, int rows_
     }
     quic_data->current_chunk++;
 
-    *io_ptr = (uint32_t *)quic_data->chunks->chunk[quic_data->current_chunk].data;
+    *io_ptr = SPICE_ALIGNED_CAST(uint32_t *,
+                                 quic_data->chunks->chunk[quic_data->current_chunk].data);
     return quic_data->chunks->chunk[quic_data->current_chunk].len >> 2;
 }
 
@@ -1945,6 +1946,7 @@ static void canvas_mask_pixman(CanvasBase *canvas,
     int needs_invert;
     pixman_region32_t mask_region;
     uint32_t *mask_data;
+    uint8_t *mask_data_src;
     int mask_x, mask_y;
     int mask_width, mask_height, mask_stride;
     pixman_box32_t extents;
@@ -2006,7 +2008,9 @@ static void canvas_mask_pixman(CanvasBase *canvas,
     /* round down X to even 32 pixels (i.e. uint32_t) */
     extents.x1 = extents.x1 & ~(0x1f);
 
-    mask_data = (uint32_t *)((uint8_t *)mask_data + mask_stride * extents.y1 + extents.x1 / 32);
+    mask_data_src = (uint8_t *)mask_data + mask_stride * extents.y1 + extents.x1 / 32;
+    mask_data = SPICE_UNALIGNED_CAST(uint32_t *, mask_data_src);
+
     mask_x -= extents.x1;
     mask_y -= extents.y1;
     mask_width = extents.x2 - extents.x1;
