@@ -104,14 +104,12 @@ static void spice_log_set_abort_level(void)
             g_warning("Setting SPICE_ABORT_LEVEL is deprecated, use G_DEBUG instead");
             abort_level = atoi(abort_str);
             glib_abort_level = spice_log_level_to_glib(abort_level);
-            if (glib_abort_level != 0) {
-                unsigned int fatal_mask = G_LOG_FATAL_MASK;
-                while (glib_abort_level >= G_LOG_LEVEL_ERROR) {
-                    fatal_mask |= glib_abort_level;
-                    glib_abort_level >>= 1;
-                }
-                g_log_set_fatal_mask(SPICE_LOG_DOMAIN, fatal_mask);
+            unsigned int fatal_mask = G_LOG_FATAL_MASK;
+            while (glib_abort_level >= G_LOG_LEVEL_ERROR) {
+                fatal_mask |= glib_abort_level;
+                glib_abort_level >>= 1;
             }
+            g_log_set_fatal_mask(SPICE_LOG_DOMAIN, fatal_mask);
         } else {
             abort_level = SPICE_ABORT_LEVEL_DEFAULT;
         }
@@ -156,8 +154,6 @@ static void spice_logv(const char *log_domain,
                        va_list args)
 {
     GString *log_msg;
-
-    g_return_if_fail(spice_log_level_to_glib(log_level) != 0);
 
     log_msg = g_string_new(NULL);
     if (strloc && function) {
