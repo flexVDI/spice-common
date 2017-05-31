@@ -156,7 +156,7 @@ static void spice_logv(const char *log_domain,
     GLogLevelFlags glib_level = spice_log_level_to_glib(log_level);
 
     if ((glib_level & G_LOG_LEVEL_MASK) > glib_debug_level) {
-            return; // do not print anything
+        return; // do not print anything
     }
 
     log_msg = g_string_new(NULL);
