@@ -30,7 +30,7 @@
 #include "log.h"
 #include "backtrace.h"
 
-static int glib_debug_level = 0;
+static int glib_debug_level = INT_MAX;
 static int abort_level = -1;
 
 #ifndef SPICE_ABORT_LEVEL_DEFAULT
@@ -58,7 +58,7 @@ static GLogLevelFlags spice_log_level_to_glib(SpiceLogLevel level)
 
 static void spice_log_set_debug_level(void)
 {
-    if (glib_debug_level == 0) {
+    if (glib_debug_level == INT_MAX) {
         const char *debug_str = g_getenv("SPICE_DEBUG_LEVEL");
         if (debug_str != NULL) {
             int debug_level;
@@ -121,9 +121,8 @@ static void spice_logger(const gchar *log_domain,
                          const gchar *message,
                          gpointer user_data G_GNUC_UNUSED)
 {
-    if (glib_debug_level != 0) {
-        if ((log_level & G_LOG_LEVEL_MASK) > glib_debug_level)
-            return; // do not print anything
+    if ((log_level & G_LOG_LEVEL_MASK) > glib_debug_level) {
+        return; // do not print anything
     }
     g_log_default_handler(log_domain, log_level, message, NULL);
 }
