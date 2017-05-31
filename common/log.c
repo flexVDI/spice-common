@@ -153,6 +153,11 @@ static void spice_logv(const char *log_domain,
                        va_list args)
 {
     GString *log_msg;
+    GLogLevelFlags glib_level = spice_log_level_to_glib(log_level);
+
+    if ((glib_level & G_LOG_LEVEL_MASK) > glib_debug_level) {
+            return; // do not print anything
+    }
 
     log_msg = g_string_new(NULL);
     if (strloc && function) {
@@ -161,7 +166,7 @@ static void spice_logv(const char *log_domain,
     if (format) {
         g_string_append_vprintf(log_msg, format, args);
     }
-    g_log(log_domain, spice_log_level_to_glib(log_level), "%s", log_msg->str);
+    g_log(log_domain, glib_level, "%s", log_msg->str);
     g_string_free(log_msg, TRUE);
 
     if (abort_level != -1 && abort_level >= (int) log_level) {
