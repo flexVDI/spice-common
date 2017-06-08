@@ -93,7 +93,7 @@ static void spice_log_set_debug_level(void)
             if (debug_env == NULL) {
                 g_setenv("G_MESSAGES_DEBUG", SPICE_LOG_DOMAIN, FALSE);
             } else {
-                debug_env = g_strconcat(debug_env, ":", SPICE_LOG_DOMAIN, NULL);
+                debug_env = g_strconcat(debug_env, " ", SPICE_LOG_DOMAIN, NULL);
                 g_setenv("G_MESSAGES_DEBUG", SPICE_LOG_DOMAIN, FALSE);
                 g_free(debug_env);
             }
