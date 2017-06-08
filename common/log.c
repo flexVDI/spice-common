@@ -31,15 +31,23 @@
 #include "backtrace.h"
 
 static int glib_debug_level = INT_MAX;
-static int abort_level = -1;
+static int abort_mask = 0;
 
-#ifndef SPICE_ABORT_LEVEL_DEFAULT
+#ifndef SPICE_ABORT_MASK_DEFAULT
 #ifdef SPICE_DISABLE_ABORT
-#define SPICE_ABORT_LEVEL_DEFAULT -1
+#define SPICE_ABORT_MASK_DEFAULT 0
 #else
-#define SPICE_ABORT_LEVEL_DEFAULT SPICE_LOG_LEVEL_CRITICAL
+#define SPICE_ABORT_MASK_DEFAULT (G_LOG_LEVEL_CRITICAL|G_LOG_LEVEL_ERROR)
 #endif
 #endif
+
+typedef enum {
+    SPICE_LOG_LEVEL_ERROR,
+    SPICE_LOG_LEVEL_CRITICAL,
+    SPICE_LOG_LEVEL_WARNING,
+    SPICE_LOG_LEVEL_INFO,
+    SPICE_LOG_LEVEL_DEBUG,
+} SpiceLogLevel;
 
 static GLogLevelFlags spice_log_level_to_glib(SpiceLogLevel level)
 {
@@ -95,23 +103,23 @@ static void spice_log_set_debug_level(void)
 
 static void spice_log_set_abort_level(void)
 {
-    if (abort_level == -1) {
+    if (abort_mask == 0) {
         const char *abort_str = g_getenv("SPICE_ABORT_LEVEL");
         if (abort_str != NULL) {
             GLogLevelFlags glib_abort_level;
 
             /* FIXME: To be removed after enough deprecation time */
             g_warning("Setting SPICE_ABORT_LEVEL is deprecated, use G_DEBUG instead");
-            abort_level = atoi(abort_str);
-            glib_abort_level = spice_log_level_to_glib(abort_level);
+            glib_abort_level = spice_log_level_to_glib(atoi(abort_str));
             unsigned int fatal_mask = G_LOG_FATAL_MASK;
             while (glib_abort_level >= G_LOG_LEVEL_ERROR) {
                 fatal_mask |= glib_abort_level;
                 glib_abort_level >>= 1;
             }
+            abort_mask = fatal_mask;
             g_log_set_fatal_mask(SPICE_LOG_DOMAIN, fatal_mask);
         } else {
-            abort_level = SPICE_ABORT_LEVEL_DEFAULT;
+            abort_mask = SPICE_ABORT_MASK_DEFAULT;
         }
     }
 }
@@ -146,16 +154,15 @@ SPICE_CONSTRUCTOR_FUNC(spice_log_init)
 }
 
 static void spice_logv(const char *log_domain,
-                       SpiceLogLevel log_level,
+                       GLogLevelFlags log_level,
                        const char *strloc,
                        const char *function,
                        const char *format,
                        va_list args)
 {
     GString *log_msg;
-    GLogLevelFlags glib_level = spice_log_level_to_glib(log_level);
 
-    if ((glib_level & G_LOG_LEVEL_MASK) > glib_debug_level) {
+    if ((log_level & G_LOG_LEVEL_MASK) > glib_debug_level) {
         return; // do not print anything
     }
 
@@ -166,17 +173,17 @@ static void spice_logv(const char *log_domain,
     if (format) {
         g_string_append_vprintf(log_msg, format, args);
     }
-    g_log(log_domain, glib_level, "%s", log_msg->str);
+    g_log(log_domain, log_level, "%s", log_msg->str);
     g_string_free(log_msg, TRUE);
 
-    if (abort_level != -1 && abort_level >= (int) log_level) {
+    if ((abort_mask & log_level) != 0) {
         spice_backtrace();
         abort();
     }
 }
 
 void spice_log(const char *log_domain,
-               SpiceLogLevel log_level,
+               GLogLevelFlags log_level,
                const char *strloc,
                const char *function,
                const char *format,
