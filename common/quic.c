@@ -878,7 +878,7 @@ static void find_model_params(Encoder *encoder,
     /* The only valid values are 1, 3 and 5.
        0, 2 and 4 are obsolete and the rest of the
        values are considered out of the range. */
-    spice_static_assert (evol == 1 || evol == 3 || evol == 5);
+    SPICE_VERIFY(evol == 1 || evol == 3 || evol == 5);
     spice_assert(bpc <= 8 && bpc > 0);
 
     *ncounters = 8;

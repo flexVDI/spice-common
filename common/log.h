@@ -94,11 +94,6 @@ void spice_log(const char *log_domain,
     }                                                   \
 } G_STMT_END
 
-/* FIXME: improve that some day.. */
-#define spice_static_assert(x) SPICE_STMT_START {       \
-    spice_assert(x);                                    \
-} SPICE_STMT_END
-
 SPICE_END_DECLS
 
 #endif /* H_SPICE_LOG */
