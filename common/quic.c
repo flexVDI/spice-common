@@ -173,13 +173,13 @@ struct Encoder {
 };
 
 /* target wait mask index */
-static int wmimax = DEFwmimax;
+static const int wmimax = DEFwmimax;
 
 /* number of symbols to encode before increasing wait mask index */
-static int wminext = DEFwminext;
+static const int wminext = DEFwminext;
 
 /* model evolution mode */
-static int evol = DEFevol;
+static const int evol = DEFevol;
 
 /* bppmask[i] contains i ones as lsb-s */
 static const unsigned long int bppmask[33] = {
