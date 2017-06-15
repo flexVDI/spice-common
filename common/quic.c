@@ -741,39 +741,33 @@ static inline void init_decode_io(Encoder *encoder)
     encoder->io_available_bits = 0;
 }
 
-#ifdef __GNUC__
-#define ATTR_PACKED __attribute__ ((__packed__))
-#else
-#define ATTR_PACKED
-#pragma pack(push)
-#pragma pack(1)
-#endif
+#include <spice/start-packed.h>
 
-typedef struct ATTR_PACKED one_byte_pixel_t {
+typedef struct SPICE_ATTR_PACKED one_byte_pixel_t {
     BYTE a;
 } one_byte_t;
 
-typedef struct ATTR_PACKED three_bytes_pixel_t {
+typedef struct SPICE_ATTR_PACKED three_bytes_pixel_t {
     BYTE a;
     BYTE b;
     BYTE c;
 } three_bytes_t;
 
-typedef struct ATTR_PACKED four_bytes_pixel_t {
+typedef struct SPICE_ATTR_PACKED four_bytes_pixel_t {
     BYTE a;
     BYTE b;
     BYTE c;
     BYTE d;
 } four_bytes_t;
 
-typedef struct ATTR_PACKED rgb32_pixel_t {
+typedef struct SPICE_ATTR_PACKED rgb32_pixel_t {
     BYTE b;
     BYTE g;
     BYTE r;
     BYTE pad;
 } rgb32_pixel_t;
 
-typedef struct ATTR_PACKED rgb24_pixel_t {
+typedef struct SPICE_ATTR_PACKED rgb24_pixel_t {
     BYTE b;
     BYTE g;
     BYTE r;
@@ -781,11 +775,7 @@ typedef struct ATTR_PACKED rgb24_pixel_t {
 
 typedef uint16_t rgb16_pixel_t;
 
-#ifndef __GNUC__
-#pragma pack(pop)
-#endif
-
-#undef ATTR_PACKED
+#include <spice/end-packed.h>
 
 #define ONE_BYTE
 #include "quic_tmpl.c"
