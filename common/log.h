@@ -27,35 +27,34 @@
 
 SPICE_BEGIN_DECLS
 
-#ifndef SPICE_LOG_DOMAIN
-#define SPICE_LOG_DOMAIN "Spice"
+#ifdef SPICE_LOG_DOMAIN
+#error Do not use obsolete SPICE_LOG_DOMAIN macro, is currently unused
 #endif
 
 #define SPICE_STRLOC  __FILE__ ":" G_STRINGIFY (__LINE__)
 
-void spice_log(const char *log_domain,
-               GLogLevelFlags log_level,
+void spice_log(GLogLevelFlags log_level,
                const char *strloc,
                const char *function,
                const char *format,
-               ...) SPICE_ATTR_PRINTF(5, 6);
+               ...) SPICE_ATTR_PRINTF(4, 5);
 
 #define spice_return_if_fail(x) G_STMT_START {                          \
     if G_LIKELY(x) { } else {                                           \
-        spice_log(SPICE_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, G_STRFUNC, "condition `%s' failed", #x); \
+        spice_log(G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, G_STRFUNC, "condition `%s' failed", #x); \
         return;                                                         \
     }                                                                   \
 } G_STMT_END
 
 #define spice_return_val_if_fail(x, val) G_STMT_START {                 \
     if G_LIKELY(x) { } else {                                           \
-        spice_log(SPICE_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, __FUNCTION__, "condition `%s' failed", #x); \
+        spice_log(G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, __FUNCTION__, "condition `%s' failed", #x); \
         return (val);                                                   \
     }                                                                   \
 } G_STMT_END
 
 #define spice_warn_if_reached() G_STMT_START {                          \
-    spice_log(SPICE_LOG_DOMAIN, G_LOG_LEVEL_WARNING, SPICE_STRLOC, __FUNCTION__, "should not be reached"); \
+    spice_log(G_LOG_LEVEL_WARNING, SPICE_STRLOC, __FUNCTION__, "should not be reached"); \
 } G_STMT_END
 
 #define spice_printerr(format, ...) G_STMT_START {                      \
@@ -63,23 +62,23 @@ void spice_log(const char *log_domain,
 } G_STMT_END
 
 #define spice_info(format, ...) G_STMT_START {                         \
-    spice_log(SPICE_LOG_DOMAIN, G_LOG_LEVEL_INFO, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+    spice_log(G_LOG_LEVEL_INFO, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
 } G_STMT_END
 
 #define spice_debug(format, ...) G_STMT_START {                         \
-    spice_log(SPICE_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+    spice_log(G_LOG_LEVEL_DEBUG, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
 } G_STMT_END
 
 #define spice_warning(format, ...) G_STMT_START {                       \
-    spice_log(SPICE_LOG_DOMAIN, G_LOG_LEVEL_WARNING, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+    spice_log(G_LOG_LEVEL_WARNING, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
 } G_STMT_END
 
 #define spice_critical(format, ...) G_STMT_START {                          \
-    spice_log(SPICE_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+    spice_log(G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
 } G_STMT_END
 
 #define spice_error(format, ...) G_STMT_START {                         \
-    spice_log(SPICE_LOG_DOMAIN, G_LOG_LEVEL_ERROR, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+    spice_log(G_LOG_LEVEL_ERROR, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
 } G_STMT_END
 
 #define spice_warn_if_fail(x) G_STMT_START {            \

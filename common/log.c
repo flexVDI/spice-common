@@ -41,6 +41,8 @@ static int abort_mask = 0;
 #endif
 #endif
 
+#define G_LOG_DOMAIN "Spice"
+
 typedef enum {
     SPICE_LOG_LEVEL_ERROR,
     SPICE_LOG_LEVEL_CRITICAL,
@@ -91,10 +93,10 @@ static void spice_log_set_debug_level(void)
              */
             debug_env = (char *)g_getenv("G_MESSAGES_DEBUG");
             if (debug_env == NULL) {
-                g_setenv("G_MESSAGES_DEBUG", SPICE_LOG_DOMAIN, FALSE);
+                g_setenv("G_MESSAGES_DEBUG", G_LOG_DOMAIN, FALSE);
             } else {
-                debug_env = g_strconcat(debug_env, " ", SPICE_LOG_DOMAIN, NULL);
-                g_setenv("G_MESSAGES_DEBUG", SPICE_LOG_DOMAIN, FALSE);
+                debug_env = g_strconcat(debug_env, " ", G_LOG_DOMAIN, NULL);
+                g_setenv("G_MESSAGES_DEBUG", G_LOG_DOMAIN, FALSE);
                 g_free(debug_env);
             }
         }
@@ -117,7 +119,7 @@ static void spice_log_set_abort_level(void)
                 glib_abort_level >>= 1;
             }
             abort_mask = fatal_mask;
-            g_log_set_fatal_mask(SPICE_LOG_DOMAIN, fatal_mask);
+            g_log_set_fatal_mask(G_LOG_DOMAIN, fatal_mask);
         } else {
             abort_mask = SPICE_ABORT_MASK_DEFAULT;
         }
@@ -140,7 +142,7 @@ SPICE_CONSTRUCTOR_FUNC(spice_log_init)
 
     spice_log_set_debug_level();
     spice_log_set_abort_level();
-    g_log_set_handler(SPICE_LOG_DOMAIN,
+    g_log_set_handler(G_LOG_DOMAIN,
                       G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION,
                       spice_logger, NULL);
     /* Threading is always enabled from 2.31.0 onwards */
@@ -182,8 +184,7 @@ static void spice_logv(const char *log_domain,
     }
 }
 
-void spice_log(const char *log_domain,
-               GLogLevelFlags log_level,
+void spice_log(GLogLevelFlags log_level,
                const char *strloc,
                const char *function,
                const char *format,
@@ -192,6 +193,6 @@ void spice_log(const char *log_domain,
     va_list args;
 
     va_start (args, format);
-    spice_logv (log_domain, log_level, strloc, function, format, args);
+    spice_logv (G_LOG_DOMAIN, log_level, strloc, function, format, args);
     va_end (args);
 }
