@@ -62,23 +62,23 @@ void spice_log(GLogLevelFlags log_level,
 } G_STMT_END
 
 #define spice_info(format, ...) G_STMT_START {                         \
-    spice_log(G_LOG_LEVEL_INFO, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+    spice_log(G_LOG_LEVEL_INFO, SPICE_STRLOC, __FUNCTION__, "" format, ## __VA_ARGS__); \
 } G_STMT_END
 
 #define spice_debug(format, ...) G_STMT_START {                         \
-    spice_log(G_LOG_LEVEL_DEBUG, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+    spice_log(G_LOG_LEVEL_DEBUG, SPICE_STRLOC, __FUNCTION__, "" format, ## __VA_ARGS__); \
 } G_STMT_END
 
 #define spice_warning(format, ...) G_STMT_START {                       \
-    spice_log(G_LOG_LEVEL_WARNING, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+    spice_log(G_LOG_LEVEL_WARNING, SPICE_STRLOC, __FUNCTION__, "" format, ## __VA_ARGS__); \
 } G_STMT_END
 
 #define spice_critical(format, ...) G_STMT_START {                          \
-    spice_log(G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+    spice_log(G_LOG_LEVEL_CRITICAL, SPICE_STRLOC, __FUNCTION__, "" format, ## __VA_ARGS__); \
 } G_STMT_END
 
 #define spice_error(format, ...) G_STMT_START {                         \
-    spice_log(G_LOG_LEVEL_ERROR, SPICE_STRLOC, __FUNCTION__, format, ## __VA_ARGS__); \
+    spice_log(G_LOG_LEVEL_ERROR, SPICE_STRLOC, __FUNCTION__, "" format, ## __VA_ARGS__); \
 } G_STMT_END
 
 #define spice_warn_if_fail(x) G_STMT_START {            \
