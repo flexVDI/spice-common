@@ -520,12 +520,11 @@ static void canvas_fix_alignment(uint8_t *bits,
     if (stride_pixman > stride_encoded) {
         // Fix the row alignment
         int row;
-        uint8_t *dest = bits;
         for (row = height - 1; row > 0; --row) {
-            uint32_t *dest_aligned, *dest_misaligned;
-            dest_aligned = SPICE_ALIGNED_CAST(uint32_t *,dest + stride_pixman*row);
-            dest_misaligned = SPICE_UNALIGNED_CAST(uint32_t*,dest + stride_encoded*row);
-            memmove(dest_aligned, dest_misaligned, stride_encoded);
+            uint8_t *aligned, *misaligned;
+            aligned = bits + stride_pixman*row;
+            misaligned = bits + stride_encoded*row;
+            memmove(aligned, misaligned, stride_encoded);
         }
     }
 }
