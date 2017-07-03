@@ -178,9 +178,6 @@ static const int wmimax = DEFwmimax;
 /* number of symbols to encode before increasing wait mask index */
 static const int wminext = DEFwminext;
 
-/* model evolution mode */
-static const int evol = DEFevol;
-
 /* bppmask[i] contains i ones as lsb-s */
 static const unsigned long int bppmask[33] = {
     0x00000000, /* [0] */
@@ -248,14 +245,14 @@ static unsigned int tabrand(unsigned int *tabrand_seed)
     return tabrand_chaos[++*tabrand_seed & TABRAND_SEEDMASK];
 }
 
-static const unsigned short besttrigtab[3][11] = { /* array of wm_trigger for waitmask and evol,
+static const unsigned short besttrigtab[3][11] = { /* array of wm_trigger for waitmask and DEFevol,
                                                     used by set_wm_trigger() */
     /* 1 */ { 550, 900, 800, 700, 500, 350, 300, 200, 180, 180, 160},
     /* 3 */ { 110, 550, 900, 800, 550, 400, 350, 250, 140, 160, 140},
     /* 5 */ { 100, 120, 550, 900, 700, 500, 400, 300, 220, 250, 160}
 };
 
-/* set wm_trigger knowing waitmask (param) and evol (glob)*/
+/* set wm_trigger knowing waitmask (param) and DEFevol (glob)*/
 static void set_wm_trigger(CommonState *state)
 {
     unsigned int wm = state->wmidx;
@@ -263,9 +260,9 @@ static void set_wm_trigger(CommonState *state)
         wm = 10;
     }
 
-    spice_assert(evol < 6);
+    spice_assert(DEFevol < 6);
 
-    state->wm_trigger = besttrigtab[evol / 2][wm];
+    state->wm_trigger = besttrigtab[DEFevol / 2][wm];
 
     spice_assert(state->wm_trigger <= 2000);
     spice_assert(state->wm_trigger >= 1);
@@ -878,7 +875,7 @@ static void find_model_params(Encoder *encoder,
     /* The only valid values are 1, 3 and 5.
        0, 2 and 4 are obsolete and the rest of the
        values are considered out of the range. */
-    SPICE_VERIFY(evol == 1 || evol == 3 || evol == 5);
+    SPICE_VERIFY(DEFevol == 1 || DEFevol == 3 || DEFevol == 5);
     spice_assert(bpc <= 8 && bpc > 0);
 
     *ncounters = 8;
@@ -887,7 +884,7 @@ static void find_model_params(Encoder *encoder,
 
     *n_buckets_ptrs = 0;  /* ==0 means: not set yet */
 
-    switch (evol) {   /* set repfirst firstsize repnext mulsize */
+    switch (DEFevol) {   /* set repfirst firstsize repnext mulsize */
     case 1: /* buckets contain following numbers of contexts: 1 1 1 2 2 4 4 8 8 ... */
         *repfirst = 3;
         *firstsize = 1;
@@ -907,7 +904,7 @@ static void find_model_params(Encoder *encoder,
         *mulsize = 4;
         break;
     default:
-        encoder->usr->error(encoder->usr, "findmodelparams(): evol out of range!!!\n");
+        encoder->usr->error(encoder->usr, "findmodelparams(): DEFevol out of range!!!\n");
         return;
     }
 
