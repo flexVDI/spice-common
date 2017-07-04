@@ -1061,7 +1061,7 @@ static int init_encoder(Encoder *encoder, QuicUsrContext *usr)
     return TRUE;
 }
 
-static int encoder_reste(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_end)
+static int encoder_reset(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_end)
 {
     spice_assert(((uintptr_t)io_ptr % 4) == ((uintptr_t)io_ptr_end % 4));
     spice_assert(io_ptr <= io_ptr_end);
@@ -1084,7 +1084,7 @@ static int encoder_reste(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_en
     return TRUE;
 }
 
-static int encoder_reste_channels(Encoder *encoder, int channels, int width, int bpc)
+static int encoder_reset_channels(Encoder *encoder, int channels, int width, int bpc)
 {
     int i;
 
@@ -1233,8 +1233,8 @@ int quic_encode(QuicContext *quic, QuicImageType type, int width, int height,
 
     quic_image_params(encoder, type, &channels, &bpc);
 
-    if (!encoder_reste(encoder, io_ptr, io_ptr_end) ||
-        !encoder_reste_channels(encoder, channels, width, bpc)) {
+    if (!encoder_reset(encoder, io_ptr, io_ptr_end) ||
+        !encoder_reset_channels(encoder, channels, width, bpc)) {
         return QUIC_ERROR;
     }
 
@@ -1369,7 +1369,7 @@ int quic_decode_begin(QuicContext *quic, uint32_t *io_ptr, unsigned int num_io_w
     int channels;
     int bpc;
 
-    if (!encoder_reste(encoder, io_ptr, io_ptr_end)) {
+    if (!encoder_reset(encoder, io_ptr, io_ptr_end)) {
         return QUIC_ERROR;
     }
 
@@ -1400,7 +1400,7 @@ int quic_decode_begin(QuicContext *quic, uint32_t *io_ptr, unsigned int num_io_w
 
     quic_image_params(encoder, type, &channels, &bpc);
 
-    if (!encoder_reste_channels(encoder, channels, width, bpc)) {
+    if (!encoder_reset_channels(encoder, channels, width, bpc)) {
         return QUIC_ERROR;
     }
 
