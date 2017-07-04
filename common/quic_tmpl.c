@@ -255,7 +255,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
 
     spice_assert(end - i > 0);
 
-    if (!i) {
+    if (i == 0) {
         unsigned int codeword, codewordlen;
 
         decorrelate_drow[0] = family.xlatU2L[(unsigned)((int)cur_row->a -

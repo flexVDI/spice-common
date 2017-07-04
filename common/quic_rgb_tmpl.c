@@ -237,7 +237,7 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, int i,
 
     spice_assert(end - i > 0);
 
-    if (!i) {
+    if (i == 0) {
         unsigned int codeword, codewordlen;
 
         COMPRESS_ONE_ROW0_0(r);
@@ -349,7 +349,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, int i,
 
     spice_assert(end - i > 0);
 
-    if (!i) {
+    if (i == 0) {
         unsigned int codeword, codewordlen;
 
         COMPRESS_ONE_0(r);
@@ -492,7 +492,7 @@ static void FNAME(uncompress_row0_seg)(Encoder *encoder, int i,
 
     spice_assert(end - i > 0);
 
-    if (!i) {
+    if (i == 0) {
         unsigned int codewordlen;
 
         UNCOMPRESS_PIX_START(&cur_row[i]);
@@ -613,7 +613,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder,
 
     spice_assert(end - i > 0);
 
-    if (!i) {
+    if (i == 0) {
         unsigned int codewordlen;
 
         UNCOMPRESS_PIX_START(&cur_row[i]);
