@@ -380,7 +380,9 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
     int height;
 
     if (setjmp(quic_data->jmp_env)) {
-        pixman_image_unref(surface);
+        if (surface != NULL) {
+            pixman_image_unref(surface);
+        }
         spice_warning("%s", quic_data->message_buf);
         return NULL;
     }
