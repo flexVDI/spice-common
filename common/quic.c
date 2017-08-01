@@ -175,9 +175,6 @@ struct Encoder {
 /* target wait mask index */
 static const int wmimax = DEFwmimax;
 
-/* number of symbols to encode before increasing wait mask index */
-static const int wminext = DEFwminext;
-
 /* bppmask[i] contains i ones as lsb-s */
 static const unsigned long int bppmask[33] = {
     0x00000000, /* [0] */
@@ -1066,7 +1063,7 @@ static int encoder_reset(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_en
     encoder->rgb_state.waitcnt = 0;
     encoder->rgb_state.tabrand_seed = stabrand();
     encoder->rgb_state.wmidx = DEFwmistart;
-    encoder->rgb_state.wmileft = wminext;
+    encoder->rgb_state.wmileft = DEFwminext;
     set_wm_trigger(&encoder->rgb_state);
 
 #if defined(RLE) && defined(RLE_STAT)
@@ -1130,7 +1127,7 @@ static int encoder_reset_channels(Encoder *encoder, int channels, int width, int
         encoder->channels[i].state.waitcnt = 0;
         encoder->channels[i].state.tabrand_seed = stabrand();
         encoder->channels[i].state.wmidx = DEFwmistart;
-        encoder->channels[i].state.wmileft = wminext;
+        encoder->channels[i].state.wmileft = DEFwminext;
         set_wm_trigger(&encoder->channels[i].state);
 
 #if defined(RLE) && defined(RLE_STAT)

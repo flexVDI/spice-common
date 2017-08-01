@@ -222,7 +222,7 @@ static void FNAME(compress_row0)(Encoder *encoder, Channel *channel, const PIXEL
 
         channel->state.wmidx++;
         set_wm_trigger(&channel->state);
-        channel->state.wmileft = wminext;
+        channel->state.wmileft = DEFwminext;
     }
 
     if (width) {
@@ -235,7 +235,7 @@ static void FNAME(compress_row0)(Encoder *encoder, Channel *channel, const PIXEL
 
     spice_assert((int)channel->state.wmidx <= wmimax);
     spice_assert(channel->state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
@@ -364,7 +364,7 @@ static void FNAME(compress_row)(Encoder *encoder, Channel *channel,
 
         channel->state.wmidx++;
         set_wm_trigger(&channel->state);
-        channel->state.wmileft = wminext;
+        channel->state.wmileft = DEFwminext;
     }
 
     if (width) {
@@ -377,7 +377,7 @@ static void FNAME(compress_row)(Encoder *encoder, Channel *channel,
 
     spice_assert((int)channel->state.wmidx <= wmimax);
     spice_assert(channel->state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel, int i,
@@ -464,7 +464,7 @@ static void FNAME(uncompress_row0)(Encoder *encoder, Channel *channel,
 
         channel->state.wmidx++;
         set_wm_trigger(&channel->state);
-        channel->state.wmileft = wminext;
+        channel->state.wmileft = DEFwminext;
     }
 
     if (width) {
@@ -477,7 +477,7 @@ static void FNAME(uncompress_row0)(Encoder *encoder, Channel *channel,
 
     spice_assert((int)channel->state.wmidx <= wmimax);
     spice_assert(channel->state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
@@ -602,7 +602,7 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 
         channel->state.wmidx++;
         set_wm_trigger(&channel->state);
-        channel->state.wmileft = wminext;
+        channel->state.wmileft = DEFwminext;
     }
 
     if (width) {
@@ -615,7 +615,7 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 
     spice_assert((int)channel->state.wmidx <= wmimax);
     spice_assert(channel->state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 #undef PIXEL

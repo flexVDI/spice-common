@@ -294,7 +294,7 @@ static void FNAME(compress_row0)(Encoder *encoder, const PIXEL *cur_row,
 
         encoder->rgb_state.wmidx++;
         set_wm_trigger(&encoder->rgb_state);
-        encoder->rgb_state.wmileft = wminext;
+        encoder->rgb_state.wmileft = DEFwminext;
     }
 
     if (width) {
@@ -307,7 +307,7 @@ static void FNAME(compress_row0)(Encoder *encoder, const PIXEL *cur_row,
 
     spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
     spice_assert(encoder->rgb_state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 #define COMPRESS_ONE_0(channel) \
@@ -440,7 +440,7 @@ static void FNAME(compress_row)(Encoder *encoder,
 
         encoder->rgb_state.wmidx++;
         set_wm_trigger(&encoder->rgb_state);
-        encoder->rgb_state.wmileft = wminext;
+        encoder->rgb_state.wmileft = DEFwminext;
     }
 
     if (width) {
@@ -453,7 +453,7 @@ static void FNAME(compress_row)(Encoder *encoder,
 
     spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
     spice_assert(encoder->rgb_state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 #endif
@@ -556,7 +556,7 @@ static void FNAME(uncompress_row0)(Encoder *encoder,
 
         encoder->rgb_state.wmidx++;
         set_wm_trigger(&encoder->rgb_state);
-        encoder->rgb_state.wmileft = wminext;
+        encoder->rgb_state.wmileft = DEFwminext;
     }
 
     if (width) {
@@ -569,7 +569,7 @@ static void FNAME(uncompress_row0)(Encoder *encoder,
 
     spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
     spice_assert(encoder->rgb_state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 #define UNCOMPRESS_ONE_0(channel) \
@@ -710,7 +710,7 @@ static void FNAME(uncompress_row)(Encoder *encoder,
 
         encoder->rgb_state.wmidx++;
         set_wm_trigger(&encoder->rgb_state);
-        encoder->rgb_state.wmileft = wminext;
+        encoder->rgb_state.wmileft = DEFwminext;
     }
 
     if (width) {
@@ -723,7 +723,7 @@ static void FNAME(uncompress_row)(Encoder *encoder,
 
     spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
     spice_assert(encoder->rgb_state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 #undef PIXEL
