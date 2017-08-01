@@ -284,7 +284,7 @@ static void FNAME(compress_row0)(Encoder *encoder, const PIXEL *cur_row,
     const unsigned int bpc_mask = BPC_MASK;
     int pos = 0;
 
-    while ((wmimax > (int)encoder->rgb_state.wmidx) && (encoder->rgb_state.wmileft <= width)) {
+    while ((DEFwmimax > (int)encoder->rgb_state.wmidx) && (encoder->rgb_state.wmileft <= width)) {
         if (encoder->rgb_state.wmileft) {
             FNAME(compress_row0_seg)(encoder, pos, cur_row, pos + encoder->rgb_state.wmileft,
                                      bppmask[encoder->rgb_state.wmidx], bpc, bpc_mask);
@@ -300,12 +300,12 @@ static void FNAME(compress_row0)(Encoder *encoder, const PIXEL *cur_row,
     if (width) {
         FNAME(compress_row0_seg)(encoder, pos, cur_row, pos + width,
                                  bppmask[encoder->rgb_state.wmidx], bpc, bpc_mask);
-        if (wmimax > (int)encoder->rgb_state.wmidx) {
+        if (DEFwmimax > (int)encoder->rgb_state.wmidx) {
             encoder->rgb_state.wmileft -= width;
         }
     }
 
-    spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
+    spice_assert((int)encoder->rgb_state.wmidx <= DEFwmimax);
     spice_assert(encoder->rgb_state.wmidx <= 32);
     spice_assert(DEFwminext > 0);
 }
@@ -428,7 +428,7 @@ static void FNAME(compress_row)(Encoder *encoder,
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
 
-    while ((wmimax > (int)encoder->rgb_state.wmidx) && (encoder->rgb_state.wmileft <= width)) {
+    while ((DEFwmimax > (int)encoder->rgb_state.wmidx) && (encoder->rgb_state.wmileft <= width)) {
         if (encoder->rgb_state.wmileft) {
             FNAME(compress_row_seg)(encoder, pos, prev_row, cur_row,
                                     pos + encoder->rgb_state.wmileft,
@@ -446,12 +446,12 @@ static void FNAME(compress_row)(Encoder *encoder,
     if (width) {
         FNAME(compress_row_seg)(encoder, pos, prev_row, cur_row, pos + width,
                                 bppmask[encoder->rgb_state.wmidx], bpc, bpc_mask);
-        if (wmimax > (int)encoder->rgb_state.wmidx) {
+        if (DEFwmimax > (int)encoder->rgb_state.wmidx) {
             encoder->rgb_state.wmileft -= width;
         }
     }
 
-    spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
+    spice_assert((int)encoder->rgb_state.wmidx <= DEFwmimax);
     spice_assert(encoder->rgb_state.wmidx <= 32);
     spice_assert(DEFwminext > 0);
 }
@@ -544,7 +544,7 @@ static void FNAME(uncompress_row0)(Encoder *encoder,
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
 
-    while ((wmimax > (int)encoder->rgb_state.wmidx) && (encoder->rgb_state.wmileft <= width)) {
+    while ((DEFwmimax > (int)encoder->rgb_state.wmidx) && (encoder->rgb_state.wmileft <= width)) {
         if (encoder->rgb_state.wmileft) {
             FNAME(uncompress_row0_seg)(encoder, pos, cur_row,
                                        pos + encoder->rgb_state.wmileft,
@@ -562,12 +562,12 @@ static void FNAME(uncompress_row0)(Encoder *encoder,
     if (width) {
         FNAME(uncompress_row0_seg)(encoder, pos, cur_row, pos + width,
                                    bppmask[encoder->rgb_state.wmidx], bpc, bpc_mask);
-        if (wmimax > (int)encoder->rgb_state.wmidx) {
+        if (DEFwmimax > (int)encoder->rgb_state.wmidx) {
             encoder->rgb_state.wmileft -= width;
         }
     }
 
-    spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
+    spice_assert((int)encoder->rgb_state.wmidx <= DEFwmimax);
     spice_assert(encoder->rgb_state.wmidx <= 32);
     spice_assert(DEFwminext > 0);
 }
@@ -700,7 +700,7 @@ static void FNAME(uncompress_row)(Encoder *encoder,
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
 
-    while ((wmimax > (int)encoder->rgb_state.wmidx) && (encoder->rgb_state.wmileft <= width)) {
+    while ((DEFwmimax > (int)encoder->rgb_state.wmidx) && (encoder->rgb_state.wmileft <= width)) {
         if (encoder->rgb_state.wmileft) {
             FNAME(uncompress_row_seg)(encoder, prev_row, cur_row, pos,
                                       pos + encoder->rgb_state.wmileft, bpc, bpc_mask);
@@ -716,12 +716,12 @@ static void FNAME(uncompress_row)(Encoder *encoder,
     if (width) {
         FNAME(uncompress_row_seg)(encoder, prev_row, cur_row, pos,
                                   pos + width, bpc, bpc_mask);
-        if (wmimax > (int)encoder->rgb_state.wmidx) {
+        if (DEFwmimax > (int)encoder->rgb_state.wmidx) {
             encoder->rgb_state.wmileft -= width;
         }
     }
 
-    spice_assert((int)encoder->rgb_state.wmidx <= wmimax);
+    spice_assert((int)encoder->rgb_state.wmidx <= DEFwmimax);
     spice_assert(encoder->rgb_state.wmidx <= 32);
     spice_assert(DEFwminext > 0);
 }

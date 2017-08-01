@@ -172,9 +172,6 @@ struct Encoder {
     CommonState rgb_state;
 };
 
-/* target wait mask index */
-static const int wmimax = DEFwmimax;
-
 /* bppmask[i] contains i ones as lsb-s */
 static const unsigned long int bppmask[33] = {
     0x00000000, /* [0] */

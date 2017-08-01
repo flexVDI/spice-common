@@ -212,7 +212,7 @@ static void FNAME(compress_row0)(Encoder *encoder, Channel *channel, const PIXEL
     const unsigned int bpc_mask = BPC_MASK;
     int pos = 0;
 
-    while ((wmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
+    while ((DEFwmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
         if (channel->state.wmileft) {
             FNAME(compress_row0_seg)(encoder, channel, pos, cur_row, pos + channel->state.wmileft,
                                      bppmask[channel->state.wmidx], bpc, bpc_mask);
@@ -228,12 +228,12 @@ static void FNAME(compress_row0)(Encoder *encoder, Channel *channel, const PIXEL
     if (width) {
         FNAME(compress_row0_seg)(encoder, channel, pos, cur_row, pos + width,
                                  bppmask[channel->state.wmidx], bpc, bpc_mask);
-        if (wmimax > (int)channel->state.wmidx) {
+        if (DEFwmimax > (int)channel->state.wmidx) {
             channel->state.wmileft -= width;
         }
     }
 
-    spice_assert((int)channel->state.wmidx <= wmimax);
+    spice_assert((int)channel->state.wmidx <= DEFwmimax);
     spice_assert(channel->state.wmidx <= 32);
     spice_assert(DEFwminext > 0);
 }
@@ -353,7 +353,7 @@ static void FNAME(compress_row)(Encoder *encoder, Channel *channel,
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
 
-    while ((wmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
+    while ((DEFwmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
         if (channel->state.wmileft) {
             FNAME(compress_row_seg)(encoder, channel, pos, prev_row, cur_row,
                                     pos + channel->state.wmileft, bppmask[channel->state.wmidx],
@@ -370,12 +370,12 @@ static void FNAME(compress_row)(Encoder *encoder, Channel *channel,
     if (width) {
         FNAME(compress_row_seg)(encoder, channel, pos, prev_row, cur_row, pos + width,
                                 bppmask[channel->state.wmidx], bpc, bpc_mask);
-        if (wmimax > (int)channel->state.wmidx) {
+        if (DEFwmimax > (int)channel->state.wmidx) {
             channel->state.wmileft -= width;
         }
     }
 
-    spice_assert((int)channel->state.wmidx <= wmimax);
+    spice_assert((int)channel->state.wmidx <= DEFwmimax);
     spice_assert(channel->state.wmidx <= 32);
     spice_assert(DEFwminext > 0);
 }
@@ -453,7 +453,7 @@ static void FNAME(uncompress_row0)(Encoder *encoder, Channel *channel,
     BYTE * const correlate_row = channel->correlate_row;
     unsigned int pos = 0;
 
-    while ((wmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
+    while ((DEFwmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
         if (channel->state.wmileft) {
             FNAME(uncompress_row0_seg)(encoder, channel, pos, correlate_row, cur_row,
                                        pos + channel->state.wmileft, bppmask[channel->state.wmidx],
@@ -470,12 +470,12 @@ static void FNAME(uncompress_row0)(Encoder *encoder, Channel *channel,
     if (width) {
         FNAME(uncompress_row0_seg)(encoder, channel, pos, correlate_row, cur_row, pos + width,
                                    bppmask[channel->state.wmidx], bpc, bpc_mask);
-        if (wmimax > (int)channel->state.wmidx) {
+        if (DEFwmimax > (int)channel->state.wmidx) {
             channel->state.wmileft -= width;
         }
     }
 
-    spice_assert((int)channel->state.wmidx <= wmimax);
+    spice_assert((int)channel->state.wmidx <= DEFwmimax);
     spice_assert(channel->state.wmidx <= 32);
     spice_assert(DEFwminext > 0);
 }
@@ -592,7 +592,7 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
     BYTE * const correlate_row = channel->correlate_row;
     unsigned int pos = 0;
 
-    while ((wmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
+    while ((DEFwmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
         if (channel->state.wmileft) {
             FNAME(uncompress_row_seg)(encoder, channel, correlate_row, prev_row, cur_row, pos,
                                       pos + channel->state.wmileft, bpc, bpc_mask);
@@ -608,12 +608,12 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
     if (width) {
         FNAME(uncompress_row_seg)(encoder, channel, correlate_row, prev_row, cur_row, pos,
                                   pos + width, bpc, bpc_mask);
-        if (wmimax > (int)channel->state.wmidx) {
+        if (DEFwmimax > (int)channel->state.wmidx) {
             channel->state.wmileft -= width;
         }
     }
 
-    spice_assert((int)channel->state.wmidx <= wmimax);
+    spice_assert((int)channel->state.wmidx <= DEFwmimax);
     spice_assert(channel->state.wmidx <= 32);
     spice_assert(DEFwminext > 0);
 }
