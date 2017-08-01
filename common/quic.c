@@ -254,7 +254,7 @@ static void set_wm_trigger(CommonState *state)
         wm = 10;
     }
 
-    spice_assert(DEFevol < 6);
+    SPICE_VERIFY(DEFevol < 6);
 
     state->wm_trigger = besttrigtab[DEFevol / 2][wm];
 
