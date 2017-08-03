@@ -251,19 +251,11 @@ do_run:
         while (cur_row[i].a == cur_row[i - 1].a) {
             run_size++;
             if (++i == end) {
-#ifdef RLE_STAT
                 encode_channel_run(encoder, channel, run_size);
-#else
-                encode_run(encoder, run_size);
-#endif
                 return;
             }
         }
-#ifdef RLE_STAT
         encode_channel_run(encoder, channel, run_size);
-#else
-        encode_run(encoder, run_size);
-#endif
         stopidx = i + channel->state.waitcnt;
 #endif
     }
@@ -480,11 +472,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
 do_run:
         channel->state.waitcnt = stopidx - i;
         run_index = i;
-#ifdef RLE_STAT
         run_end = i + decode_channel_run(encoder, channel);
-#else
-        run_end = i + decode_run(encoder);
-#endif
 
         for (; i < run_end; i++) {
             cur_row[i].a = cur_row[i - 1].a;

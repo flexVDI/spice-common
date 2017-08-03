@@ -30,7 +30,6 @@
 #include "bitops.h"
 
 #define RLE
-#define RLE_STAT
 
 /* ASCII "QUIC" */
 #define QUIC_MAGIC 0x43495551
@@ -104,7 +103,6 @@ typedef struct CommonState {
     unsigned int wmidx;
     unsigned int wmileft;
 
-#ifdef RLE_STAT
     int melcstate; /* index to the state array */
 
     int melclen;  /* contents of the state array location
@@ -115,7 +113,6 @@ typedef struct CommonState {
                      of melclen bits */
 
     unsigned long melcorder;  /* 2^ melclen */
-#endif
 } CommonState;
 
 
@@ -493,8 +490,6 @@ static inline void decode_eat32bits(Encoder *encoder)
 
 #ifdef RLE
 
-#ifdef RLE_STAT
-
 static inline void encode_ones(Encoder *encoder, unsigned int n)
 {
     unsigned int count;
@@ -663,50 +658,6 @@ static int decode_channel_run(Encoder *encoder, Channel *channel)
 
     return runlen;
 }
-
-#else
-
-static inline void encode_run(Encoder *encoder, unsigned int len)
-{
-    int odd = len & 1U;
-    int msb;
-
-    len &= ~1U;
-
-    while ((msb = spice_bit_find_msb(len))) {
-        len &= ~(1 << (msb - 1));
-        spice_assert(msb < 32);
-        encode(encoder, (1 << (msb)) - 1, msb);
-        encode(encoder, 0, 1);
-    }
-
-    if (odd) {
-        encode(encoder, 2, 2);
-    } else {
-        encode(encoder, 0, 1);
-    }
-}
-
-static inline unsigned int decode_run(Encoder *encoder)
-{
-    unsigned int len = 0;
-    int count;
-
-    do {
-        count = 0;
-        while (encoder->io_word & (1U << 31)) {
-            decode_eatbits(encoder, 1);
-            count++;
-            spice_assert(count < 32);
-        }
-        decode_eatbits(encoder, 1);
-        len += (1U << count) >> 1;
-    } while (count > 1);
-
-    return len;
-}
-
-#endif
 #endif
 
 static inline void init_decode_io(Encoder *encoder)
@@ -1028,7 +979,7 @@ static int encoder_reset(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_en
     encoder->rgb_state.wmileft = DEFwminext;
     set_wm_trigger(&encoder->rgb_state);
 
-#if defined(RLE) && defined(RLE_STAT)
+#if defined(RLE)
     encoder_init_rle(&encoder->rgb_state);
 #endif
 
@@ -1090,7 +1041,7 @@ static int encoder_reset_channels(Encoder *encoder, int channels, int width, int
         encoder->channels[i].state.wmileft = DEFwminext;
         set_wm_trigger(&encoder->channels[i].state);
 
-#if defined(RLE) && defined(RLE_STAT)
+#if defined(RLE)
         encoder_init_rle(&encoder->channels[i].state);
 #endif
     }
