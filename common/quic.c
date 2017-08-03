@@ -133,8 +133,6 @@ typedef struct FamilyStat {
 } FamilyStat;
 
 typedef struct Channel {
-    Encoder *encoder;
-
     int correlate_row_width;
     BYTE *correlate_row;
 
@@ -994,7 +992,6 @@ static int init_channel(Encoder *encoder, Channel *channel)
     unsigned int n_buckets;
     unsigned int n_buckets_ptrs;
 
-    channel->encoder = encoder;
     channel->correlate_row_width = 0;
     channel->correlate_row = NULL;
 
@@ -1020,9 +1017,9 @@ static int init_channel(Encoder *encoder, Channel *channel)
     return TRUE;
 }
 
-static void destroy_channel(Channel *channel)
+static void destroy_channel(Encoder *encoder, Channel *channel)
 {
-    QuicUsrContext *usr = channel->encoder->usr;
+    QuicUsrContext *usr = encoder->usr;
     if (channel->correlate_row) {
         usr->free(usr, channel->correlate_row - 1);
     }
@@ -1039,7 +1036,7 @@ static int init_encoder(Encoder *encoder, QuicUsrContext *usr)
     for (i = 0; i < MAX_CHANNELS; i++) {
         if (!init_channel(encoder, &encoder->channels[i])) {
             for (--i; i >= 0; i--) {
-                destroy_channel(&encoder->channels[i]);
+                destroy_channel(encoder, &encoder->channels[i]);
             }
             return FALSE;
         }
@@ -1638,7 +1635,7 @@ void quic_destroy(QuicContext *quic)
     }
 
     for (i = 0; i < MAX_CHANNELS; i++) {
-        destroy_channel(&encoder->channels[i]);
+        destroy_channel(encoder, &encoder->channels[i]);
     }
     encoder->usr->free(encoder->usr, encoder);
 }
