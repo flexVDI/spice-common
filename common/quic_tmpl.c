@@ -627,7 +627,7 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 #undef RLE_PRED_2_IMP
 #undef RLE_PRED_3_IMP
 #undef golomb_coding
-#undef golomb_deoding
+#undef golomb_decoding
 #undef update_model
 #undef find_bucket
 #undef family
