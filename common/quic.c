@@ -514,16 +514,16 @@ static void encoder_init_rle(CommonState *state)
 }
 
 
-static void encode_run(Encoder *encoder, unsigned int runlen) //todo: try use end of line
+static void encode_state_run(Encoder *encoder, CommonState *state, unsigned int runlen)
 {
     int hits = 0;
 
-    while (runlen >= encoder->rgb_state.melcorder) {
+    while (runlen >= state->melcorder) {
         hits++;
-        runlen -= encoder->rgb_state.melcorder;
-        if (encoder->rgb_state.melcstate < MELCSTATES - 1) {
-            encoder->rgb_state.melclen = J[++encoder->rgb_state.melcstate];
-            encoder->rgb_state.melcorder = (1L << encoder->rgb_state.melclen);
+        runlen -= state->melcorder;
+        if (state->melcstate < MELCSTATES - 1) {
+            state->melclen = J[++state->melcstate];
+            state->melcorder = (1L << state->melclen);
         }
     }
 
@@ -534,49 +534,30 @@ static void encode_run(Encoder *encoder, unsigned int runlen) //todo: try use en
     */
     encode_ones(encoder, hits);
 
-    encode(encoder, runlen, encoder->rgb_state.melclen + 1);
+    encode(encoder, runlen, state->melclen + 1);
 
     /* adjust melcoder parameters */
-    if (encoder->rgb_state.melcstate) {
-        encoder->rgb_state.melclen = J[--encoder->rgb_state.melcstate];
-        encoder->rgb_state.melcorder = (1L << encoder->rgb_state.melclen);
+    if (state->melcstate) {
+        state->melclen = J[--state->melcstate];
+        state->melcorder = (1L << state->melclen);
     }
+}
+
+static void encode_run(Encoder *encoder, unsigned int runlen) //todo: try use end of line
+{
+    encode_state_run(encoder, &encoder->rgb_state, runlen);
 }
 
 static void encode_channel_run(Encoder *encoder, Channel *channel, unsigned int runlen)
 {
-    //todo: try use end of line
-    int hits = 0;
-
-    while (runlen >= channel->state.melcorder) {
-        hits++;
-        runlen -= channel->state.melcorder;
-        if (channel->state.melcstate < MELCSTATES - 1) {
-            channel->state.melclen = J[++channel->state.melcstate];
-            channel->state.melcorder = (1L << channel->state.melclen);
-        }
-    }
-
-    /* send the required number of "hit" bits (one per occurrence
-       of a run of length melcorder). This number is never too big:
-       after 31 such "hit" bits, each "hit" would represent a run of 32K
-       pixels.
-    */
-    encode_ones(encoder, hits);
-
-    encode(encoder, runlen, channel->state.melclen + 1);
-
-    /* adjust melcoder parameters */
-    if (channel->state.melcstate) {
-        channel->state.melclen = J[--channel->state.melcstate];
-        channel->state.melcorder = (1L << channel->state.melclen);
-    }
+    encode_state_run(encoder, &channel->state, runlen);
 }
+
 
 /* decoding routine: reads bits from the input and returns a run length. */
 /* argument is the number of pixels left to end-of-line (bound on run length) */
 
-static int decode_run(Encoder *encoder)
+static int decode_state_run(Encoder *encoder, CommonState *state)
 {
     int runlen = 0;
 
@@ -585,11 +566,11 @@ static int decode_run(Encoder *encoder)
         temp = lzeroes[(BYTE)(~(encoder->io_word >> 24))];/* number of leading ones in the
                                                                       input stream, up to 8 */
         for (hits = 1; hits <= temp; hits++) {
-            runlen += encoder->rgb_state.melcorder;
+            runlen += state->melcorder;
 
-            if (encoder->rgb_state.melcstate < MELCSTATES - 1) {
-                encoder->rgb_state.melclen = J[++encoder->rgb_state.melcstate];
-                encoder->rgb_state.melcorder = (1U << encoder->rgb_state.melclen);
+            if (state->melcstate < MELCSTATES - 1) {
+                state->melclen = J[++state->melcstate];
+                state->melcorder = (1U << state->melclen);
             }
         }
         if (temp != 8) {
@@ -601,58 +582,29 @@ static int decode_run(Encoder *encoder)
     } while (1);
 
     /* read the length of the remainder */
-    if (encoder->rgb_state.melclen) {
-        runlen += encoder->io_word >> (32 - encoder->rgb_state.melclen);
-        decode_eatbits(encoder, encoder->rgb_state.melclen);
+    if (state->melclen) {
+        runlen += encoder->io_word >> (32 - state->melclen);
+        decode_eatbits(encoder, state->melclen);
     }
 
     /* adjust melcoder parameters */
-    if (encoder->rgb_state.melcstate) {
-        encoder->rgb_state.melclen = J[--encoder->rgb_state.melcstate];
-        encoder->rgb_state.melcorder = (1U << encoder->rgb_state.melclen);
+    if (state->melcstate) {
+        state->melclen = J[--state->melcstate];
+        state->melcorder = (1U << state->melclen);
     }
 
     return runlen;
+}
+
+static int decode_run(Encoder *encoder)
+{
+    return decode_state_run(encoder, &encoder->rgb_state);
 }
 
 
 static int decode_channel_run(Encoder *encoder, Channel *channel)
 {
-    int runlen = 0;
-
-    do {
-        register int temp, hits;
-        temp = lzeroes[(BYTE)(~(encoder->io_word >> 24))];/* number of leading ones in the
-                                                                      input stream, up to 8 */
-        for (hits = 1; hits <= temp; hits++) {
-            runlen += channel->state.melcorder;
-
-            if (channel->state.melcstate < MELCSTATES - 1) {
-                channel->state.melclen = J[++channel->state.melcstate];
-                channel->state.melcorder = (1U << channel->state.melclen);
-            }
-        }
-        if (temp != 8) {
-            decode_eatbits(encoder, temp + 1);  /* consume the leading
-                                                            0 of the remainder encoding */
-            break;
-        }
-        decode_eatbits(encoder, 8);
-    } while (1);
-
-    /* read the length of the remainder */
-    if (channel->state.melclen) {
-        runlen += encoder->io_word >> (32 - channel->state.melclen);
-        decode_eatbits(encoder, channel->state.melclen);
-    }
-
-    /* adjust melcoder parameters */
-    if (channel->state.melcstate) {
-        channel->state.melclen = J[--channel->state.melcstate];
-        channel->state.melcorder = (1U << channel->state.melclen);
-    }
-
-    return runlen;
+    return decode_state_run(encoder, &channel->state);
 }
 
 static inline void init_decode_io(Encoder *encoder)
