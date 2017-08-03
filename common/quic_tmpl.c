@@ -43,16 +43,12 @@
 #define _PIXEL_A ((unsigned int)curr[-1].a)
 #define _PIXEL_B ((unsigned int)prev[0].a)
 
-#ifdef RLE
 #define RLE_PRED_IMP                                                       \
 if (prev_row[i - 1].a == prev_row[i].a) {                                  \
     if (run_index != i && i > 2 && cur_row[i - 1].a == cur_row[i - 2].a) { \
         goto do_run;                                                       \
     }                                                                      \
 }
-#else
-#define RLE_PRED_IMP
-#endif
 
 /*  a  */
 static inline BYTE FNAME(decorrelate_0)(const PIXEL * const curr, const unsigned int bpc_mask)
@@ -182,10 +178,8 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
 {
     BYTE * const decorrelate_drow = channel->correlate_row;
     int stopidx;
-#ifdef RLE
     int run_index = 0;
     int run_size;
-#endif
 
     spice_assert(end - i > 0);
 
@@ -242,7 +236,6 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
 
         return;
 
-#ifdef RLE
 do_run:
         run_index = i;
         channel->state.waitcnt = stopidx - i;
@@ -257,7 +250,6 @@ do_run:
         }
         encode_channel_run(encoder, channel, run_size);
         stopidx = i + channel->state.waitcnt;
-#endif
     }
 }
 
@@ -409,10 +401,8 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
 {
     const unsigned int waitmask = bppmask[channel->state.wmidx];
     int stopidx;
-#ifdef RLE
     int run_index = 0;
     int run_end;
-#endif
 
     spice_assert(end - i > 0);
 
@@ -468,7 +458,6 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
 
         return;
 
-#ifdef RLE
 do_run:
         channel->state.waitcnt = stopidx - i;
         run_index = i;
@@ -483,7 +472,6 @@ do_run:
         }
 
         stopidx = i + channel->state.waitcnt;
-#endif
     }
 }
 

@@ -29,8 +29,6 @@
 #include "spice_common.h"
 #include "bitops.h"
 
-#define RLE
-
 /* ASCII "QUIC" */
 #define QUIC_MAGIC 0x43495551
 #define QUIC_VERSION_MAJOR 0U
@@ -488,8 +486,6 @@ static inline void decode_eat32bits(Encoder *encoder)
     decode_eatbits(encoder, 16);
 }
 
-#ifdef RLE
-
 static inline void encode_ones(Encoder *encoder, unsigned int n)
 {
     unsigned int count;
@@ -658,7 +654,6 @@ static int decode_channel_run(Encoder *encoder, Channel *channel)
 
     return runlen;
 }
-#endif
 
 static inline void init_decode_io(Encoder *encoder)
 {
@@ -979,9 +974,7 @@ static int encoder_reset(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_en
     encoder->rgb_state.wmileft = DEFwminext;
     set_wm_trigger(&encoder->rgb_state);
 
-#if defined(RLE)
     encoder_init_rle(&encoder->rgb_state);
-#endif
 
     encoder->io_words_count = io_ptr_end - io_ptr;
     encoder->io_now = io_ptr;
@@ -1041,9 +1034,7 @@ static int encoder_reset_channels(Encoder *encoder, int channels, int width, int
         encoder->channels[i].state.wmileft = DEFwminext;
         set_wm_trigger(&encoder->channels[i].state);
 
-#if defined(RLE)
         encoder_init_rle(&encoder->channels[i].state);
-#endif
     }
     return TRUE;
 }
