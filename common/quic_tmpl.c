@@ -322,7 +322,6 @@ static void FNAME(compress_row)(Encoder *encoder, Channel *channel,
     decode_eatbits(encoder, codewordlen);
 
 static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel, int i,
-                                       BYTE * const correlate_row,
                                        PIXEL * const cur_row,
                                        const int end,
                                        const unsigned int waitmask,
@@ -330,6 +329,7 @@ static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel, int i
                                        const unsigned int bpc_mask)
 {
     CommonState *state = &channel->state;
+    BYTE * const correlate_row = channel->correlate_row;
     int stopidx;
 
     spice_assert(end - i > 0);
@@ -381,12 +381,11 @@ static void FNAME(uncompress_row0)(Encoder *encoder, Channel *channel,
     CommonState *state = &channel->state;
     const unsigned int bpc = BPC;
     const unsigned int bpc_mask = BPC_MASK;
-    BYTE * const correlate_row = channel->correlate_row;
     unsigned int pos = 0;
 
     while ((DEFwmimax > (int)state->wmidx) && (state->wmileft <= width)) {
         if (state->wmileft) {
-            FNAME(uncompress_row0_seg)(encoder, channel, pos, correlate_row, cur_row,
+            FNAME(uncompress_row0_seg)(encoder, channel, pos, cur_row,
                                        pos + state->wmileft, bppmask[state->wmidx],
                                        bpc, bpc_mask);
             pos += state->wmileft;
@@ -399,7 +398,7 @@ static void FNAME(uncompress_row0)(Encoder *encoder, Channel *channel,
     }
 
     if (width) {
-        FNAME(uncompress_row0_seg)(encoder, channel, pos, correlate_row, cur_row, pos + width,
+        FNAME(uncompress_row0_seg)(encoder, channel, pos, cur_row, pos + width,
                                    bppmask[state->wmidx], bpc, bpc_mask);
         if (DEFwmimax > (int)state->wmidx) {
             state->wmileft -= width;
@@ -428,7 +427,6 @@ static void FNAME(uncompress_row0)(Encoder *encoder, Channel *channel,
     decode_eatbits(encoder, codewordlen);
 
 static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
-                                      BYTE *correlate_row,
                                       const PIXEL * const prev_row,
                                       PIXEL * const cur_row,
                                       int i,
@@ -437,6 +435,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
                                       const unsigned int bpc_mask)
 {
     CommonState *state = &channel->state;
+    BYTE * const correlate_row = channel->correlate_row;
     const unsigned int waitmask = bppmask[state->wmidx];
     int stopidx;
     int run_index = 0;
@@ -513,12 +512,11 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
     CommonState *state = &channel->state;
     const unsigned int bpc = BPC;
     const unsigned int bpc_mask = BPC_MASK;
-    BYTE * const correlate_row = channel->correlate_row;
     unsigned int pos = 0;
 
     while ((DEFwmimax > (int)state->wmidx) && (state->wmileft <= width)) {
         if (state->wmileft) {
-            FNAME(uncompress_row_seg)(encoder, channel, correlate_row, prev_row, cur_row, pos,
+            FNAME(uncompress_row_seg)(encoder, channel, prev_row, cur_row, pos,
                                       pos + state->wmileft, bpc, bpc_mask);
             pos += state->wmileft;
             width -= state->wmileft;
@@ -530,7 +528,7 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
     }
 
     if (width) {
-        FNAME(uncompress_row_seg)(encoder, channel, correlate_row, prev_row, cur_row, pos,
+        FNAME(uncompress_row_seg)(encoder, channel, prev_row, cur_row, pos,
                                   pos + width, bpc, bpc_mask);
         if (DEFwmimax > (int)state->wmidx) {
             state->wmileft -= width;
