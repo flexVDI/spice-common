@@ -153,7 +153,6 @@ struct Encoder {
     QuicImageType type;
     unsigned int width;
     unsigned int height;
-    unsigned int num_channels;
 
     unsigned int n_buckets_8bpc;
     unsigned int n_buckets_5bpc;
@@ -1078,8 +1077,6 @@ static int encoder_reset(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_en
 static int encoder_reset_channels(Encoder *encoder, int channels, int width, int bpc)
 {
     int i;
-
-    encoder->num_channels = channels;
 
     for (i = 0; i < channels; i++) {
         s_bucket *bucket;
