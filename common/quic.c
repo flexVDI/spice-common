@@ -82,11 +82,11 @@ typedef struct QuicFamily {
     unsigned int golomb_code[256][MAXNUMCODES];
 
     /* array for translating distribution U to L for depths up to 8 bpp,
-    initialized by decorelateinit() */
+    initialized by decorrelate_init() */
     BYTE xlatU2L[256];
 
     /* array for translating distribution L to U for depths up to 8 bpp,
-       initialized by corelateinit() */
+       initialized by correlate_init() */
     unsigned int xlatL2U[256];
 } QuicFamily;
 
@@ -315,7 +315,7 @@ static unsigned int cnt_l_zeroes(const unsigned int bits)
 #include "quic_family_tmpl.c"
 #endif
 
-static void decorelate_init(QuicFamily *family, int bpc)
+static void decorrelate_init(QuicFamily *family, int bpc)
 {
     const unsigned int pixelbitmask = bppmask[bpc];
     const unsigned int pixelbitmaskshr = pixelbitmask >> 1;
@@ -332,7 +332,7 @@ static void decorelate_init(QuicFamily *family, int bpc)
     }
 }
 
-static void corelate_init(QuicFamily *family, int bpc)
+static void correlate_init(QuicFamily *family, int bpc)
 {
     const unsigned long int pixelbitmask = bppmask[bpc];
     unsigned long int s;
@@ -388,8 +388,8 @@ static void family_init(QuicFamily *family, int bpc, int limit)
         }
     }
 
-    decorelate_init(family, bpc);
-    corelate_init(family, bpc);
+    decorrelate_init(family, bpc);
+    correlate_init(family, bpc);
 }
 
 static void more_io_words(Encoder *encoder)
