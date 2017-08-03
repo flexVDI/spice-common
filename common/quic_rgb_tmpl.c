@@ -110,7 +110,6 @@
 
 #define _PIXEL_A(channel, curr) ((unsigned int)GET_##channel((curr) - 1))
 #define _PIXEL_B(channel, prev) ((unsigned int)GET_##channel(prev))
-#define _PIXEL_C(channel, prev) ((unsigned int)GET_##channel((prev) - 1))
 
 /*  a  */
 
@@ -120,7 +119,6 @@
 #define CORRELATE_0(channel, curr, correlate, bpc_mask)\
     ((family.xlatL2U[correlate] + _PIXEL_A(channel, curr)) & bpc_mask)
 
-#ifdef PRED_1
 
 /*  (a+b)/2  */
 #define DECORRELATE(channel, prev, curr, bpc_mask, r)                                           \
@@ -130,36 +128,6 @@
 #define CORRELATE(channel, prev, curr, correlate, bpc_mask, r)                                  \
     SET_##channel(r, ((family.xlatL2U[correlate] +                                              \
           (int)((_PIXEL_A(channel, curr) + _PIXEL_B(channel, prev)) >> 1)) & bpc_mask))
-#endif
-
-#ifdef PRED_2
-
-/*  .75a+.75b-.5c  */
-#define DECORRELATE(channel, prev, curr, bpc_mask, r) {                         \
-    int p = ((int)(3 * (_PIXEL_A(channel, curr) + _PIXEL_B(channel, prev))) -   \
-                        (int)(_PIXEL_C(channel, prev) << 1)) >> 2;              \
-    if (p < 0) {                                                                \
-        p = 0;                                                                  \
-    } else if ((unsigned)p > bpc_mask) {                                        \
-        p = bpc_mask;                                                           \
-    }                                                                           \
-    r = family.xlatU2L[(unsigned)((int)GET_##channel(curr) - p) & bpc_mask];    \
-}
-
-#define CORRELATE(channel, prev, curr, correlate, bpc_mask, r) {                        \
-    const int p = ((int)(3 * (_PIXEL_A(channel, curr) + _PIXEL_B(channel, prev))) -     \
-                        (int)(_PIXEL_C(channel, prev) << 1) ) >> 2;                     \
-    const unsigned int s = family.xlatL2U[correlate];                                   \
-    if (!(p & ~bpc_mask)) {                                                             \
-        SET_##channel(r, (s + (unsigned)p) & bpc_mask);                                 \
-    } else if (p < 0) {                                                                 \
-        SET_##channel(r, s);                                                            \
-    } else {                                                                            \
-        SET_##channel(r, (s + bpc_mask) & bpc_mask);                                    \
-    }                                                                                   \
-}
-
-#endif
 
 
 #define COMPRESS_ONE_ROW0_0(channel)                                                \
@@ -693,7 +661,6 @@ static void FNAME(uncompress_row)(Encoder *encoder,
 #undef FNAME
 #undef _PIXEL_A
 #undef _PIXEL_B
-#undef _PIXEL_C
 #undef SAME_PIXEL
 #undef RLE_PRED_IMP
 #undef UPDATE_MODEL

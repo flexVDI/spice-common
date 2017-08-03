@@ -48,7 +48,6 @@
 
 #define _PIXEL_A ((unsigned int)curr[-1].a)
 #define _PIXEL_B ((unsigned int)prev[0].a)
-#define _PIXEL_C ((unsigned int)prev[-1].a)
 
 #ifdef RLE
 #define RLE_PRED_IMP                                                       \
@@ -73,7 +72,6 @@ static inline void FNAME(correlate_0)(PIXEL *curr, const BYTE correlate,
     curr->a = (family.xlatL2U[correlate] + _PIXEL_A) & bpc_mask;
 }
 
-#ifdef PRED_1
 
 /*  (a+b)/2  */
 static inline BYTE FNAME(decorrelate)(const PIXEL *const prev, const PIXEL * const curr,
@@ -89,43 +87,6 @@ static inline void FNAME(correlate)(const PIXEL *prev, PIXEL *curr, const BYTE c
     curr->a = (family.xlatL2U[correlate] + (int)((_PIXEL_A + _PIXEL_B) >> 1)) & bpc_mask;
 }
 
-#endif
-
-#ifdef PRED_2
-
-/*  .75a+.75b-.5c  */
-static inline BYTE FNAME(decorrelate)(const PIXEL *const prev, const PIXEL * const curr,
-                                      const unsigned int bpc_mask)
-{
-    int p = ((int)(3 * (_PIXEL_A + _PIXEL_B)) - (int)(_PIXEL_C << 1)) >> 2;
-
-    if (p < 0) {
-        p = 0;
-    } else if ((unsigned)p > bpc_mask) {
-        p = bpc_mask;
-    }
-
-    {
-        return family.xlatU2L[(unsigned)((int)curr->a - p) & bpc_mask];
-    }
-}
-
-static inline void FNAME(correlate)(const PIXEL *prev, PIXEL *curr, const BYTE correlate,
-                                    const unsigned int bpc_mask)
-{
-    const int p = ((int)(3 * (_PIXEL_A + _PIXEL_B)) - (int)(_PIXEL_C << 1)) >> 2;
-    const unsigned int s = family.xlatL2U[correlate];
-
-    if (!(p & ~bpc_mask)) {
-        curr->a = (s + (unsigned)p) & bpc_mask;
-    } else if (p < 0) {
-        curr->a = s;
-    } else {
-        curr->a = (s + bpc_mask) & bpc_mask;
-    }
-}
-
-#endif
 
 static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel, int i,
                                      const PIXEL * const cur_row,
@@ -585,7 +546,6 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 #undef FNAME
 #undef _PIXEL_A
 #undef _PIXEL_B
-#undef _PIXEL_C
 #undef RLE_PRED_IMP
 #undef golomb_coding
 #undef golomb_decoding

@@ -31,7 +31,6 @@
 
 #define RLE
 #define RLE_STAT
-#define PRED_1
 #define QUIC_RGB
 
 /* ASCII "QUIC" */
