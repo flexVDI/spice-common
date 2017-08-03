@@ -168,7 +168,7 @@ struct Encoder {
 };
 
 /* bppmask[i] contains i ones as lsb-s */
-static const unsigned long int bppmask[33] = {
+static const unsigned int bppmask[33] = {
     0x00000000, /* [0] */
     0x00000001, 0x00000003, 0x00000007, 0x0000000f,
     0x0000001f, 0x0000003f, 0x0000007f, 0x000000ff,
@@ -329,7 +329,7 @@ static void decorrelate_init(QuicFamily *family, int bpc)
 
 static void correlate_init(QuicFamily *family, int bpc)
 {
-    const unsigned long int pixelbitmask = bppmask[bpc];
+    const unsigned int pixelbitmask = bppmask[bpc];
     unsigned long int s;
 
     //spice_assert(bpc <= 8);
