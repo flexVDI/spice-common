@@ -103,8 +103,6 @@ typedef struct s_bucket {
 typedef struct Encoder Encoder;
 
 typedef struct CommonState {
-    Encoder *encoder;
-
     unsigned int waitcnt;
     unsigned int tabrand_seed;
     unsigned int wm_trigger;
@@ -997,7 +995,6 @@ static int init_channel(Encoder *encoder, Channel *channel)
     unsigned int n_buckets_ptrs;
 
     channel->encoder = encoder;
-    channel->state.encoder = encoder;
     channel->correlate_row_width = 0;
     channel->correlate_row = NULL;
 
@@ -1038,7 +1035,6 @@ static int init_encoder(Encoder *encoder, QuicUsrContext *usr)
     int i;
 
     encoder->usr = usr;
-    encoder->rgb_state.encoder = encoder;
 
     for (i = 0; i < MAX_CHANNELS; i++) {
         if (!init_channel(encoder, &encoder->channels[i])) {
