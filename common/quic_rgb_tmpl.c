@@ -185,36 +185,15 @@
                 correlate_row_b[index]);
 
 
-#ifdef RLE_PRED_1
-#define RLE_PRED_1_IMP                                                                          \
-if (SAME_PIXEL(&cur_row[i - 1], &prev_row[i])) {                                                \
-    if (run_index != i && SAME_PIXEL(&prev_row[i - 1], &prev_row[i]) &&                         \
-                                i + 1 < end && SAME_PIXEL(&prev_row[i], &prev_row[i + 1])) {    \
-        goto do_run;                                                                            \
-    }                                                                                           \
-}
-#else
-#define RLE_PRED_1_IMP
-#endif
-
-#ifdef RLE_PRED_2
-#define RLE_PRED_2_IMP                                                              \
+#ifdef RLE
+#define RLE_PRED_IMP                                                                \
 if (SAME_PIXEL(&prev_row[i - 1], &prev_row[i])) {                                   \
     if (run_index != i && i > 2 && SAME_PIXEL(&cur_row[i - 1], &cur_row[i - 2])) {  \
         goto do_run;                                                                \
     }                                                                               \
 }
 #else
-#define RLE_PRED_2_IMP
-#endif
-
-#ifdef RLE_PRED_3
-#define RLE_PRED_3_IMP                                                              \
-if (i > 1 &&  SAME_PIXEL(&cur_row[i - 1], &cur_row[i - 2]) && i != run_index) {     \
-    goto do_run;                                                                    \
-}
-#else
-#define RLE_PRED_3_IMP
+#define RLE_PRED_IMP
 #endif
 
 #ifdef COMPRESS_IMP
@@ -370,11 +349,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, int i,
         while (stopidx < end) {
             for (; i <= stopidx; i++) {
                 unsigned int codeword, codewordlen;
-#ifdef RLE
-                RLE_PRED_1_IMP;
-                RLE_PRED_2_IMP;
-                RLE_PRED_3_IMP;
-#endif
+                RLE_PRED_IMP;
                 COMPRESS_ONE(r, i);
                 COMPRESS_ONE(g, i);
                 COMPRESS_ONE(b, i);
@@ -386,11 +361,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, int i,
 
         for (; i < end; i++) {
             unsigned int codeword, codewordlen;
-#ifdef RLE
-            RLE_PRED_1_IMP;
-            RLE_PRED_2_IMP;
-            RLE_PRED_3_IMP;
-#endif
+            RLE_PRED_IMP;
             COMPRESS_ONE(r, i);
             COMPRESS_ONE(g, i);
             COMPRESS_ONE(b, i);
@@ -635,11 +606,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder,
         while (stopidx < end) {
             for (; i <= stopidx; i++) {
                 unsigned int codewordlen;
-#ifdef RLE
-                RLE_PRED_1_IMP;
-                RLE_PRED_2_IMP;
-                RLE_PRED_3_IMP;
-#endif
+                RLE_PRED_IMP;
                 UNCOMPRESS_PIX_START(&cur_row[i]);
                 UNCOMPRESS_ONE(r);
                 UNCOMPRESS_ONE(g);
@@ -653,11 +620,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder,
 
         for (; i < end; i++) {
             unsigned int codewordlen;
-#ifdef RLE
-            RLE_PRED_1_IMP;
-            RLE_PRED_2_IMP;
-            RLE_PRED_3_IMP;
-#endif
+            RLE_PRED_IMP;
             UNCOMPRESS_PIX_START(&cur_row[i]);
             UNCOMPRESS_ONE(r);
             UNCOMPRESS_ONE(g);
@@ -732,9 +695,7 @@ static void FNAME(uncompress_row)(Encoder *encoder,
 #undef _PIXEL_B
 #undef _PIXEL_C
 #undef SAME_PIXEL
-#undef RLE_PRED_1_IMP
-#undef RLE_PRED_2_IMP
-#undef RLE_PRED_3_IMP
+#undef RLE_PRED_IMP
 #undef UPDATE_MODEL
 #undef DECORRELATE_0
 #undef DECORRELATE

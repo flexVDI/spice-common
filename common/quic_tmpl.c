@@ -50,36 +50,15 @@
 #define _PIXEL_B ((unsigned int)prev[0].a)
 #define _PIXEL_C ((unsigned int)prev[-1].a)
 
-#ifdef RLE_PRED_1
-#define RLE_PRED_1_IMP                                                              \
-if (cur_row[i - 1].a == prev_row[i].a) {                                            \
-    if (run_index != i && prev_row[i - 1].a == prev_row[i].a &&                     \
-                        i + 1 < end && prev_row[i].a == prev_row[i + 1].a) {        \
-        goto do_run;                                                                \
-    }                                                                               \
-}
-#else
-#define RLE_PRED_1_IMP
-#endif
-
-#ifdef RLE_PRED_2
-#define RLE_PRED_2_IMP                                                     \
+#ifdef RLE
+#define RLE_PRED_IMP                                                       \
 if (prev_row[i - 1].a == prev_row[i].a) {                                  \
     if (run_index != i && i > 2 && cur_row[i - 1].a == cur_row[i - 2].a) { \
         goto do_run;                                                       \
     }                                                                      \
 }
 #else
-#define RLE_PRED_2_IMP
-#endif
-
-#ifdef RLE_PRED_3
-#define RLE_PRED_3_IMP                                                  \
-if (i > 1 && cur_row[i - 1].a == cur_row[i - 2].a && i != run_index) {  \
-    goto do_run;                                                        \
-}
-#else
-#define RLE_PRED_3_IMP
+#define RLE_PRED_IMP
 #endif
 
 /*  a  */
@@ -282,11 +261,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
         while (stopidx < end) {
             for (; i <= stopidx; i++) {
                 unsigned int codeword, codewordlen;
-#ifdef RLE
-                RLE_PRED_1_IMP;
-                RLE_PRED_2_IMP;
-                RLE_PRED_3_IMP;
-#endif
+                RLE_PRED_IMP;
                 decorrelate_drow[i] = FNAME(decorrelate)(&prev_row[i], &cur_row[i], bpc_mask);
                 golomb_coding(decorrelate_drow[i],
                               find_bucket(channel, decorrelate_drow[i - 1])->bestcode, &codeword,
@@ -301,11 +276,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
 
         for (; i < end; i++) {
             unsigned int codeword, codewordlen;
-#ifdef RLE
-            RLE_PRED_1_IMP;
-            RLE_PRED_2_IMP;
-            RLE_PRED_3_IMP;
-#endif
+            RLE_PRED_IMP;
             decorrelate_drow[i] = FNAME(decorrelate)(&prev_row[i], &cur_row[i], bpc_mask);
             golomb_coding(decorrelate_drow[i], find_bucket(channel,
                                                           decorrelate_drow[i - 1])->bestcode,
@@ -523,11 +494,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
 
             for (; i <= stopidx; i++) {
                 unsigned int codewordlen;
-#ifdef RLE
-                RLE_PRED_1_IMP;
-                RLE_PRED_2_IMP;
-                RLE_PRED_3_IMP;
-#endif
+                RLE_PRED_IMP;
                 pbucket = find_bucket(channel, correlate_row[i - 1]);
                 correlate_row[i] = (BYTE)golomb_decoding(pbucket->bestcode, encoder->io_word,
                                                          &codewordlen);
@@ -542,11 +509,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
 
         for (; i < end; i++) {
             unsigned int codewordlen;
-#ifdef RLE
-            RLE_PRED_1_IMP;
-            RLE_PRED_2_IMP;
-            RLE_PRED_3_IMP;
-#endif
+            RLE_PRED_IMP;
             correlate_row[i] = (BYTE)golomb_decoding(find_bucket(channel,
                                                                  correlate_row[i - 1])->bestcode,
                                                      encoder->io_word, &codewordlen);
@@ -623,9 +586,7 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 #undef _PIXEL_A
 #undef _PIXEL_B
 #undef _PIXEL_C
-#undef RLE_PRED_1_IMP
-#undef RLE_PRED_2_IMP
-#undef RLE_PRED_3_IMP
+#undef RLE_PRED_IMP
 #undef golomb_coding
 #undef golomb_decoding
 #undef update_model
