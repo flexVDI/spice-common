@@ -161,6 +161,21 @@ AC_DEFUN([SPICE_CHECK_GLIB2], [
     PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 2.38 gio-2.0 >= 2.38 gthread-2.0 >= 2.38)
 ])
 
+# SPICE_CHECK_GDK_PIXBUF
+# ----------------------
+# Check for the availability of gdk-pixbuf. If found, it will return the flags to use
+# in the GDK_PIXBUF_CFLAGS and GDK_PIXBUF_LIBS variables, and it will define a
+# HAVE_GDK_PIXBUF preprocessor symbol as well as a HAVE_GDK_PIXBUF Makefile conditional.
+# ----------------
+AC_DEFUN([SPICE_CHECK_GDK_PIXBUF], [
+    PKG_CHECK_MODULES([GDK_PIXBUF], [gdk-pixbuf-2.0 >= 2.26], [have_gdk_pixbuf=yes], [have_gdk_pixbuf=no])
+
+    AM_CONDITIONAL([HAVE_GDK_PIXBUF], [test "x$have_gdk_pixbuf" = "xyes"])
+    if test "x$have_gdk_pixbuf" = "xyes" ; then
+      AC_DEFINE([HAVE_GDK_PIXBUF], [1], [Define if gdk-pixbuf was found])
+    fi
+])
+
 # SPICE_CHECK_PYTHON_MODULES()
 # --------------------------
 # Adds a --enable-python-checks configure flags as well as checks for the

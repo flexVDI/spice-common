@@ -34,6 +34,27 @@ test_marshallers_LDADD =				\
 	$(GLIB2_LIBS)			\
 	$(NULL)
 
+
+if HAVE_GDK_PIXBUF
+TESTS += test_quic
+
+test_quic_SOURCES =			\
+	test-quic.c			\
+	$(NULL)
+test_quic_CFLAGS =			\
+	-I$(top_srcdir)			\
+	$(GLIB2_CFLAGS)			\
+	$(GDK_PIXBUF_CFLAGS)		\
+	$(PROTOCOL_CFLAGS)		\
+	$(NULL)
+test_quic_LDADD =					\
+	$(top_builddir)/common/libspice-common.la	\
+	$(GLIB2_LIBS)					\
+	$(GDK_PIXBUF_LIBS)				\
+	$(NULL)
+endif
+
+
 # Avoid need for python(pyparsing) by end users
 TEST_MARSHALLERS =				\
 	generated_test_marshallers.c		\
