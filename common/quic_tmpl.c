@@ -25,12 +25,6 @@
 #define PIXEL one_byte_t
 #endif
 
-#ifdef THREE_BYTE
-#undef THREE_BYTE
-#define FNAME(name) quic_three_##name
-#define PIXEL three_bytes_t
-#endif
-
 #ifdef FOUR_BYTE
 #undef FOUR_BYTE
 #define FNAME(name) quic_four_##name

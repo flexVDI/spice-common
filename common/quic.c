@@ -31,7 +31,6 @@
 
 #define RLE
 #define RLE_STAT
-#define QUIC_RGB
 
 /* ASCII "QUIC" */
 #define QUIC_MAGIC 0x43495551
@@ -301,10 +300,8 @@ static unsigned int cnt_l_zeroes(const unsigned int bits)
 #define QUIC_FAMILY_8BPC
 #include "quic_family_tmpl.c"
 
-#ifdef QUIC_RGB
 #define QUIC_FAMILY_5BPC
 #include "quic_family_tmpl.c"
-#endif
 
 static void decorrelate_init(QuicFamily *family, int bpc)
 {
@@ -525,7 +522,6 @@ static void encoder_init_rle(CommonState *state)
     state->melcorder = 1 << state->melclen;
 }
 
-#ifdef QUIC_RGB
 
 static void encode_run(Encoder *encoder, unsigned int runlen) //todo: try use end of line
 {
@@ -555,8 +551,6 @@ static void encode_run(Encoder *encoder, unsigned int runlen) //todo: try use en
         encoder->rgb_state.melcorder = (1L << encoder->rgb_state.melclen);
     }
 }
-
-#endif
 
 static void encode_channel_run(Encoder *encoder, Channel *channel, unsigned int runlen)
 {
@@ -591,7 +585,6 @@ static void encode_channel_run(Encoder *encoder, Channel *channel, unsigned int 
 /* decoding routine: reads bits from the input and returns a run length. */
 /* argument is the number of pixels left to end-of-line (bound on run length) */
 
-#ifdef QUIC_RGB
 static int decode_run(Encoder *encoder)
 {
     int runlen = 0;
@@ -631,7 +624,6 @@ static int decode_run(Encoder *encoder)
     return runlen;
 }
 
-#endif
 
 static int decode_channel_run(Encoder *encoder, Channel *channel)
 {
@@ -729,12 +721,6 @@ typedef struct SPICE_ATTR_PACKED one_byte_pixel_t {
     BYTE a;
 } one_byte_t;
 
-typedef struct SPICE_ATTR_PACKED three_bytes_pixel_t {
-    BYTE a;
-    BYTE b;
-    BYTE c;
-} three_bytes_t;
-
 typedef struct SPICE_ATTR_PACKED four_bytes_pixel_t {
     BYTE a;
     BYTE b;
@@ -765,8 +751,6 @@ typedef uint16_t rgb16_pixel_t;
 #define FOUR_BYTE
 #include "quic_tmpl.c"
 
-#ifdef QUIC_RGB
-
 #define QUIC_RGB32
 #include "quic_rgb_tmpl.c"
 
@@ -778,13 +762,6 @@ typedef uint16_t rgb16_pixel_t;
 
 #define QUIC_RGB16_TO_32
 #include "quic_rgb_tmpl.c"
-
-#else
-
-#define THREE_BYTE
-#include "quic_tmpl.c"
-
-#endif
 
 static void fill_model_structures(SPICE_GNUC_UNUSED Encoder *encoder, FamilyStat *family_stat,
                                   unsigned int rep_first, unsigned int first_size,
@@ -1131,9 +1108,6 @@ static void quic_image_params(Encoder *encoder, QuicImageType type, int *channel
     case QUIC_IMAGE_TYPE_RGB16:
         *channels = 3;
         *bpc = 5;
-#ifndef QUIC_RGB
-        encoder->usr->error(encoder->usr, "not implemented\n");
-#endif
         break;
     case QUIC_IMAGE_TYPE_RGB24:
         *channels = 3;
@@ -1198,9 +1172,6 @@ int quic_encode(QuicContext *quic, QuicImageType type, int width, int height,
     uint8_t *prev;
     int channels;
     int bpc;
-#ifndef QUIC_RGB
-    int i;
-#endif
 
     lines_end = line + num_lines * stride;
     if (line == NULL && lines_end != line) {
@@ -1227,7 +1198,6 @@ int quic_encode(QuicContext *quic, QuicImageType type, int width, int height,
     FILL_LINES();
 
     switch (type) {
-#ifdef QUIC_RGB
     case QUIC_IMAGE_TYPE_RGB32:
         spice_assert(ABS(stride) >= width * 4);
         QUIC_COMPRESS_RGB(32);
@@ -1267,47 +1237,6 @@ int quic_encode(QuicContext *quic, QuicImageType type, int width, int height,
             encoder->rows_completed++;
         }
         break;
-#else
-    case QUIC_IMAGE_TYPE_RGB24:
-        spice_assert(ABS(stride) >= width * 3);
-        for (i = 0; i < 3; i++) {
-            encoder->channels[i].correlate_row[-1] = 0;
-            quic_three_compress_row0(encoder, &encoder->channels[i], (three_bytes_t *)(line + i),
-                                     width);
-        }
-        encoder->rows_completed++;
-        for (row = 1; row < height; row++) {
-            prev = line;
-            NEXT_LINE();
-            for (i = 0; i < 3; i++) {
-                encoder->channels[i].correlate_row[-1] = encoder->channels[i].correlate_row[0];
-                quic_three_compress_row(encoder, &encoder->channels[i], (three_bytes_t *)(prev + i),
-                                        (three_bytes_t *)(line + i), width);
-            }
-            encoder->rows_completed++;
-        }
-        break;
-    case QUIC_IMAGE_TYPE_RGB32:
-    case QUIC_IMAGE_TYPE_RGBA:
-        spice_assert(ABS(stride) >= width * 4);
-        for (i = 0; i < channels; i++) {
-            encoder->channels[i].correlate_row[-1] = 0;
-            quic_four_compress_row0(encoder, &encoder->channels[i], (four_bytes_t *)(line + i),
-                                    width);
-        }
-        encoder->rows_completed++;
-        for (row = 1; row < height; row++) {
-            prev = line;
-            NEXT_LINE();
-            for (i = 0; i < channels; i++) {
-                encoder->channels[i].correlate_row[-1] = encoder->channels[i].correlate_row[0];
-                quic_four_compress_row(encoder, &encoder->channels[i], (four_bytes_t *)(prev + i),
-                                       (four_bytes_t *)(line + i), width);
-            }
-            encoder->rows_completed++;
-        }
-        break;
-#endif
     case QUIC_IMAGE_TYPE_GRAY:
         spice_assert(ABS(stride) >= width);
         encoder->channels[0].correlate_row[-1] = 0;
@@ -1387,19 +1316,6 @@ int quic_decode_begin(QuicContext *quic, uint32_t *io_ptr, unsigned int num_io_w
     return QUIC_OK;
 }
 
-#ifndef QUIC_RGB
-static void clear_row(four_bytes_t *row, int width)
-{
-    four_bytes_t *end;
-    for (end = row + width; row < end; row++) {
-        row->a = 0;
-    }
-}
-
-#endif
-
-#ifdef QUIC_RGB
-
 static void uncompress_rgba(Encoder *encoder, uint8_t *buf, int stride)
 {
     unsigned int row;
@@ -1432,8 +1348,6 @@ static void uncompress_rgba(Encoder *encoder, uint8_t *buf, int stride)
         encoder->rows_completed++;
     }
 }
-
-#endif
 
 static void uncompress_gray(Encoder *encoder, uint8_t *buf, int stride)
 {
@@ -1475,14 +1389,10 @@ int quic_decode(QuicContext *quic, QuicImageType type, uint8_t *buf, int stride)
     Encoder *encoder = (Encoder *)quic;
     unsigned int row;
     uint8_t *prev;
-#ifndef QUIC_RGB
-    int i;
-#endif
 
     spice_assert(buf);
 
     switch (encoder->type) {
-#ifdef QUIC_RGB
     case QUIC_IMAGE_TYPE_RGB32:
     case QUIC_IMAGE_TYPE_RGB24:
         if (type == QUIC_IMAGE_TYPE_RGB32) {
@@ -1518,73 +1428,6 @@ int quic_decode(QuicContext *quic, QuicImageType type, uint8_t *buf, int stride)
         spice_assert(ABS(stride) >= (int)encoder->width * 4);
         uncompress_rgba(encoder, buf, stride);
         break;
-#else
-    case QUIC_IMAGE_TYPE_RGB24:
-        spice_assert(ABS(stride) >= (int)encoder->width * 3);
-        for (i = 0; i < 3; i++) {
-            encoder->channels[i].correlate_row[-1] = 0;
-            quic_three_uncompress_row0(encoder, &encoder->channels[i], (three_bytes_t *)(buf + i),
-                                       encoder->width);
-        }
-        encoder->rows_completed++;
-        for (row = 1; row < encoder->height; row++) {
-            prev = buf;
-            buf += stride;
-            for (i = 0; i < 3; i++) {
-                encoder->channels[i].correlate_row[-1] = encoder->channels[i].correlate_row[0];
-                quic_three_uncompress_row(encoder, &encoder->channels[i],
-                                          (three_bytes_t *)(prev + i),
-                                          (three_bytes_t *)(buf + i),
-                                          encoder->width);
-            }
-            encoder->rows_completed++;
-        }
-        break;
-    case QUIC_IMAGE_TYPE_RGB32:
-        spice_assert(ABS(stride) >= encoder->width * 4);
-        for (i = 0; i < 3; i++) {
-            encoder->channels[i].correlate_row[-1] = 0;
-            quic_four_uncompress_row0(encoder, &encoder->channels[i], (four_bytes_t *)(buf + i),
-                                      encoder->width);
-        }
-        clear_row((four_bytes_t *)(buf + 3), encoder->width);
-        encoder->rows_completed++;
-        for (row = 1; row < encoder->height; row++) {
-            prev = buf;
-            buf += stride;
-            for (i = 0; i < 3; i++) {
-                encoder->channels[i].correlate_row[-1] = encoder->channels[i].correlate_row[0];
-                quic_four_uncompress_row(encoder, &encoder->channels[i],
-                                         (four_bytes_t *)(prev + i),
-                                         (four_bytes_t *)(buf + i),
-                                         encoder->width);
-            }
-            clear_row((four_bytes_t *)(buf + 3), encoder->width);
-            encoder->rows_completed++;
-        }
-        break;
-    case QUIC_IMAGE_TYPE_RGBA:
-        spice_assert(ABS(stride) >= encoder->width * 4);
-        for (i = 0; i < 4; i++) {
-            encoder->channels[i].correlate_row[-1] = 0;
-            quic_four_uncompress_row0(encoder, &encoder->channels[i], (four_bytes_t *)(buf + i),
-                                      encoder->width);
-        }
-        encoder->rows_completed++;
-        for (row = 1; row < encoder->height; row++) {
-            prev = buf;
-            buf += stride;
-            for (i = 0; i < 4; i++) {
-                encoder->channels[i].correlate_row[-1] = encoder->channels[i].correlate_row[0];
-                quic_four_uncompress_row(encoder, &encoder->channels[i],
-                                         (four_bytes_t *)(prev + i),
-                                         (four_bytes_t *)(buf + i),
-                                         encoder->width);
-            }
-            encoder->rows_completed++;
-        }
-        break;
-#endif
     case QUIC_IMAGE_TYPE_GRAY:
 
         if (type != QUIC_IMAGE_TYPE_GRAY) {
