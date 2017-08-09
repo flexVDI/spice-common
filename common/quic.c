@@ -507,7 +507,7 @@ static inline void encode_ones(Encoder *encoder, unsigned int n)
     unsigned int count;
 
     for (count = n >> 5; count; count--) {
-        encode(encoder, ~0U, 32);
+        encode_32(encoder, ~0U);
     }
 
     if ((n &= 0x1f)) {
