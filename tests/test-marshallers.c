@@ -8,10 +8,11 @@
 #define g_assert_true g_assert
 #endif
 
-static uint8_t expected_data[] = { 0x02, 0x00, 0x00, 0x00, /* data_size */
-                                   0x08, 0x00, 0x00, 0x00, /* data offset */
+static uint8_t expected_data[] = { 123, /* dummy byte */
+                                   0x02, 0x00, 0x00, 0x00, /* data_size */
+                                   0x09, 0x00, 0x00, 0x00, /* data offset */
                                    0xef, 0xcd, 0xab, 0x90, 0x78, 0x56, 0x34, 0x12, /* data */
-                                   0xef, 0xcd, 0xab, 0x90, 0x78, 0x56, 0x34, 0x12, /* data */
+                                   0x21, 0x43, 0x65, 0x87, 0x09, 0xba, 0xdc, 0xfe, /* data */
 };
 
 int main(int argc G_GNUC_UNUSED, char **argv G_GNUC_UNUSED)
@@ -23,9 +24,10 @@ int main(int argc G_GNUC_UNUSED, char **argv G_GNUC_UNUSED)
     uint8_t *data;
 
     msg = spice_malloc0(sizeof(SpiceMsgMainShortDataSubMarshall) + 2 * sizeof(uint64_t));
+    msg->dummy_byte = 123;
     msg->data_size = 2;
     msg->data[0] = 0x1234567890abcdef;
-    msg->data[1] = 0x1234567890abcdef;
+    msg->data[1] = 0xfedcba0987654321;
 
     marshaller = spice_marshaller_new();
     spice_marshall_msg_main_ShortDataSubMarshall(marshaller, msg);
