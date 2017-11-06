@@ -465,8 +465,17 @@ flags8 string_flags {
 
 flags32 surface_flags {
     /* Adding flags requires some caps check, since old clients only
-       treat the value as an enum and not as a flag (flag == PRIMARY) */
-    PRIMARY
+       treat the value as an enum and not as a flag (flag == PRIMARY).
+       Considering this was fixed by commit
+       5b6e3d1c16457c926322ce28d341af2e8d39efb5 in Aug 21 2013 is safe
+       to assume that if capabilities include SPICE_DISPLAY_CAP_MULTI_CODEC
+       we can use any flags */
+    PRIMARY,
+    /* The surface will be streamed entirely. This means that only
+       stream commands will be received and the stream will cover the
+       entire surface. This flag can be safely ignored and is intended
+       as an hint for the client */
+    STREAMING_MODE,
 };
 
 enum32 surface_fmt {
