@@ -60,7 +60,7 @@ typedef struct {
 } SpiceImageCacheOps;
 
 struct _SpiceImageCache {
-  SpiceImageCacheOps *ops;
+  const SpiceImageCacheOps *ops;
 };
 
 typedef struct {
@@ -69,7 +69,7 @@ typedef struct {
 } SpiceImageSurfacesOps;
 
 struct _SpiceImageSurfaces {
- SpiceImageSurfacesOps *ops;
+ const SpiceImageSurfacesOps *ops;
 };
 
 typedef struct {
