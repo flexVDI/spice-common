@@ -972,11 +972,24 @@ channel DisplayChannel : BaseChannel {
     message {
         uint32 stream_id;
         uint32 unique_id;
+        // the mm_time of the first frame included in the report
         uint32 start_frame_mm_time;
+        // the mm_time of the last frame included in the report
         uint32 end_frame_mm_time;
+        // the number of frames that reached the client during the time the
+        // report is referring to
+        // A special case is when num_frames == 0 and num_drops ==
+        // 0xffffffffu, this is used in the client to communicate that
+        // the stream is not supported or that the client was not able
+        // to decode it
         uint32 num_frames;
+        // the part of the above frames that were dropped by the client due
+        // to late arrival time
         uint32 num_drops;
+        // end_frame_mm_time - client_mm_time
         int32 last_frame_delay;
+        // the latency of the audio playback
+        // If there is no audio playback, set it to 0xffffffffu
         uint32 audio_delay;
     } stream_report;
 
