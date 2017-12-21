@@ -153,6 +153,10 @@
 #endif // TO_RGB32
 #endif
 
+#ifndef CAST_PLT_DISTANCE
+#define CAST_PLT_DISTANCE(dist) (dist)
+#endif
+
 #ifdef LZ_A8
 #ifndef TO_RGB32
 #define OUT_PIXEL one_byte_pixel_t
@@ -261,12 +265,8 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
 #endif
             ofs += 1; // offset is biased by 1       (fixing bias)
 
-#if defined(TO_RGB32)
-#if defined(PLT4_BE) || defined(PLT4_LE) || defined(PLT1_BE) || defined(PLT1_LE)
             ofs = CAST_PLT_DISTANCE(ofs);
             len = CAST_PLT_DISTANCE(len);
-#endif
-#endif
             ref -= ofs;
 
             spice_assert(op + len <= op_limit);
@@ -295,12 +295,7 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
             }
         } else { // copy
             ctrl++; // copy count is biased by 1
-#if defined(TO_RGB32) && (defined(PLT4_BE) || defined(PLT4_LE) || defined(PLT1_BE) || \
-                                                                                   defined(PLT1_LE))
             spice_assert(op + CAST_PLT_DISTANCE(ctrl) <= op_limit);
-#else
-            spice_assert(op + ctrl <= op_limit);
-#endif
             COPY_COMP_PIXEL(encoder, op);
 
             spice_assert(op <= op_limit);
