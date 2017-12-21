@@ -824,7 +824,7 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     lz_decode_begin(lz_data->lz, comp_buf, comp_size, &type,
                     &width, &height, &n_comp_pixels, &top_down, palette);
 
-    stride_encoded = width;
+    stride_encoded = n_comp_pixels / height;
     switch (type) {
     case LZ_IMAGE_TYPE_RGBA:
         as_type = LZ_IMAGE_TYPE_RGBA;
