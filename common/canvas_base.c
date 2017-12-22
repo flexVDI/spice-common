@@ -783,15 +783,17 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     int top_down;
     int stride_encoded;
     int stride;
-    int free_palette;
+    int free_palette = FALSE;
 
     if (setjmp(lz_data->jmp_env)) {
+        if (free_palette)  {
+            free(palette);
+        }
         free(decomp_buf);
         spice_warning("%s", lz_data->message_buf);
         return NULL;
     }
 
-    free_palette = FALSE;
     if (image->descriptor.type == SPICE_IMAGE_TYPE_LZ_RGB) {
         spice_return_val_if_fail(image->u.lz_rgb.data->num_chunks == 1, NULL); /* TODO: Handle chunks */
         comp_buf = image->u.lz_rgb.data->chunk[0].data;
