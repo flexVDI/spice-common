@@ -737,16 +737,13 @@ static inline SpicePalette *canvas_get_localized_palette(CanvasBase *canvas, Spi
     SpicePalette *palette = canvas_get_palette(canvas, base_palette, palette_id, flags);
     SpicePalette *copy;
     uint32_t *now, *end;
-    size_t size;
 
     if (canvas->format == SPICE_SURFACE_FMT_32_xRGB ||
         canvas->format == SPICE_SURFACE_FMT_32_ARGB) {
         return palette;
     }
 
-    size = sizeof(SpicePalette) + palette->num_ents * 4;
-    copy = (SpicePalette *)spice_malloc(size);
-    memcpy(copy, palette, size);
+    copy = spice_memdup(palette, sizeof(SpicePalette) + palette->num_ents * 4);
 
     switch (canvas->format) {
     case SPICE_SURFACE_FMT_32_xRGB:
