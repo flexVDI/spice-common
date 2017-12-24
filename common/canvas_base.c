@@ -132,9 +132,6 @@ typedef struct CanvasBase {
 #ifdef SW_CANVAS_CACHE
     SpicePaletteCache *palette_cache;
 #endif
-#ifdef WIN32
-    HDC dc;
-#endif
 
     SpiceImageSurfaces *surfaces;
 
@@ -623,9 +620,6 @@ static pixman_image_t *canvas_get_jpeg_alpha(CanvasBase *canvas, SpiceImage *ima
         alpha_top_down = TRUE;
     }
 
-#ifdef WIN32
-    lz_data->decode_data.dc = canvas->dc;
-#endif
     surface = alloc_lz_image_surface(&lz_data->decode_data, PIXMAN_LE_a8r8g8b8,
                                      width, height, width*height, alpha_top_down);
 
@@ -840,10 +834,6 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     spice_return_val_if_fail((unsigned)height == image->descriptor.height, NULL);
 
     spice_return_val_if_fail((image->descriptor.type == SPICE_IMAGE_TYPE_LZ_PLT) || (n_comp_pixels == width * height), NULL);
-#ifdef WIN32
-    lz_data->decode_data.dc = canvas->dc;
-#endif
-
 
     alloc_lz_image_surface(&lz_data->decode_data, pixman_format,
                            width, height, n_comp_pixels, top_down);
@@ -886,9 +876,6 @@ static pixman_image_t *canvas_get_glz(CanvasBase *canvas, SpiceImage *image,
                                       int want_original)
 {
     spice_return_val_if_fail(image->descriptor.type == SPICE_IMAGE_TYPE_GLZ_RGB, NULL);
-#ifdef WIN32
-    canvas->glz_data.decode_data.dc = canvas->dc;
-#endif
 
     spice_return_val_if_fail(image->u.lz_rgb.data->num_chunks == 1, NULL); /* TODO: Handle chunks */
     return canvas_get_glz_rgb_common(canvas, image->u.lz_rgb.data->chunk[0].data, want_original);
@@ -3479,10 +3466,6 @@ static int canvas_base_init(CanvasBase *canvas, SpiceCanvasOps *ops,
     canvas->bits_cache = bits_cache;
 #ifdef SW_CANVAS_CACHE
     canvas->palette_cache = palette_cache;
-#endif
-
-#ifdef WIN32
-    canvas->dc = NULL;
 #endif
 
     return 1;

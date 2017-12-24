@@ -38,19 +38,11 @@ int spice_pixman_image_get_format(pixman_image_t *image, pixman_format_code_t *f
 
 pixman_image_t *surface_create(pixman_format_code_t format, int width, int height, int top_down);
 
-#ifdef WIN32
-pixman_image_t *surface_create_stride(HDC dc, pixman_format_code_t format, int width, int height,
-                                      int stride);
-#else
 pixman_image_t *surface_create_stride(pixman_format_code_t format, int width, int height,
                                       int stride);
-#endif
 
 
 typedef struct LzDecodeUsrData {
-#ifdef WIN32
-    HDC dc;
-#endif
     pixman_image_t       *out_surface;
 } LzDecodeUsrData;
 

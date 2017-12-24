@@ -161,22 +161,9 @@ pixman_image_t * surface_create(pixman_format_code_t format, int width, int heig
     }
 }
 
-#ifdef WIN32
-pixman_image_t *surface_create_stride(HDC dc, pixman_format_code_t format, int width, int height,
-                                      int stride)
-#else
 pixman_image_t *surface_create_stride(pixman_format_code_t format, int width, int height,
                                       int stride)
-#endif
 {
-#ifdef WIN32
-    if (dc) {
-        if (abs(stride) == (width * 4)) {
-            return surface_create(format, width, height, (stride > 0));
-        }
-    }
-#endif
-
     return __surface_create_stride(format, width, height, stride);
 }
 
@@ -196,11 +183,7 @@ pixman_image_t *alloc_lz_image_surface(LzDecodeUsrData *canvas_data,
         stride = -stride;
     }
 
-   surface = surface_create_stride(
-#ifdef WIN32
-            canvas_data->dc,
-#endif
-            pixman_format, width, height, stride);
+    surface = surface_create_stride(pixman_format, width, height, stride);
     canvas_data->out_surface = surface;
     return surface;
 }
