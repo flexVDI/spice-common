@@ -418,11 +418,7 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
     spice_return_val_if_fail((uint32_t)width == image->descriptor.width, NULL);
     spice_return_val_if_fail((uint32_t)height == image->descriptor.height, NULL);
 
-    surface = surface_create(
-#ifdef WIN32
-                             canvas->dc,
-#endif
-                             pixman_format,
+    surface = surface_create(pixman_format,
                              width, height, FALSE);
 
     spice_return_val_if_fail(surface != NULL, NULL);
@@ -481,11 +477,7 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image)
     spice_return_val_if_fail((uint32_t)width == image->descriptor.width, NULL);
     spice_return_val_if_fail((uint32_t)height == image->descriptor.height, NULL);
 
-    surface = surface_create(
-#ifdef WIN32
-                             canvas->dc,
-#endif
-                             PIXMAN_LE_x8r8g8b8,
+    surface = surface_create(PIXMAN_LE_x8r8g8b8,
                              width, height, FALSE);
     if (surface == NULL) {
         spice_warning("create surface failed");
@@ -563,11 +555,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
             return NULL;
     }
 
-    surface = surface_create(
-#ifdef WIN32
-                             canvas->dc,
-#endif
-                             format,
+    surface = surface_create(format,
                              width, height, top_down);
     if (surface == NULL) {
         spice_warning("create surface failed");
@@ -694,11 +682,7 @@ static pixman_image_t *canvas_bitmap_to_surface(CanvasBase *canvas, SpiceBitmap*
                                           bitmap->format == SPICE_BITMAP_FMT_RGBA);
     }
 
-    image = surface_create(
-#ifdef WIN32
-                           canvas->dc,
-#endif
-                           format,
+    image = surface_create(format,
                            bitmap->x, bitmap->y, FALSE);
     if (image == NULL) {
         spice_warning("create surface failed");
@@ -1262,11 +1246,7 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
                                                  surface_format == PIXMAN_a8r8g8b8);
 
         if (surface_format != wanted_format) {
-            converted = surface_create(
-#ifdef WIN32
-                                       canvas->dc,
-#endif
-                                       wanted_format,
+            converted = surface_create(wanted_format,
                                        pixman_image_get_width(surface),
                                        pixman_image_get_height(surface),
                                        TRUE);
@@ -1411,11 +1391,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
     int line_size;
     int dest_stride;
 
-    surface = surface_create(
-#ifdef WIN32
-            canvas->dc,
-#endif
-            PIXMAN_a1, bitmap->x, bitmap->y, TRUE);
+    surface = surface_create(PIXMAN_a1, bitmap->x, bitmap->y, TRUE);
     spice_return_val_if_fail(surface != NULL, NULL);
 
     spice_chunks_linearize(bitmap->data);

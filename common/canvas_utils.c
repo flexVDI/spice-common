@@ -114,12 +114,7 @@ static inline pixman_image_t *__surface_create_stride(pixman_format_code_t forma
     return surface;
 }
 
-#ifdef WIN32
-pixman_image_t *surface_create(HDC dc, pixman_format_code_t format,
-                                int width, int height, int top_down)
-#else
 pixman_image_t * surface_create(pixman_format_code_t format, int width, int height, int top_down)
-#endif
 {
     if (top_down) {
         pixman_image_t *surface;
@@ -177,7 +172,7 @@ pixman_image_t *surface_create_stride(pixman_format_code_t format, int width, in
 #ifdef WIN32
     if (dc) {
         if (abs(stride) == (width * 4)) {
-            return surface_create(dc, format, width, height, (stride > 0));
+            return surface_create(format, width, height, (stride > 0));
         }
     }
 #endif
