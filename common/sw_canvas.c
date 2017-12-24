@@ -993,9 +993,6 @@ static void colorkey_scale_image_from_surface(SpiceCanvas *spice_canvas,
 }
 
 static void canvas_put_image(SpiceCanvas *spice_canvas,
-#ifdef WIN32
-                             HDC dc,
-#endif
                              const SpiceRect *dest, const uint8_t *src_data,
                              uint32_t src_width, uint32_t src_height, int src_stride,
                              const QRegion *clip)
