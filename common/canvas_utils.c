@@ -30,7 +30,6 @@ static int gdi_handlers = 0;
 typedef struct PixmanData {
 #ifdef WIN32
     HBITMAP bitmap;
-    HANDLE mutex;
 #endif
     uint8_t *data;
     pixman_format_code_t format;
@@ -44,7 +43,6 @@ static void release_data(SPICE_GNUC_UNUSED pixman_image_t *image,
 #ifdef WIN32
     if (data->bitmap) {
         DeleteObject((HBITMAP)data->bitmap);
-        CloseHandle(data->mutex);
         gdi_handlers--;
     }
 #endif
@@ -155,7 +153,6 @@ pixman_image_t * surface_create(pixman_format_code_t format, int width, int heig
         pixman_image_t *surface;
         PixmanData *pixman_data;
         HBITMAP bitmap;
-        HANDLE mutex;
 
         memset(&bitmap_info, 0, sizeof(bitmap_info));
         bitmap_info.inf.bmiHeader.biSize = sizeof(bitmap_info.inf.bmiHeader);
@@ -201,14 +198,8 @@ pixman_image_t * surface_create(pixman_format_code_t format, int width, int heig
 
         bitmap_info.inf.bmiHeader.biCompression = BI_RGB;
 
-        mutex = CreateMutex(NULL, 0, NULL);
-        if (!mutex) {
-            spice_error("Unable to CreateMutex");
-        }
-
         bitmap = CreateDIBSection(dc, &bitmap_info.inf, 0, (VOID **)&data, NULL, 0);
         if (!bitmap) {
-            CloseHandle(mutex);
             spice_error("Unable to CreateDIBSection");
         }
 
@@ -221,14 +212,12 @@ pixman_image_t * surface_create(pixman_format_code_t format, int width, int heig
 
         surface = pixman_image_create_bits(format, width, height, (uint32_t *)src, nstride);
         if (surface == NULL) {
-            CloseHandle(mutex);
             DeleteObject(bitmap);
             spice_error("create surface failed, out of memory");
         }
         pixman_data = pixman_image_add_data(surface);
         pixman_data->format = format;
         pixman_data->bitmap = bitmap;
-        pixman_data->mutex = mutex;
         gdi_handlers++;
         return surface;
     } else {
