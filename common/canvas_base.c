@@ -529,7 +529,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     width = image->descriptor.width;
     stride_encoded = width;
     height = image->descriptor.height;
-    top_down = *(data++);
+    top_down = !!*(data++);
     spice_format = *(data++);
     switch (spice_format) {
         case SPICE_BITMAP_FMT_16BIT:
