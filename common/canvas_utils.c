@@ -84,8 +84,8 @@ int spice_pixman_image_get_format(pixman_image_t *image, pixman_format_code_t *f
     return 0;
 }
 
-static inline pixman_image_t *__surface_create_stride(pixman_format_code_t format, int width, int height,
-                                                      int stride)
+pixman_image_t *surface_create_stride(pixman_format_code_t format, int width, int height,
+                                      int stride)
 {
     uint8_t *data;
     uint8_t *stride_data;
@@ -157,14 +157,8 @@ pixman_image_t * surface_create(pixman_format_code_t format, int width, int heig
             spice_error("invalid format");
         }
         stride = -stride;
-        return __surface_create_stride(format, width, height, stride);
+        return surface_create_stride(format, width, height, stride);
     }
-}
-
-pixman_image_t *surface_create_stride(pixman_format_code_t format, int width, int height,
-                                      int stride)
-{
-    return __surface_create_stride(format, width, height, stride);
 }
 
 pixman_image_t *alloc_lz_image_surface(LzDecodeUsrData *canvas_data,
