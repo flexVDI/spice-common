@@ -19,10 +19,6 @@
 #ifndef _H_CANVAS_UTILS
 #define _H_CANVAS_UTILS
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
 #include <spice/types.h>
 #include <spice/macros.h>
 

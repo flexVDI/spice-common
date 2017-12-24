@@ -25,9 +25,6 @@
 #include "lz.h"
 #include "region.h"
 #include "draw.h"
-#ifdef WIN32
-#include <windows.h>
-#endif
 
 SPICE_BEGIN_DECLS
 
