@@ -23,14 +23,7 @@
 #include "canvas_utils.h"
 #include "mem.h"
 
-#ifdef WIN32
-static int gdi_handlers = 0;
-#endif
-
 typedef struct PixmanData {
-#ifdef WIN32
-    HBITMAP bitmap;
-#endif
     uint8_t *data;
     pixman_format_code_t format;
 } PixmanData;
@@ -40,12 +33,6 @@ static void release_data(SPICE_GNUC_UNUSED pixman_image_t *image,
 {
     PixmanData *data = (PixmanData *)release_data;
 
-#ifdef WIN32
-    if (data->bitmap) {
-        DeleteObject((HBITMAP)data->bitmap);
-        gdi_handlers--;
-    }
-#endif
     free(data->data);
 
     free(data);
@@ -134,94 +121,6 @@ pixman_image_t *surface_create(HDC dc, pixman_format_code_t format,
 pixman_image_t * surface_create(pixman_format_code_t format, int width, int height, int top_down)
 #endif
 {
-#ifdef WIN32
-    /*
-     * Windows xp allow only 10,000 of gdi handlers, considering the fact that
-     * we limit here the number to 5000, we dont use atomic operations to sync
-     * this calculation against the other canvases (in case of multiple
-     * monitors), in worst case there will be little more than 5000 gdi
-     * handlers.
-     */
-    if (dc && gdi_handlers < 5000) {
-        uint8_t *data;
-        uint8_t *src;
-        struct {
-            BITMAPINFO inf;
-            RGBQUAD palette[255];
-        } bitmap_info;
-        int nstride;
-        pixman_image_t *surface;
-        PixmanData *pixman_data;
-        HBITMAP bitmap;
-
-        memset(&bitmap_info, 0, sizeof(bitmap_info));
-        bitmap_info.inf.bmiHeader.biSize = sizeof(bitmap_info.inf.bmiHeader);
-        bitmap_info.inf.bmiHeader.biWidth = width;
-
-        bitmap_info.inf.bmiHeader.biHeight = (!top_down) ? height : -height;
-
-        bitmap_info.inf.bmiHeader.biPlanes = 1;
-        switch (format) {
-        case PIXMAN_a8r8g8b8:
-        case PIXMAN_x8r8g8b8:
-#ifdef WORDS_BIGENDIAN
-        case PIXMAN_b8g8r8a8:
-        case PIXMAN_b8g8r8x8:
-#endif
-            bitmap_info.inf.bmiHeader.biBitCount = 32;
-            nstride = width * 4;
-            break;
-        case PIXMAN_r8g8b8:
-#ifdef WORDS_BIGENDIAN
-        case PIXMAN_b8g8r8:
-#endif
-            bitmap_info.inf.bmiHeader.biBitCount = 24;
-            nstride = SPICE_ALIGN(width * 3, 4);
-            break;
-        case PIXMAN_x1r5g5b5:
-        case PIXMAN_r5g6b5:
-            bitmap_info.inf.bmiHeader.biBitCount = 16;
-            nstride = SPICE_ALIGN(width * 2, 4);
-            break;
-        case PIXMAN_a8:
-            bitmap_info.inf.bmiHeader.biBitCount = 8;
-            nstride = SPICE_ALIGN(width, 4);
-            break;
-        case PIXMAN_a1:
-            bitmap_info.inf.bmiHeader.biBitCount = 1;
-            nstride = SPICE_ALIGN(width, 32) / 8;
-            break;
-        default:
-            spice_error("invalid format");
-            return NULL;
-        }
-
-        bitmap_info.inf.bmiHeader.biCompression = BI_RGB;
-
-        bitmap = CreateDIBSection(dc, &bitmap_info.inf, 0, (VOID **)&data, NULL, 0);
-        if (!bitmap) {
-            spice_error("Unable to CreateDIBSection");
-        }
-
-        if (top_down) {
-            src = data;
-        } else {
-            src = data + nstride * (height - 1);
-            nstride = -nstride;
-        }
-
-        surface = pixman_image_create_bits(format, width, height, (uint32_t *)src, nstride);
-        if (surface == NULL) {
-            DeleteObject(bitmap);
-            spice_error("create surface failed, out of memory");
-        }
-        pixman_data = pixman_image_add_data(surface);
-        pixman_data->format = format;
-        pixman_data->bitmap = bitmap;
-        gdi_handlers++;
-        return surface;
-    } else {
-#endif
     if (top_down) {
         pixman_image_t *surface;
         PixmanData *data;
@@ -265,10 +164,6 @@ pixman_image_t * surface_create(pixman_format_code_t format, int width, int heig
         stride = -stride;
         return __surface_create_stride(format, width, height, stride);
     }
-#ifdef WIN32
-}
-
-#endif
 }
 
 #ifdef WIN32
