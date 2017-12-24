@@ -105,9 +105,8 @@
 #ifdef LZ_RGB16
 #define PIXEL rgb16_pixel_t
 #define FNAME(name) lz_rgb16_##name
-#define GET_r(pix) (((pix) >> 10) & 0x1f)
-#define GET_g(pix) (((pix) >> 5) & 0x1f)
-#define GET_b(pix) ((pix) & 0x1f)
+#define GET_rgb(pix) ((pix) & 0x7fffu)
+#define SAME_PIXEL(p1, p2) (GET_rgb(p1) == GET_rgb(p2))
 #define ENCODE_PIXEL(e, pix) {encode(e, (pix) >> 8); encode(e, (pix) & 0xff);}
 
 #define HASH_FUNC(v, p) {                 \
@@ -153,7 +152,7 @@
     }
 #endif
 
-#if defined(LZ_RGB16) || defined(LZ_RGB24) || defined(LZ_RGB32)
+#if defined(LZ_RGB24) || defined(LZ_RGB32)
 #define SAME_PIXEL(p1, p2) (GET_r(p1) == GET_r(p2) && GET_g(p1) == GET_g(p2) && \
                             GET_b(p1) == GET_b(p2))
 
@@ -525,6 +524,7 @@ static void FNAME(compress)(Encoder *encoder)
 #undef GET_r
 #undef GET_g
 #undef GET_b
+#undef GET_rgb
 #undef GET_CODE
 #undef LZ_PLT
 #undef LZ_RGB_ALPHA
