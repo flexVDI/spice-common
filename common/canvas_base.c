@@ -45,6 +45,14 @@
 #include "mem.h"
 #include "macros.h"
 
+#include <spice/start-packed.h>
+typedef struct SPICE_ATTR_PACKED {
+    uint32_t v;
+} uint32_unaligned_t;
+#include <spice/end-packed.h>
+
+#define read_uint32_be(ptr) ntohl(((uint32_unaligned_t *)(ptr))->v)
+
 #define ROUND(_x) ((int)floor((_x) + 0.5))
 
  static inline int fix_to_int(SPICE_FIXED28_4 fixed)
@@ -572,7 +580,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
 
     do {
         // Read next compressed block
-        enc_size = ntohl(*SPICE_UNALIGNED_CAST(uint32_t *, data));
+        enc_size = read_uint32_be(data);
         data += 4;
         dec_size = LZ4_decompress_safe_continue(stream, (const char *) data,
                                                 (char *) dest, enc_size, available);
