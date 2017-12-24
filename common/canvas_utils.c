@@ -27,6 +27,15 @@
 static int gdi_handlers = 0;
 #endif
 
+typedef struct PixmanData {
+#ifdef WIN32
+    HBITMAP bitmap;
+    HANDLE mutex;
+#endif
+    uint8_t *data;
+    pixman_format_code_t format;
+} PixmanData;
+
 static void release_data(SPICE_GNUC_UNUSED pixman_image_t *image,
                          void *release_data)
 {

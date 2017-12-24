@@ -31,15 +31,6 @@
 
 SPICE_BEGIN_DECLS
 
-typedef struct PixmanData {
-#ifdef WIN32
-    HBITMAP bitmap;
-    HANDLE mutex;
-#endif
-    uint8_t *data;
-    pixman_format_code_t format;
-} PixmanData;
-
 void spice_pixman_image_set_format(pixman_image_t *image,
                                    pixman_format_code_t format);
 int spice_pixman_image_get_format(pixman_image_t *image, pixman_format_code_t *format);
