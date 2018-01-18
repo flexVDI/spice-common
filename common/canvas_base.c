@@ -754,14 +754,14 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     uint8_t    *decomp_buf = NULL;
     pixman_format_code_t pixman_format;
     LzImageType type, as_type;
-    SpicePalette *palette;
+    SpicePalette *palette = NULL;
     int n_comp_pixels;
     int width;
     int height;
     int top_down;
     int stride_encoded;
     int stride;
-    int free_palette = FALSE;
+    volatile int free_palette = FALSE;
 
     if (setjmp(lz_data->jmp_env)) {
         if (free_palette)  {
@@ -781,7 +781,9 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
         spice_return_val_if_fail(image->u.lz_plt.data->num_chunks == 1, NULL); /* TODO: Handle chunks */
         comp_buf = image->u.lz_plt.data->chunk[0].data;
         comp_size = image->u.lz_plt.data->chunk[0].len;
-        palette = canvas_get_localized_palette(canvas, image->u.lz_plt.palette, image->u.lz_plt.palette_id, image->u.lz_plt.flags, &free_palette);
+        palette = canvas_get_localized_palette(canvas, image->u.lz_plt.palette,
+                                               image->u.lz_plt.palette_id, image->u.lz_plt.flags,
+                                               (int*) &free_palette);
     } else {
         spice_warn_if_reached();
         return NULL;
