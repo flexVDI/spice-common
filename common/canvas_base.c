@@ -571,7 +571,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
 
     do {
         // Read next compressed block
-        enc_size = ntohl(*((uint32_t *)data));
+        enc_size = ntohl(*SPICE_UNALIGNED_CAST(uint32_t *, data));
         data += 4;
         dec_size = LZ4_decompress_safe_continue(stream, (const char *) data,
                                                 (char *) dest, enc_size, available);
