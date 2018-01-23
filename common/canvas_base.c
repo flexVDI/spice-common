@@ -1943,8 +1943,16 @@ static void canvas_mask_pixman(CanvasBase *canvas,
     /* round down X to even 32 pixels (i.e. uint32_t) */
     extents.x1 = extents.x1 & ~(0x1f);
 
-    mask_data_src = (uint8_t *)mask_data + mask_stride * extents.y1 + extents.x1 / 32;
-    mask_data = SPICE_UNALIGNED_CAST(uint32_t *, mask_data_src);
+    /* mask_data_src is surely aligned to 4 bytes:
+     * - pixman requires mask_data (pixman_image_get_data) to be
+     *   aligned to 4 bytes;
+     * - pixman requires mask_stride (pixman_image_get_stride) to be
+     *   multiple of 4;
+     * - extents.x1 is multiple of 32 (see previous line) so
+     *   extents.x1 / 8 is multiple of 4.
+     */
+    mask_data_src = (uint8_t *)mask_data + mask_stride * extents.y1 + extents.x1 / 8;
+    mask_data = SPICE_ALIGNED_CAST(uint32_t *, mask_data_src);
 
     mask_x -= extents.x1;
     mask_y -= extents.y1;
