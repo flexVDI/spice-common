@@ -736,6 +736,13 @@ channel DisplayChannel : BaseChannel {
 	ResourceID resources[count] @end;
     } @ctype(SpiceResourceList) inval_list;
 
+    /* This message is used to invalidate the complete image cache
+     * on the client.
+     * Due to synchronization for GLZ images we must make sure
+     * that messages related to cached images on other channels
+     * are processed so we send a list of channels with respective
+     * message serials to wait for.
+     */
     message {
 	uint8 wait_count;
 	WaitForChannel wait_list[wait_count] @end;
