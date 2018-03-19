@@ -23,6 +23,20 @@ AC_DEFUN([SPICE_PRINT_MESSAGES],[
 ])
 
 
+# SPICE_EXTRA_CHECKS()
+# --------------------
+# Check for --enable-extra-checks option
+# --------------------
+AC_DEFUN([SPICE_EXTRA_CHECKS],[
+AC_ARG_ENABLE([extra-checks],
+               AS_HELP_STRING([--enable-extra-checks=@<:@yes/no@:>@],
+                              [Enable expensive checks @<:@default=no@:>@]))
+AM_CONDITIONAL(ENABLE_EXTRA_CHECKS, test "x$enable_extra_checks" = "xyes")
+AS_IF([test "x$enable_extra_checks" = "xyes"],
+      [AC_DEFINE([ENABLE_EXTRA_CHECKS], 1, [Enable extra checks on code])])
+])
+
+
 # SPICE_CHECK_SYSDEPS()
 # ---------------------
 # Checks for header files and library functions needed by spice-common.

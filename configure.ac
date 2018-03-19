@@ -27,6 +27,7 @@ fi
 AM_PROG_CC_C_O
 
 SPICE_CHECK_SYSDEPS
+SPICE_EXTRA_CHECKS
 
 AC_ARG_ENABLE([alignment-checks],
   AS_HELP_STRING([--enable-alignment-checks],

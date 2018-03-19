@@ -93,6 +93,12 @@ void spice_log(GLogLevelFlags log_level,
     }                                                   \
 } G_STMT_END
 
+#if ENABLE_EXTRA_CHECKS
+enum { spice_extra_checks = 1 };
+#else
+enum { spice_extra_checks = 0 };
+#endif
+
 SPICE_END_DECLS
 
 #endif /* H_SPICE_LOG */
