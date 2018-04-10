@@ -504,7 +504,7 @@ class ArrayType(Type):
         element_count = self.element_type.get_num_pointers()
         if element_count  == 0:
             return 0
-        if self.is_constant_length(self):
+        if self.is_constant_length():
             return element_count * self.size
         raise Exception("Pointers in dynamic arrays not supported")
 
