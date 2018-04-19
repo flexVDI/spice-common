@@ -327,7 +327,7 @@ typedef struct SpiceMsgDisplayInvalOne {
 
 typedef struct SpiceMsgDisplayStreamCreate {
     uint32_t surface_id;
-    uint32_t id;
+    uint32_t id; /* Any number from 0 to SPICE_MAX_NUM_STREAMS - 1 */
     uint32_t flags;
     uint32_t codec_type;
     uint64_t stamp;
