@@ -4,6 +4,11 @@
 
 typedef fixed28_4 int32 @ctype(SPICE_FIXED28_4);
 
+/* IDs of the video stream messages.
+ * These IDs are in the interval [0, SPICE_MAX_NUM_STREAMS)
+ */
+typedef stream_id_t uint32;
+
 struct Point {
     int32 x;
     int32 y;
@@ -698,7 +703,7 @@ struct String {
 };
 
 struct StreamDataHeader {
-	uint32 id;
+	stream_id_t id;
 	uint32 multi_media_time;
 };
 
@@ -756,7 +761,7 @@ channel DisplayChannel : BaseChannel {
 
     message {
 	uint32 surface_id;
-	uint32 id;
+	stream_id_t id;
 	stream_flags flags;
 	video_codec_type codec_type;
 	uint64 stamp;
@@ -775,12 +780,12 @@ channel DisplayChannel : BaseChannel {
     } stream_data;
 
     message {
-	uint32 id;
+	stream_id_t id;
 	Clip clip;
     } stream_clip;
 
     message {
-	uint32 id;
+	stream_id_t id;
     } stream_destroy;
 
     Empty stream_destroy_all;
@@ -954,7 +959,7 @@ channel DisplayChannel : BaseChannel {
     } draw_composite;
 
     message {
-        uint32 stream_id;
+        stream_id_t stream_id;
         uint32 unique_id;
         uint32 max_window_size;
         uint32 timeout_ms;
@@ -986,7 +991,7 @@ channel DisplayChannel : BaseChannel {
     } init = 101;
 
     message {
-        uint32 stream_id;
+        stream_id_t stream_id;
         uint32 unique_id;
         // the mm_time of the first frame included in the report
         uint32 start_frame_mm_time;
