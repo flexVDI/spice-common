@@ -83,6 +83,8 @@ valid_attributes=set([
     'nomarshal',
     # ??? not used by python code
     'zero_terminated',
+    # force generating marshaller code, applies to pointers which by
+    # default are not marshalled (submarshallers are generated)
     'marshall',
     # this pointer member cannot be null
     'nonnull',
@@ -97,6 +99,8 @@ valid_attributes=set([
     # the argument specifies the preprocessor define to check
     'ifdef',
     # write this member as zero on network
+    # when marshalling, a zero field is written to the network
+    # when demarshalling, the field is read from the network and discarded
     'zero',
     # specify minor version required for these members
     'minor',
@@ -124,7 +128,7 @@ attributes_with_arguments=set([
 def fix_attributes(attribute_list):
     attrs = {}
     for attr in attribute_list:
-        name = attr[0][1:]
+        name = attr[0][1:] # [1:] strips the leading '@' from the name
         lst = attr[1:]
         if not name in valid_attributes:
             raise Exception("Attribute %s not recognized" % name)
