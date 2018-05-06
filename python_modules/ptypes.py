@@ -149,9 +149,6 @@ class Type:
     def has_name(self):
         return self.name != None
 
-    def get_type(self, recursive=False):
-        return self
-
     def is_primitive(self):
         return False
 
@@ -259,12 +256,6 @@ class TypeAlias(Type):
         self.name = name
         self.the_type = the_type
         self.attributes = fix_attributes(attribute_list)
-
-    def get_type(self, recursive=False):
-        if recursive:
-            return self.the_type.get_type(True)
-        else:
-            return self.the_type
 
     def primitive_type(self):
         return self.the_type.primitive_type()
