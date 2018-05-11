@@ -1400,6 +1400,12 @@ channel SmartcardChannel : BaseChannel {
     } @ctype(SpiceMsgSmartcard) data = 101;
 
  client:
+/* Some of the following messages are duplicated, the protocol
+ * definition was broken. Messages, as you can see have same ID.
+ * Also code was not used and didn't compile correctly.
+ * Keeping in the hope could be useful in the future.
+ */
+/*
     message {
 	VscMessageHeader header;
 	switch (header.type) {
@@ -1412,13 +1418,14 @@ channel SmartcardChannel : BaseChannel {
 	    VscMessageError error;
 	} u @anon;
     } @ctype(SpiceMsgcSmartcard) data = 101;
-
+*/
     message {
 	vsc_message_type type;
 	uint32 reader_id;
 	uint32 length;
     } @ctype(VSCMsgHeader) header = 101;
-
+/* See comment on client data message above */
+/*
     message {
 	uint32 code;
     } @ctype(VSCMsgError) error = 101;
@@ -1430,6 +1437,7 @@ channel SmartcardChannel : BaseChannel {
     message {
 	int8 reader_name[] @zero_terminated @nonnull;
     } @ctype(VSCMsgReaderAdd) reader_add = 101;
+*/
 } @ifdef(USE_SMARTCARD);
 
 channel SpicevmcChannel : BaseChannel {
