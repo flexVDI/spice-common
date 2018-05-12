@@ -400,8 +400,10 @@ static inline void encode(Encoder *encoder, unsigned int word, unsigned int len)
 {
     int delta;
 
-    spice_assert(len > 0 && len < 32);
-    spice_assert(!(word & ~bppmask[len]));
+    if (spice_extra_checks) {
+        spice_assert(len > 0 && len < 32);
+        spice_assert(!(word & ~bppmask[len]));
+    }
     if ((delta = ((int)encoder->io_available_bits - len)) >= 0) {
         encoder->io_available_bits = delta;
         encoder->io_word |= word << encoder->io_available_bits;
@@ -413,8 +415,10 @@ static inline void encode(Encoder *encoder, unsigned int word, unsigned int len)
     encoder->io_available_bits = 32 - delta;
     encoder->io_word = word << encoder->io_available_bits;
 
-    spice_assert(encoder->io_available_bits < 32);
-    spice_assert((encoder->io_word & bppmask[encoder->io_available_bits]) == 0);
+    if (spice_extra_checks) {
+        spice_assert(encoder->io_available_bits < 32);
+        spice_assert((encoder->io_word & bppmask[encoder->io_available_bits]) == 0);
+    }
 }
 
 static inline void encode_32(Encoder *encoder, unsigned int word)
@@ -437,7 +441,9 @@ static inline void read_io_word(Encoder *encoder)
     if (encoder->io_now == encoder->io_end) {
         more_io_words(encoder);
     }
-    spice_assert(encoder->io_now < encoder->io_end);
+    if (spice_extra_checks) {
+        spice_assert(encoder->io_now < encoder->io_end);
+    }
     encoder->io_next_word = GUINT32_FROM_LE(*(encoder->io_now++));
 }
 
@@ -445,7 +451,9 @@ static inline void decode_eatbits(Encoder *encoder, int len)
 {
     int delta;
 
-    spice_assert(len > 0 && len < 32);
+    if (spice_extra_checks) {
+        spice_assert(len > 0 && len < 32);
+    }
     encoder->io_word <<= len;
 
     if ((delta = ((int)encoder->io_available_bits - len)) >= 0) {
