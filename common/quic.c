@@ -280,6 +280,12 @@ static const BYTE lzeroes[256] = {
 /* count leading zeroes */
 static unsigned int cnt_l_zeroes(const unsigned int bits)
 {
+    if (spice_extra_checks) {
+        spice_assert(bits != 0);
+    }
+#if defined(__GNUC__) && __GNUC__ >= 4
+    return __builtin_clz(bits);
+#else
     if (bits & 0xff800000) {
         return lzeroes[bits >> 24];
     } else if (bits & 0xffff8000) {
@@ -289,6 +295,7 @@ static unsigned int cnt_l_zeroes(const unsigned int bits)
     } else {
         return 24 + lzeroes[bits & 0x000000ff];
     }
+#endif
 }
 
 #define QUIC_FAMILY_8BPC
