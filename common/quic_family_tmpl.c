@@ -44,11 +44,9 @@ static inline unsigned int FNAME(golomb_code_len)(const BYTE n, const unsigned i
     return VNAME(family).golomb_code_len[n][l];
 }
 
-static void FNAME(golomb_coding)(const BYTE n, const unsigned int l, unsigned int * const codeword,
-                                 unsigned int * const codewordlen)
+static void FNAME(golomb_coding)(Encoder *encoder, const BYTE n, const unsigned int l)
 {
-    *codeword = FNAME(golomb_code)(n, l);
-    *codewordlen = FNAME(golomb_code_len)(n, l);
+    encode(encoder, FNAME(golomb_code)(n, l), FNAME(golomb_code_len)(n, l));
 }
 
 static unsigned int FNAME(golomb_decoding)(const unsigned int l, const unsigned int bits,

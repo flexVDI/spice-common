@@ -130,19 +130,15 @@
           (int)((_PIXEL_A(channel, curr) + _PIXEL_B(channel, prev)) >> 1)) & bpc_mask))
 
 
-#define COMPRESS_ONE_ROW0_0(channel)                                                \
-    correlate_row_##channel[0] = family.xlatU2L[GET_##channel(cur_row)];            \
-    golomb_coding(correlate_row_##channel[0], find_bucket(channel_##channel,        \
-                  correlate_row_##channel[-1])->bestcode,                           \
-                  &codeword, &codewordlen);                                         \
-    encode(encoder, codeword, codewordlen);
+#define COMPRESS_ONE_ROW0_0(channel)                                                  \
+    correlate_row_##channel[0] = family.xlatU2L[GET_##channel(cur_row)];              \
+    golomb_coding(encoder, correlate_row_##channel[0], find_bucket(channel_##channel, \
+                  correlate_row_##channel[-1])->bestcode)
 
-#define COMPRESS_ONE_ROW0(channel, index)                                               \
-    correlate_row_##channel[index] = DECORRELATE_0(channel, &cur_row[index], bpc_mask); \
-    golomb_coding(correlate_row_##channel[index], find_bucket(channel_##channel,        \
-                  correlate_row_##channel[index -1])->bestcode,                         \
-                  &codeword, &codewordlen);                                             \
-    encode(encoder, codeword, codewordlen);
+#define COMPRESS_ONE_ROW0(channel, index)                                                 \
+    correlate_row_##channel[index] = DECORRELATE_0(channel, &cur_row[index], bpc_mask);   \
+    golomb_coding(encoder, correlate_row_##channel[index], find_bucket(channel_##channel, \
+                  correlate_row_##channel[index -1])->bestcode)
 
 #define UPDATE_MODEL(index)                                                            \
     update_model(state, find_bucket(channel_r, correlate_row_r[index - 1]),            \
@@ -182,8 +178,6 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, int i,
     spice_assert(end - i > 0);
 
     if (i == 0) {
-        unsigned int codeword, codewordlen;
-
         COMPRESS_ONE_ROW0_0(r);
         COMPRESS_ONE_ROW0_0(g);
         COMPRESS_ONE_ROW0_0(b);
@@ -201,7 +195,6 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, int i,
 
     while (stopidx < end) {
         for (; i <= stopidx; i++) {
-            unsigned int codeword, codewordlen;
             COMPRESS_ONE_ROW0(r, i);
             COMPRESS_ONE_ROW0(g, i);
             COMPRESS_ONE_ROW0(b, i);
@@ -212,8 +205,6 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, int i,
     }
 
     for (; i < end; i++) {
-        unsigned int codeword, codewordlen;
-
         COMPRESS_ONE_ROW0(r, i);
         COMPRESS_ONE_ROW0(g, i);
         COMPRESS_ONE_ROW0(b, i);
@@ -258,18 +249,14 @@ static void FNAME(compress_row0)(Encoder *encoder, const PIXEL *cur_row,
 #define COMPRESS_ONE_0(channel) \
     correlate_row_##channel[0] = family.xlatU2L[(unsigned)((int)GET_##channel(cur_row) -    \
                                                 (int)GET_##channel(prev_row) ) & bpc_mask]; \
-    golomb_coding(correlate_row_##channel[0],                                               \
-                  find_bucket(channel_##channel, correlate_row_##channel[-1])->bestcode,    \
-                  &codeword, &codewordlen);                                                 \
-    encode(encoder, codeword, codewordlen);
+    golomb_coding(encoder, correlate_row_##channel[0],                                      \
+                  find_bucket(channel_##channel, correlate_row_##channel[-1])->bestcode)
 
 #define COMPRESS_ONE(channel, index)                                                            \
     DECORRELATE(channel, &prev_row[index], &cur_row[index],bpc_mask,                            \
                correlate_row_##channel[index]);                                                 \
-    golomb_coding(correlate_row_##channel[index],                                               \
-                 find_bucket(channel_##channel, correlate_row_##channel[index - 1])->bestcode,  \
-                 &codeword, &codewordlen);                                                      \
-    encode(encoder, codeword, codewordlen);
+    golomb_coding(encoder, correlate_row_##channel[index],                                      \
+                 find_bucket(channel_##channel, correlate_row_##channel[index - 1])->bestcode)
 
 static void FNAME(compress_row_seg)(Encoder *encoder, int i,
                                     const PIXEL * const prev_row,
@@ -294,8 +281,6 @@ static void FNAME(compress_row_seg)(Encoder *encoder, int i,
     spice_assert(end - i > 0);
 
     if (i == 0) {
-        unsigned int codeword, codewordlen;
-
         COMPRESS_ONE_0(r);
         COMPRESS_ONE_0(g);
         COMPRESS_ONE_0(b);
@@ -313,7 +298,6 @@ static void FNAME(compress_row_seg)(Encoder *encoder, int i,
     for (;;) {
         while (stopidx < end) {
             for (; i <= stopidx; i++) {
-                unsigned int codeword, codewordlen;
                 RLE_PRED_IMP;
                 COMPRESS_ONE(r, i);
                 COMPRESS_ONE(g, i);
@@ -325,7 +309,6 @@ static void FNAME(compress_row_seg)(Encoder *encoder, int i,
         }
 
         for (; i < end; i++) {
-            unsigned int codeword, codewordlen;
             RLE_PRED_IMP;
             COMPRESS_ONE(r, i);
             COMPRESS_ONE(g, i);

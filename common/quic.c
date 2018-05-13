@@ -93,6 +93,8 @@ typedef struct s_bucket {
 
 typedef struct Encoder Encoder;
 
+static inline void encode(Encoder *encoder, unsigned int word, unsigned int len);
+
 typedef struct CommonState {
     unsigned int waitcnt;
     unsigned int tabrand_seed;
