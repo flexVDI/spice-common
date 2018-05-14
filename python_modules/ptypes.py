@@ -1055,6 +1055,8 @@ class ChannelType(Type):
                     m.value = info.count
                 info.count = m.value + 1
                 info.messages.append(m)
+                if m.name in info.messages_byname:
+                    raise Exception("Duplicated message name '%s' in channel '%s'" % (m.name, self.name))
                 info.messages_byname[m.name] = m
 
         self.server_messages = server_info.messages
