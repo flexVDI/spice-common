@@ -1028,6 +1028,10 @@ class ChannelType(Type):
                 self.messages_byname = messages_byname.copy()
                 self.count = 1
 
+                self.messages_byvalue = {}
+                for m in self.messages:
+                    self.messages_byvalue[m.value] = m
+
         if self.base is None:
             server_info = MessagesInfo(True)
             client_info = MessagesInfo(False)
@@ -1058,6 +1062,10 @@ class ChannelType(Type):
                 if m.name in info.messages_byname:
                     raise Exception("Duplicated message name '%s' in channel '%s'" % (m.name, self.name))
                 info.messages_byname[m.name] = m
+                if m.value in info.messages_byvalue:
+                    raise Exception("Duplicated message value %d between '%s' and '%s' in channel '%s'" % (
+                        m.value, info.messages_byvalue[m.value].name, m.name, self.name))
+                info.messages_byvalue[m.value] = m
 
         self.server_messages = server_info.messages
         self.server_messages_byname = server_info.messages_byname
