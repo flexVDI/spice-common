@@ -210,6 +210,12 @@ void spice_marshaller_reset(SpiceMarshaller *m)
     m->next = NULL;
     m->n_items = 0;
     m->total_size = 0;
+    if (m->has_fd) {
+        m->has_fd = false;
+        if (m->fd != -1) {
+            close(m->fd);
+        }
+    }
 
     d = m->data;
     d->last_marshaller = d->marshallers;
