@@ -232,12 +232,14 @@ static void test_pixbuf(GdkPixbuf *pixbuf)
 
 int main(int argc, char **argv)
 {
-    if (argc == 2) {
-        GdkPixbuf *source_pixbuf;
+    if (argc >= 2) {
+        for (int i = 1; i < argc; ++i) {
+            GdkPixbuf *source_pixbuf;
 
-        source_pixbuf = gdk_pixbuf_new_from_file(argv[1], NULL);
-        test_pixbuf(source_pixbuf);
-        g_object_unref(source_pixbuf);
+            source_pixbuf = gdk_pixbuf_new_from_file(argv[i], NULL);
+            test_pixbuf(source_pixbuf);
+            g_object_unref(source_pixbuf);
+        }
     } else if (argc == 1) {
         unsigned int count;
 
