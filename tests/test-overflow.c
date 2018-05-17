@@ -80,6 +80,7 @@ int main(void)
         free_output(out);
     }
     free(msg);
+    spice_marshaller_destroy(m);
 
     return 0;
 }
