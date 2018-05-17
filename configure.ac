@@ -64,11 +64,4 @@ AC_CONFIG_FILES([
   docs/Makefile
 ])
 
-AH_BOTTOM([
-/* argh.. this is evil */
-#if defined(FIXME_SERVER_SMARTCARD) && defined(USE_SMARTCARD)
-%:undef USE_SMARTCARD
-#endif
-])
-
 AC_OUTPUT

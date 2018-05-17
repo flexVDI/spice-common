@@ -78,8 +78,6 @@ libspice_common_server_la_SOURCES =		\
 	$(SERVER_MARSHALLERS)			\
 	$(NULL)
 
-libspice_common_server_la_CFLAGS = -DFIXME_SERVER_SMARTCARD
-
 AM_CPPFLAGS =				\
 	-I$(top_srcdir)			\
 	-I$(top_builddir)		\
