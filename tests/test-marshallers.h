@@ -8,5 +8,9 @@ typedef struct {
     uint64_t *data;
 } SpiceMsgMainShortDataSubMarshall;
 
+typedef struct {
+    int8_t *name;
+} SpiceMsgMainArrayMessage;
+
 #endif /* _H_TEST_MARSHALLERS */
 

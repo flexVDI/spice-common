@@ -4,6 +4,10 @@ channel TestChannel {
       uint32 data_size;
       uint64 *data[data_size] @marshall;
    } ShortDataSubMarshall;
+
+   message {
+      int8 name[];
+   } ArrayMessage;
 };
 
 protocol Spice {

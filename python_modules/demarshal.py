@@ -1039,8 +1039,7 @@ def write_msg_parser(writer, message):
     msg_type = message.c_type()
     msg_sizeof = message.sizeof()
 
-    want_mem_size = (len(message.members) != 1 or message.members[0].is_fixed_nw_size()
-                         or not message.members[0].is_array())
+    want_mem_size = not message.has_attr("nocopy")
 
     writer.newline()
     if message.has_attr("ifdef"):
