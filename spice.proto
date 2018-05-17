@@ -1383,11 +1383,11 @@ struct VscMessageAPDU {
 } @ctype(VSCMsgAPDU);
 
 struct VscMessageATR {
-    uint8 data[];
+    uint8 atr[];
 } @ctype(VSCMsgATR);
 
 struct VscMessageReaderAdd {
-    int8 *reader_name[] @zero_terminated @nonnull @end @nomarshal;
+    int8 *name[] @zero_terminated @nonnull @end @nomarshal;
 } @ctype(VSCMsgReaderAdd);
 
 channel SmartcardChannel : BaseChannel {
@@ -1435,7 +1435,7 @@ channel SmartcardChannel : BaseChannel {
     } @ctype(VSCMsgATR) atr = 101;
 
     message {
-	int8 reader_name[] @zero_terminated @nonnull;
+	int8 name[] @zero_terminated @nonnull;
     } @ctype(VSCMsgReaderAdd) reader_add = 101;
 */
 } @ifdef(USE_SMARTCARD);
