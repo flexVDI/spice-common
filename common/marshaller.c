@@ -270,7 +270,7 @@ static size_t remaining_buffer_size(SpiceMarshallerData *d)
     return MARSHALLER_BUFFER_SIZE - d->current_buffer_position;
 }
 
-static void _reserve_space_free_data(uint8_t *data, SPICE_GNUC_UNUSED void *opaque)
+static void reserve_space_free_data(uint8_t *data, SPICE_GNUC_UNUSED void *opaque)
 {
     free(data);
 }
@@ -313,7 +313,7 @@ uint8_t *spice_marshaller_reserve_space(SpiceMarshaller *m, size_t size)
         /* Large item, allocate by itself */
         item->data = (uint8_t *)spice_malloc(size);
         item->len = size;
-        item->free_data = _reserve_space_free_data;
+        item->free_data = reserve_space_free_data;
         item->opaque = NULL;
     } else {
         /* Use next buffer */
