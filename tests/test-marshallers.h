@@ -21,5 +21,10 @@ typedef struct SpiceMsgChannels {
     uint16_t channels[0];
 } SpiceMsgChannels;
 
+typedef struct {
+    uint32_t dummy[2];
+    uint8_t data[0];
+} SpiceMsgMainLenMessage;
+
 #endif /* _H_TEST_MARSHALLERS */
 

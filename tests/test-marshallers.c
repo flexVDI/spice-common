@@ -150,6 +150,14 @@ int main(int argc G_GNUC_UNUSED, char **argv G_GNUC_UNUSED)
 
     test_overflow(marshaller);
 
+    len = 4;
+    data = g_new0(uint8_t, len);
+    memset(data, 0, len);
+    msg = (SpiceMsgMainShortDataSubMarshall *) spice_parse_msg(data, data + len, 1, 3, 0,
+                                                               &msg_len, &free_message);
+    g_assert_null(msg);
+    g_free(data);
+
     spice_marshaller_destroy(marshaller);
 
     return 0;

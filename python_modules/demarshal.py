@@ -331,6 +331,7 @@ def write_validate_array_item(writer, container, item, scope, parent_scope, star
         writer.assign(nelements, array.size)
     elif array.is_remaining_length():
         if element_type.is_fixed_nw_size():
+            writer.error_check("%s > message_end" % item.get_position())
             if element_type.get_fixed_nw_size() == 1:
                 writer.assign(nelements, "message_end - %s" % item.get_position())
             else:
