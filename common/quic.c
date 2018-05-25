@@ -388,19 +388,10 @@ static void more_io_words(Encoder *encoder)
     encoder->io_end = encoder->io_now + num_io_words;
 }
 
-static void __write_io_word(Encoder *encoder)
-{
-    more_io_words(encoder);
-    *(encoder->io_now++) = encoder->io_word;
-}
-
-static void (*__write_io_word_ptr)(Encoder *encoder) = __write_io_word;
-
 static inline void write_io_word(Encoder *encoder)
 {
     if (encoder->io_now == encoder->io_end) {
-        __write_io_word_ptr(encoder); //disable inline optimizations
-        return;
+        more_io_words(encoder);
     }
     *(encoder->io_now++) = encoder->io_word;
 }
@@ -441,20 +432,10 @@ static inline void flush(Encoder *encoder)
     encode(encoder, 0, 1);
 }
 
-static void __read_io_word(Encoder *encoder)
-{
-    more_io_words(encoder);
-    encoder->io_next_word = GUINT32_FROM_LE(*(encoder->io_now++));
-}
-
-static void (*__read_io_word_ptr)(Encoder *encoder) = __read_io_word;
-
-
 static inline void read_io_word(Encoder *encoder)
 {
     if (encoder->io_now == encoder->io_end) {
-        __read_io_word_ptr(encoder); //disable inline optimizations
-        return;
+        more_io_words(encoder);
     }
     spice_assert(encoder->io_now < encoder->io_end);
     encoder->io_next_word = GUINT32_FROM_LE(*(encoder->io_now++));
