@@ -129,6 +129,7 @@ generated_server_marshallers.h: $(top_srcdir)/spice.proto $(MARSHALLERS_DEPS)
 EXTRA_DIST =				\
 	$(CLIENT_MARSHALLERS)		\
 	$(SERVER_MARSHALLERS)		\
+	meson.build			\
 	canvas_base.c			\
 	canvas_base.h			\
 	lz_compress_tmpl.c		\

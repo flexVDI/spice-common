@@ -85,6 +85,7 @@ generated_test_demarshallers.c: $(srcdir)/test-marshallers.proto $(MARSHALLERS_D
 
 EXTRA_DIST =				\
 	$(TEST_MARSHALLERS)		\
+	meson.build			\
 	test-marshallers.proto		\
 	$(NULL)
 

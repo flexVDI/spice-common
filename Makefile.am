@@ -4,6 +4,8 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = python_modules common tests docs
 
 EXTRA_DIST =				\
+	meson.build			\
+	meson_options.txt		\
 	spice_codegen.py		\
 	spice.proto			\
 	spice1.proto			\

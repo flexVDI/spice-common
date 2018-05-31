@@ -9,7 +9,7 @@ PYTHON_MODULES =				\
 	spice_parser.py				\
 	$(NULL)
 
-EXTRA_DIST = $(PYTHON_MODULES)
+EXTRA_DIST = meson.build $(PYTHON_MODULES)
 
 DISTCLEANFILES = *.pyc
 

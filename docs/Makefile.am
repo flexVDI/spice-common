@@ -2,6 +2,7 @@ NULL =
 ASCIIDOC_FLAGS = -a icons -a toc
 
 EXTRA_DIST =					\
+	meson.build				\
 	spice_protocol.txt			\
 	$(NULL)
 
