@@ -197,7 +197,7 @@ static GdkPixbuf *gdk_pixbuf_new_random(void)
     gint width = g_random_int_range(100, 2000);
     gint height = g_random_int_range(100, 2000);
     GdkPixbuf *random_pixbuf;
-    gint i;
+    guint i;
     guint8 *pixels;
 
     random_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, has_alpha, 8, width, height);
