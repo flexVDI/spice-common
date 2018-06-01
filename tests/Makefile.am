@@ -70,6 +70,7 @@ TEST_MARSHALLERS =				\
 	generated_test_marshallers.c		\
 	generated_test_marshallers.h		\
 	generated_test_demarshallers.c		\
+	generated_test_enums.h			\
 	$(NULL)
 
 BUILT_SOURCES = $(TEST_MARSHALLERS)
@@ -92,25 +93,13 @@ generated_test_marshallers.h: $(srcdir)/test-marshallers.proto $(MARSHALLERS_DEP
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers --server --include test-marshallers.h -H $< $@ >/dev/null
 generated_test_demarshallers.c: $(srcdir)/test-marshallers.proto $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-demarshallers --client --include test-marshallers.h $< $@ >/dev/null
+generated_test_enums.h: $(srcdir)/test-marshallers.proto $(MARSHALLERS_DEPS)
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py -e $< $@ >/dev/null
 
 EXTRA_DIST =				\
 	$(TEST_MARSHALLERS)		\
 	meson.build			\
 	test-marshallers.proto		\
-	$(NULL)
-
-TESTS += test_overflow
-test_overflow_SOURCES = test-overflow.c
-test_overflow_CFLAGS = \
-	-I$(top_srcdir) \
-	$(GLIB2_CFLAGS) \
-	$(SPICE_COMMON_CFLAGS) \
-	$(PROTOCOL_CFLAGS) \
-	$(NULL)
-test_overflow_LDADD = \
-	$(top_builddir)/common/libspice-common.la \
-	$(top_builddir)/common/libspice-common-server.la \
-	$(top_builddir)/common/libspice-common-client.la \
 	$(NULL)
 
 -include $(top_srcdir)/git.mk

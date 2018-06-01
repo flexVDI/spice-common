@@ -14,6 +14,11 @@ channel TestChannel {
         uint16 n;
         uint32 res2 @zero;
     } Zeroes;
+
+    message {
+        uint32 num_of_channels;
+        uint16 channels[num_of_channels] @end;
+    } @ctype(SpiceMsgChannels) channels_list;
 };
 
 protocol Spice {

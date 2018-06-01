@@ -16,5 +16,10 @@ typedef struct {
     uint16_t n;
 } SpiceMsgMainZeroes;
 
+typedef struct SpiceMsgChannels {
+    uint32_t num_of_channels;
+    uint16_t channels[0];
+} SpiceMsgChannels;
+
 #endif /* _H_TEST_MARSHALLERS */
 
