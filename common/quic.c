@@ -393,7 +393,7 @@ static inline void write_io_word(Encoder *encoder)
     if (encoder->io_now == encoder->io_end) {
         more_io_words(encoder);
     }
-    *(encoder->io_now++) = encoder->io_word;
+    *(encoder->io_now++) = GUINT32_TO_LE(encoder->io_word);
 }
 
 static inline void encode(Encoder *encoder, unsigned int word, unsigned int len)
