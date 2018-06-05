@@ -64,6 +64,9 @@ AC_DEFUN([SPICE_CHECK_SYSDEPS], [
     AC_FUNC_ERROR_AT_LINE
     AC_FUNC_FORK
     AC_CHECK_FUNCS([dup2 floor inet_ntoa memmove memset pow sqrt])
+    AC_SEARCH_LIBS([hypot], [m], [], [
+        AC_MSG_ERROR([unable to find the hypot() function])
+    ])
 ])
 
 

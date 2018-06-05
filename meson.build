@@ -87,6 +87,16 @@ foreach func : functions
   endif
 endforeach
 
+# check for hypot function
+#
+# Include math.h header to avoid problems with builtins.
+# In some systems the function is in libm.
+if not compiler.has_function('hypot', prefix : '#include <math.h>')
+  libm = compiler.find_library('m', required : false)
+  if compiler.has_function('hypot', prefix : '#include <math.h>', dependencies : libm)
+    spice_common_deps += libm
+  endif
+endif
 
 #
 # check for mandatory dependencies
