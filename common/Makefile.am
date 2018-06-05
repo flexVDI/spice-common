@@ -23,8 +23,6 @@ libspice_common_la_SOURCES =		\
 	backtrace.h			\
 	canvas_utils.c			\
 	canvas_utils.h			\
-	client_demarshallers.h		\
-	client_marshallers.h		\
 	draw.h				\
 	lines.c				\
 	lines.h				\
@@ -54,8 +52,6 @@ libspice_common_la_SOURCES =		\
 	snd_codec.c			\
 	snd_codec.h			\
 	spice_common.h			\
-	ssl_verify.c			\
-	ssl_verify.h			\
 	verify.h			\
 	$(NULL)
 
@@ -70,6 +66,10 @@ EXTRA_libspice_common_la_SOURCES = 	\
 	$(NULL)
 
 libspice_common_client_la_SOURCES =		\
+	client_demarshallers.h			\
+	client_marshallers.h			\
+	ssl_verify.c				\
+	ssl_verify.h				\
 	$(CLIENT_MARSHALLERS)			\
 	$(NULL)
 
