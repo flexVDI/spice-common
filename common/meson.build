@@ -4,7 +4,6 @@
 spice_common_sources = [
   'backtrace.c',
   'backtrace.h',
-  'bitops.h',
   'canvas_utils.c',
   'canvas_utils.h',
   'draw.h',

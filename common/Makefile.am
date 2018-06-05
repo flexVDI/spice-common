@@ -21,7 +21,6 @@ noinst_LTLIBRARIES = libspice-common.la libspice-common-server.la libspice-commo
 libspice_common_la_SOURCES =		\
 	backtrace.c			\
 	backtrace.h			\
-	bitops.h			\
 	canvas_utils.c			\
 	canvas_utils.h			\
 	client_demarshallers.h		\

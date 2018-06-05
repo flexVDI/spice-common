@@ -27,7 +27,6 @@
 
 #include "quic.h"
 #include "spice_common.h"
-#include "bitops.h"
 
 /* ASCII "QUIC" */
 #define QUIC_MAGIC 0x43495551

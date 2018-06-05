@@ -4,7 +4,7 @@ AC_INIT([spice-common],
         [noversion],
         [spice-devel@lists.freedesktop.org])
 
-AC_CONFIG_SRCDIR([common/bitops.h])
+AC_CONFIG_SRCDIR([common/log.h])
 AC_CONFIG_MACRO_DIR([m4])
 AM_CONFIG_HEADER([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
