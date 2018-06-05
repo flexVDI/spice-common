@@ -32,8 +32,7 @@ AC_ARG_ENABLE([extra-checks],
                AS_HELP_STRING([--enable-extra-checks=@<:@yes/no@:>@],
                               [Enable expensive checks @<:@default=no@:>@]))
 AM_CONDITIONAL(ENABLE_EXTRA_CHECKS, test "x$enable_extra_checks" = "xyes")
-AS_IF([test "x$enable_extra_checks" = "xyes"],
-      [AC_DEFINE([ENABLE_EXTRA_CHECKS], 1, [Enable extra checks on code])])
+AM_COND_IF([ENABLE_EXTRA_CHECKS], AC_DEFINE([ENABLE_EXTRA_CHECKS], 1, [Enable extra checks on code]))
 ])
 
 
@@ -163,9 +162,7 @@ AC_DEFUN([SPICE_CHECK_OPUS], [
     fi
 
     AM_CONDITIONAL([HAVE_OPUS], [test "x$have_opus" = "xyes"])
-    if test "x$have_opus" = "xyes" ; then
-      AC_DEFINE([HAVE_OPUS], [1], [Define if we have OPUS])
-    fi
+    AM_COND_IF([HAVE_OPUS], AC_DEFINE([HAVE_OPUS], [1], [Define if we have OPUS]))
 ])
 
 
@@ -198,9 +195,7 @@ AC_DEFUN([SPICE_CHECK_GDK_PIXBUF], [
     PKG_CHECK_MODULES([GDK_PIXBUF], [gdk-pixbuf-2.0 >= 2.26], [have_gdk_pixbuf=yes], [have_gdk_pixbuf=no])
 
     AM_CONDITIONAL([HAVE_GDK_PIXBUF], [test "x$have_gdk_pixbuf" = "xyes"])
-    if test "x$have_gdk_pixbuf" = "xyes" ; then
-      AC_DEFINE([HAVE_GDK_PIXBUF], [1], [Define if gdk-pixbuf was found])
-    fi
+    AM_COND_IF([HAVE_GDK_PIXBUF], AC_DEFINE([HAVE_GDK_PIXBUF], [1], [Define if gdk-pixbuf was found]))
 ])
 
 # SPICE_CHECK_PYTHON_MODULES()
