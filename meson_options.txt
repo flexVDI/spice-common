@@ -15,6 +15,11 @@ option('celt051',
     value : false,
     description: 'Enable celt051 audio codec (default=false)')
 
+option('opus',
+    type : 'boolean',
+    value : true,
+    description: 'Enable Opus audio codec (default=true)')
+
 option('python-checks',
     type : 'boolean',
     value : true,

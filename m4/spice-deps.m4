@@ -149,7 +149,18 @@ AC_DEFUN([SPICE_CHECK_CELT051], [
 # HAVE_OPUS preprocessor symbol as well as a HAVE_OPUS Makefile conditional.
 # ----------------
 AC_DEFUN([SPICE_CHECK_OPUS], [
-    PKG_CHECK_MODULES([OPUS], [opus >= 0.9.14], [have_opus=yes], [have_opus=no])
+    AC_ARG_ENABLE([opus],
+        [  --disable-opus       Disable Opus audio codec (enabled by default)],,
+        [enable_opus="auto"])
+    if test "x$enable_opus" != "xno"; then
+        PKG_CHECK_MODULES([OPUS], [opus >= 0.9.14], [have_opus=yes], [have_opus=no])
+        if test "x$enable_opus" = "xauto" && test "x$have_opus" = "xno"; then
+            AC_MSG_ERROR([Opus could not be detected, explicitly use --disable-opus if that's intentional])
+        fi
+        if test "x$enable_opus" = "xyes" && test "x$have_opus" != "xyes"; then
+            AC_MSG_ERROR([--enable-opus has been specified, but Opus is missing])
+        fi
+    fi
 
     AM_CONDITIONAL([HAVE_OPUS], [test "x$have_opus" = "xyes"])
     if test "x$have_opus" = "xyes" ; then
