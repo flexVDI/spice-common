@@ -74,11 +74,8 @@ functions = ['alloca',
              'dup2',
              'floor',
              'fork',
-             'inet_ntoa',
              'memmove',
              'memset',
-             'pow',
-             'sqrt',
              'vfork']
 
 foreach func : functions

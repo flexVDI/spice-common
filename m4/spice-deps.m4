@@ -62,7 +62,7 @@ AC_DEFUN([SPICE_CHECK_SYSDEPS], [
     # do not check malloc or realloc, since that cannot be cross-compiled checked
     AC_FUNC_ERROR_AT_LINE
     AC_FUNC_FORK
-    AC_CHECK_FUNCS([dup2 floor inet_ntoa memmove memset pow sqrt])
+    AC_CHECK_FUNCS([dup2 floor memmove memset])
     AC_SEARCH_LIBS([hypot], [m], [], [
         AC_MSG_ERROR([unable to find the hypot() function])
     ])
