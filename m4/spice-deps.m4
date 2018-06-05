@@ -107,7 +107,7 @@ AC_DEFUN([SPICE_CHECK_SMARTCARD], [
 
 # SPICE_CHECK_CELT051
 # -------------------
-# Adds a --disable-celt051 switch in order to enable/disable CELT 0.5.1
+# Adds a --enable-celt051 switch in order to enable/disable CELT 0.5.1
 # support, and checks if the needed libraries are available. If found, it will
 # return the flags to use in the CELT051_CFLAGS and CELT051_LIBS variables, and
 # it will define a HAVE_CELT051 preprocessor symbol as well as a HAVE_CELT051
@@ -115,11 +115,24 @@ AC_DEFUN([SPICE_CHECK_SMARTCARD], [
 #--------------------
 AC_DEFUN([SPICE_CHECK_CELT051], [
     AC_ARG_ENABLE([celt051],
-        [  --disable-celt051       Disable celt051 audio codec (enabled by default)],,
-        [enable_celt051="yes"])
+        [  --enable-celt051       Enable celt051 audio codec (disabled by default)],,
+        [enable_celt051="auto"])
 
-    if test "x$enable_celt051" = "xyes"; then
+    if test "x$enable_celt051" != "xno"; then
         PKG_CHECK_MODULES([CELT051], [celt051 >= 0.5.1.1], [have_celt051=yes], [have_celt051=no])
+        if test "x$enable_celt051" = "xauto"; then
+            if test "x$have_celt051" = "xyes"; then
+                AC_MSG_ERROR(m4_normalize([
+                                CELT 0.5.1.x has been detected, \
+                                but CELT support is no longer automatically enabled by default. \
+                                Please explicitly use --enable-celt051 or --disable-celt051
+                             ]))
+            fi
+            # have_celt051 is "no" here, so celt is disabled by default
+        fi
+        if test "x$enable_celt051" = "xyes" && test "x$have_celt051" != "xyes"; then
+            AC_MSG_ERROR(["--enable-celt051 has been specified, but CELT 0.5.1 is missing"])
+        fi
     else
         have_celt051=no
     fi

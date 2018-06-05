@@ -12,8 +12,8 @@ option('extra-checks',
 
 option('celt051',
     type : 'boolean',
-    value : true,
-    description: 'Enable celt051 audio codec (default=true)')
+    value : false,
+    description: 'Enable celt051 audio codec (default=false)')
 
 option('python-checks',
     type : 'boolean',
