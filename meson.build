@@ -78,7 +78,7 @@ functions = ['alloca',
 
 foreach func : functions
   if compiler.has_function(func)
-    spice_common_config_data.set('HAVE_@0@'.format(func.to_upper()), '1')
+    spice_common_config_data.set('HAVE_@0@'.format(func.underscorify().to_upper()), '1')
   endif
 endforeach
 
@@ -113,12 +113,9 @@ endforeach
 #
 # Non-mandatory/optional dependencies
 #
-# Check deps which are optional but enabled by default. This foreach block only
-# checks the option, and adds the package to the deps list, while the real check
-# for the dependency is done in the foreach block below.
 optional_deps = [
-                    ['celt051', '>= 0.5.1.1', 'HAVE_CELT051'],
-                    ['opus', '>= 0.9.14', 'HAVE_OPUS'],
+                    ['celt051', '>= 0.5.1.1'],
+                    ['opus', '>= 0.9.14'],
                 ]
 foreach dep : optional_deps
   option_value = get_option(dep[0])
@@ -126,7 +123,7 @@ foreach dep : optional_deps
     d = dependency(dep[0], required: (option_value == 'true'), version : dep[1])
     if d.found()
       spice_common_deps += d
-      spice_common_config_data.set(dep[2], '1')
+      spice_common_config_data.set('HAVE_@0@'.format(dep[0].underscorify().to_upper()), '1')
     endif
   endif
 endforeach
