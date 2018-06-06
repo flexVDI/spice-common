@@ -2,37 +2,37 @@ option('alignment-checks',
     type : 'boolean',
     value : false,
     yield : true,
-    description : 'Enable runtime checks for cast alignment (default=false)')
+    description : 'Enable runtime checks for cast alignment')
 
 option('extra-checks',
     type : 'boolean',
     value : false,
     yield : true,
-    description : 'Enable extra checks on code (default=false)')
+    description : 'Enable extra checks on code')
 
 option('celt051',
     type : 'combo',
     choices : ['true', 'false', 'auto'],
     value : 'auto',
-    description: 'Enable celt051 audio codec (default=auto)')
+    description: 'Enable celt051 audio codec')
 
 option('opus',
     type : 'combo',
     choices : ['true', 'false', 'auto'],
-    description: 'Enable Opus audio codec (default=true)')
+    description: 'Enable Opus audio codec')
 
 option('python-checks',
     type : 'boolean',
     value : true,
-    description : 'Enable checks for Python modules needed to build from git (default=true)')
+    description : 'Enable checks for Python modules needed to build from git')
 
 option('manual',
     type : 'boolean',
     value : true,
     yield : true,
-    description : 'Build SPICE manual (default=true)')
+    description : 'Build SPICE manual')
 
 option('generate-code',
     type : 'combo',
     choices : ['all', 'server', 'client'],
-    description : 'Which code should be built (default=all)')
+    description : 'Which code should be built')
