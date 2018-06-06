@@ -117,22 +117,19 @@ endforeach
 #
 # Check deps which are optional but enabled by default. This foreach block only
 # checks the option, and adds the package to the deps list, while the real check
-# for the dependency is done in the foeach block below.
+# for the dependency is done in the foreach block below.
 optional_deps = [
-                    ['celt051', '>= 0.5.1.1', false, 'HAVE_CELT051'],
-                    ['opus', '>= 0.9.14', true, 'HAVE_OPUS'],
+                    ['celt051', '>= 0.5.1.1', 'HAVE_CELT051'],
+                    ['opus', '>= 0.9.14', 'HAVE_OPUS'],
                 ]
 foreach dep : optional_deps
-  if get_option(dep[0])
-    deps += [dep]
-  endif
-endforeach
-
-foreach dep : deps
-  d = dependency(dep[0], required : dep[2], version : dep[1])
-  if d.found()
-    spice_common_deps += d
-    spice_common_config_data.set(dep[3], '1')
+  option_value = get_option(dep[0])
+  if option_value != 'false'
+    d = dependency(dep[0], required: (option_value == 'true'), version : dep[1])
+    if d.found()
+      spice_common_deps += d
+      spice_common_config_data.set(dep[2], '1')
+    endif
   endif
 endforeach
 

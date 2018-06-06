@@ -11,13 +11,15 @@ option('extra-checks',
     description : 'Enable extra checks on code (default=false)')
 
 option('celt051',
-    type : 'boolean',
-    value : false,
-    description: 'Enable celt051 audio codec (default=false)')
+    type : 'combo',
+    choices : ['true', 'false', 'auto'],
+    value : 'auto',
+    description: 'Enable celt051 audio codec (default=auto)')
 
 option('opus',
-    type : 'boolean',
-    value : true,
+    type : 'combo',
+    choices : ['true', 'false', 'auto'],
+    value : 'true',
     description: 'Enable Opus audio codec (default=true)')
 
 option('python-checks',
