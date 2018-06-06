@@ -10,7 +10,7 @@ if not meson.is_subproject()
 endif
 
 # some global vars
-spice_common_global_cflags = [#'-std=c99', # fails compiling bitops.h
+spice_common_global_cflags = ['-std=c99',
                               '-DHAVE_CONFIG_H',
                               '-DG_LOG_DOMAIN="Spice"',
                               '-Wall',
