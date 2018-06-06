@@ -58,8 +58,7 @@ headers = ['alloca.h',
            'sys/socket.h',
            'sys/stat.h',
            'sys/types.h',
-           'unistd.h',
-           'vfork.h']
+           'unistd.h']
 
 foreach header : headers
   if compiler.has_header(header)
@@ -75,8 +74,7 @@ functions = ['alloca',
              'floor',
              'fork',
              'memmove',
-             'memset',
-             'vfork']
+             'memset']
 
 foreach func : functions
   if compiler.has_function(func)
