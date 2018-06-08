@@ -11,6 +11,6 @@ PYTHON_MODULES =				\
 
 EXTRA_DIST = meson.build $(PYTHON_MODULES)
 
-DISTCLEANFILES = *.pyc
+DISTCLEANFILES = *.pyc __pycache__/*.pyc
 
 -include $(top_srcdir)/git.mk
