@@ -359,6 +359,7 @@ enum8 video_codec_type {
     VP8,
     H264,
     VP9,
+    H265,
 };
 
 flags8 stream_flags {
