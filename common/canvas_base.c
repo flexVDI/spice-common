@@ -437,10 +437,11 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
 
 
 //#define DUMP_JPEG
-#ifdef DUMP_JPEG
-static int jpeg_id = 0;
-static void dump_jpeg(uint8_t* data, int data_size)
+static void
+dump_jpeg(SPICE_GNUC_UNUSED SpiceChunks* data, SPICE_GNUC_UNUSED uint32_t data_size)
 {
+#ifdef DUMP_JPEG
+    static uint32_t jpeg_id = 0;
     char file_str[200];
     uint32_t id = ++jpeg_id;
 
@@ -455,10 +456,12 @@ static void dump_jpeg(uint8_t* data, int data_size)
         return;
     }
 
-    fwrite(data, 1, data_size, f);
+    for (uint32_t n = 0; n < data->num_chunks; ++n) {
+        fwrite(data->chunk[n].data, 1, data->chunk[n].len, f);
+    }
     fclose(f);
-}
 #endif
+}
 
 static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image)
 {
@@ -486,9 +489,7 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image)
 
     canvas->jpeg->ops->decode(canvas->jpeg, dest, stride, SPICE_BITMAP_FMT_32BIT);
 
-#ifdef DUMP_JPEG
     dump_jpeg(image->u.jpeg.data, image->u.jpeg.data_size);
-#endif
     return surface;
 }
 
@@ -652,9 +653,7 @@ static pixman_image_t *canvas_get_jpeg_alpha(CanvasBase *canvas, SpiceImage *ima
     }
     lz_decode(lz_data->lz, LZ_IMAGE_TYPE_XXXA, decomp_alpha_buf);
 
-#ifdef DUMP_JPEG
     dump_jpeg(image->u.jpeg_alpha.data, image->u.jpeg_alpha.jpeg_size);
-#endif
     return surface;
 }
 
