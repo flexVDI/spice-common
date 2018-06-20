@@ -250,6 +250,12 @@ static void test_log_levels(void)
     g_test_trap_subprocess(NULL, 0, 0);
     g_test_trap_assert_passed();
     g_test_trap_assert_stderr("*spice_warning\n*g_critical\n*g_warning\n*g_message\n*other_critical\n*other_warning\n*other_message\n");
+    g_test_trap_assert_stdout_unmatched("*spice_info*");
+    g_test_trap_assert_stdout_unmatched("*spice_debug*");
+    g_test_trap_assert_stdout_unmatched("*g_info*");
+    g_test_trap_assert_stdout_unmatched("*g_debug*");
+    g_test_trap_assert_stdout_unmatched("*other_info*");
+    g_test_trap_assert_stdout_unmatched("*other_debug*");
 }
 
 /* Checks that SPICE_DEBUG_LEVEL impacts spice_debug(), g_debug() but not other_debug() */
@@ -275,6 +281,7 @@ static void test_spice_debug_level(void)
     g_test_trap_assert_passed();
     g_test_trap_assert_stderr("*SPICE_DEBUG_LEVEL*deprecated*");
     g_test_trap_assert_stdout("*spice_info\n*g_debug\n*spice_debug\n");
+    g_test_trap_assert_stdout_unmatched("*other_debug*");
 }
 
 /* Checks that raising SPICE_DEBUG_LEVEL allows to only show spice_warning() and spice_critical()
@@ -310,6 +317,14 @@ static void test_spice_debug_level_warning(void)
     g_test_trap_assert_stderr("*SPICE_DEBUG_LEVEL*deprecated*");
     g_test_trap_assert_stderr("*SPICE_ABORT_LEVEL*deprecated*");
     g_test_trap_assert_stderr("*spice_critical\n*g_critical\n*other_message\n*other_warning\n*other_critical\n");
+    g_test_trap_assert_stdout_unmatched("*spice_info*");
+    g_test_trap_assert_stdout_unmatched("*spice_debug*");
+    g_test_trap_assert_stderr_unmatched("*spice_warning*");
+    g_test_trap_assert_stdout_unmatched("*g_debug*");
+    g_test_trap_assert_stdout_unmatched("*g_info*");
+    g_test_trap_assert_stderr_unmatched("*g_message*");
+    g_test_trap_assert_stderr_unmatched("*g_warning*");
+    g_test_trap_assert_stdout_unmatched("*other_info*");
 }
 
 /* Checks that setting G_MESSAGES_DEBUG to 'Spice' impacts spice_debug() and
@@ -335,6 +350,8 @@ static void test_spice_g_messages_debug(void)
     g_test_trap_assert_passed();
     g_test_trap_assert_stdout("*spice_debug\n*spice_info\n*g_debug\n*g_info\n");
     g_test_trap_assert_stderr("*g_message\n*other_message\n");
+    g_test_trap_assert_stdout_unmatched("*other_debug*");
+    g_test_trap_assert_stdout_unmatched("*other_info*");
 }
 
 /* Checks that setting G_MESSAGES_DEBUG to 'all' impacts spice_debug(),
