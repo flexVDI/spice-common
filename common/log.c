@@ -142,9 +142,14 @@ SPICE_CONSTRUCTOR_FUNC(spice_log_init)
 
     spice_log_set_debug_level();
     spice_log_set_abort_level();
-    g_log_set_handler(G_LOG_DOMAIN,
-                      G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION,
-                      spice_logger, NULL);
+    if (glib_debug_level != INT_MAX) {
+        /* If SPICE_DEBUG_LEVEL is set, we need a custom handler, which is
+         * going to break use of g_log_set_default_handler() by apps
+         */
+        g_log_set_handler(G_LOG_DOMAIN,
+                          G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION,
+                          spice_logger, NULL);
+    }
     /* Threading is always enabled from 2.31.0 onwards */
     /* Our logging is potentially used from different threads.
      * Older glibs require that g_thread_init() is called when
