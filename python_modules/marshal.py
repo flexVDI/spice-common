@@ -321,7 +321,7 @@ def write_member_marshaller(writer, container, member, src, scope):
     elif t.is_primitive():
         if member.has_attr("zero"):
             writer.statement("spice_marshaller_add_%s(m, 0)" % (t.primitive_type()))
-        if member.has_attr("bytes_count"):
+        elif member.has_attr("bytes_count"):
             var = "%s__ref" % member.name
             scope.variable_def("void *", var)
             writer.statement("%s = spice_marshaller_add_%s(m, %s)" % (var, t.primitive_type(), 0))
