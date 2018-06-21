@@ -8,6 +8,12 @@ channel TestChannel {
    message {
       int8 name[];
    } ArrayMessage;
+
+    message {
+        uint8 res1 @zero;
+        uint16 n;
+        uint32 res2 @zero;
+    } Zeroes;
 };
 
 protocol Spice {

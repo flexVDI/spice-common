@@ -12,5 +12,9 @@ typedef struct {
     int8_t *name;
 } SpiceMsgMainArrayMessage;
 
+typedef struct {
+    uint16_t n;
+} SpiceMsgMainZeroes;
+
 #endif /* _H_TEST_MARSHALLERS */
 

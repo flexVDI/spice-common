@@ -62,6 +62,19 @@ int main(int argc G_GNUC_UNUSED, char **argv G_GNUC_UNUSED)
     if (free_res) {
         free(data);
     }
+    spice_marshaller_reset(marshaller);
+
+    SpiceMsgMainZeroes msg_zeroes = { 0x0102 };
+
+    spice_marshall_msg_main_Zeroes(marshaller, &msg_zeroes);
+    spice_marshaller_flush(marshaller);
+    data = spice_marshaller_linearize(marshaller, 0, &len, &free_res);
+    g_assert_cmpint(len, ==, 7);
+    g_assert_true(memcmp(data, "\x00\x02\x01\x00\x00\x00\x00", 7) == 0);
+    if (free_res) {
+        free(data);
+    }
+
     spice_marshaller_destroy(marshaller);
 
     return 0;
