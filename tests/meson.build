@@ -48,5 +48,5 @@ if gdk_pixbuf_dep.found()
   test('test_quic',
        executable('test_quic', 'test-quic.c',
                   dependencies : [spice_common_dep, gdk_pixbuf_dep],
-                  install : false))
+                  install : false), timeout : 120)
 endif
