@@ -67,6 +67,7 @@ valid_attributes=set([
     'end',
     # the C structure contains a pointer to data
     # for instance we want to write an array to an allocated array
+    # The demarshaller allocates space for data that this pointer points to
     'to_ptr',
     # write output to this C structure
     'ctype',
@@ -75,8 +76,12 @@ valid_attributes=set([
     # used in demarshaller to use directly data from message without a copy
     'nocopy',
     # store member array in a pointer
-    # similar to to_ptr but has an additional argument which is the name of a C
-    # field which will store the array length
+    # Has an argument which is the name of a C field which will store the
+    # array length
+    # The demarshaller stores a reference to the original message buffer so
+    # you should keep a reference to the original message to avoid a dangling
+    # pointer
+    # Is useful for large buffers to avoid extra memory allocation and copying
     'as_ptr',
     # do not generate marshall code
     # used for last members to be able to marshall them manually
