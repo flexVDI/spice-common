@@ -41,6 +41,7 @@ typedef void *QuicContext;
 
 typedef struct QuicUsrContext QuicUsrContext;
 struct QuicUsrContext {
+    SPICE_ATTR_NORETURN
     SPICE_ATTR_PRINTF(2, 3) void (*error)(QuicUsrContext *usr, const char *fmt, ...);
     SPICE_ATTR_PRINTF(2, 3) void (*warn)(QuicUsrContext *usr, const char *fmt, ...);
     SPICE_ATTR_PRINTF(2, 3) void (*info)(QuicUsrContext *usr, const char *fmt, ...);

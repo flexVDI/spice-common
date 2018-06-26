@@ -19,6 +19,7 @@ typedef void *LzContext;
 
 typedef struct LzUsrContext LzUsrContext;
 struct LzUsrContext {
+    SPICE_ATTR_NORETURN
     SPICE_ATTR_PRINTF(2, 3) void (*error)(LzUsrContext *usr, const char *fmt, ...);
     SPICE_ATTR_PRINTF(2, 3) void (*warn)(LzUsrContext *usr, const char *fmt, ...);
     SPICE_ATTR_PRINTF(2, 3) void (*info)(LzUsrContext *usr, const char *fmt, ...);
