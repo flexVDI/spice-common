@@ -62,7 +62,6 @@ static int slow_region_test(const QRegion *rgn, const QRegion *other_rgn, int qu
 static int rect_is_valid(const SpiceRect *r)
 {
     if (r->top > r->bottom || r->left > r->right) {
-        printf("%s: invalid rect\n", __FUNCTION__);
         return FALSE;
     }
     return TRUE;
