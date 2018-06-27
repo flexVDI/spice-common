@@ -127,7 +127,7 @@ enum {
     EXPECT_CONT,
 };
 
-int main(void)
+static void test_region(void)
 {
     QRegion _r1, _r2, _r3;
     QRegion *r1 = &_r1;
@@ -396,6 +396,13 @@ int main(void)
     region_destroy(r3);
     region_destroy(r1);
     region_destroy(r2);
+}
 
-    return 0;
+int main(int argc, char **argv)
+{
+    g_test_init(&argc, &argv, NULL);
+
+    g_test_add_func("/spice-common/region", test_region);
+
+    return g_test_run();
 }
