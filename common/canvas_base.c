@@ -537,6 +537,10 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     width = image->descriptor.width;
     stride_encoded = width;
     height = image->descriptor.height;
+    if (data + 2 > data_end) {
+        g_warning("missing header in LZ4 data");
+        return NULL;
+    }
     top_down = !!*(data++);
     spice_format = *(data++);
     switch (spice_format) {
@@ -579,16 +583,22 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     bits = dest;
 
     do {
+        if (data + 4 > data_end) {
+            goto format_error;
+        }
         // Read next compressed block
         enc_size = read_uint32_be(data);
         data += 4;
+        /* check overflow. This check is a bit different to avoid
+         * possible overflows. From previous check data_end - data cannot overflow.
+         * Computing data + enc_size on 32 bit could cause overflows. */
+        if (enc_size < 0 || data_end - data < (unsigned int) enc_size) {
+            goto format_error;
+        }
         dec_size = LZ4_decompress_safe_continue(stream, (const char *) data,
                                                 (char *) dest, enc_size, available);
         if (dec_size <= 0) {
-            spice_warning("Error decoding LZ4 block\n");
-            pixman_image_unref(surface);
-            surface = NULL;
-            break;
+            goto format_error;
         }
         dest += dec_size;
         available -= dec_size;
@@ -599,6 +609,12 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
 
     LZ4_freeStreamDecode(stream);
     return surface;
+
+format_error:
+    spice_warning("Error decoding LZ4 block\n");
+    LZ4_freeStreamDecode(stream);
+    pixman_image_unref(surface);
+    return NULL;
 }
 #endif
 
