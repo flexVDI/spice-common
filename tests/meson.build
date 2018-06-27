@@ -1,7 +1,7 @@
 #
 # Build tests
 #
-tests = ['test-logging']
+tests = ['test-logging', 'test-region']
 tests_deps = [spice_common_dep]
 
 if spice_common_generate_code == 'all'

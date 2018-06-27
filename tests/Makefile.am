@@ -54,6 +54,18 @@ test_quic_LDADD =					\
 	$(NULL)
 endif
 
+TESTS += test_region
+test_region_SOURCES = \
+	test-region.c \
+	$(NULL)
+test_region_CFLAGS =			\
+	-I$(top_srcdir)			\
+	$(SPICE_COMMON_CFLAGS)		\
+	$(PROTOCOL_CFLAGS)		\
+	$(NULL)
+test_region_LDADD =					\
+	$(top_builddir)/common/libspice-common.la	\
+	$(NULL)
 
 # Avoid need for python(pyparsing) by end users
 TEST_MARSHALLERS =				\
