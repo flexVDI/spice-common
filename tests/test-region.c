@@ -142,7 +142,7 @@ static void test_region(void)
     region_init(r2);
 
     g_debug("dump r1 empty rgn [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
-    region_dump(r1, "");
+    //region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = TRUE;
     expected[EXPECT_R2_EMPTY] = TRUE;
     expected[EXPECT_EQUAL] = TRUE;
@@ -153,7 +153,7 @@ static void test_region(void)
 
     region_clone(r3, r1);
     g_debug("dump r3 clone rgn [%s]", region_is_valid(r3) ? "VALID" : "INVALID");
-    region_dump(r3, "");
+    //region_dump(r3, "");
     expected[EXPECT_R1_EMPTY] = TRUE;
     expected[EXPECT_R2_EMPTY] = TRUE;
     expected[EXPECT_EQUAL] = TRUE;
@@ -166,7 +166,7 @@ static void test_region(void)
     rect_set(r, 0, 0, 100, 100);
     region_add(r1, r);
     g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
-    region_dump(r1, "");
+    //region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = TRUE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -179,7 +179,7 @@ static void test_region(void)
     rect_set(r, 0, 0, 0, 0);
     region_add(r1, r);
     g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
-    region_dump(r1, "");
+    //region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = TRUE;
     expected[EXPECT_R2_EMPTY] = TRUE;
     expected[EXPECT_EQUAL] = TRUE;
@@ -191,7 +191,7 @@ static void test_region(void)
     rect_set(r, -100, -100, 0, 0);
     region_add(r1, r);
     g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
-    region_dump(r1, "");
+    //region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = TRUE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -204,7 +204,7 @@ static void test_region(void)
     rect_set(r, -100, -100, 100, 100);
     region_add(r1, r);
     g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
-    region_dump(r1, "");
+    //region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = TRUE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -220,7 +220,7 @@ static void test_region(void)
     rect_set(r, 100, 100, 200, 200);
     region_add(r1, r);
     g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
-    region_dump(r1, "");
+    //region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = TRUE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -232,7 +232,7 @@ static void test_region(void)
     rect_set(r, 300, 300, 400, 400);
     region_add(r1, r);
     g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
-    region_dump(r1, "");
+    //region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = TRUE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -244,7 +244,7 @@ static void test_region(void)
     rect_set(r, 500, 500, 600, 600);
     region_add(r2, r);
     g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
-    region_dump(r2, "");
+    //region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -260,7 +260,7 @@ static void test_region(void)
     rect_set(r, 300, 300, 400, 400);
     region_add(r2, r);
     g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
-    region_dump(r2, "");
+    //region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
     expected[EXPECT_EQUAL] = TRUE;
@@ -274,7 +274,7 @@ static void test_region(void)
     rect_set(r, 100, 100, 200, 200);
     region_add(r2, r);
     g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
-    region_dump(r2, "");
+    //region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -288,7 +288,7 @@ static void test_region(void)
     rect_set(r, -2000, -2000, -1000, -1000);
     region_add(r2, r);
     g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
-    region_dump(r2, "");
+    //region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -302,7 +302,7 @@ static void test_region(void)
     rect_set(r, -2000, -2000, 1000, 1000);
     region_add(r2, r);
     g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
-    region_dump(r2, "");
+    //region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -316,7 +316,7 @@ static void test_region(void)
     rect_set(r, 150, 150, 175, 175);
     region_add(r2, r);
     g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
-    region_dump(r2, "");
+    //region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -330,7 +330,7 @@ static void test_region(void)
     rect_set(r, 150, 150, 350, 350);
     region_add(r2, r);
     g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
-    region_dump(r2, "");
+    //region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -341,7 +341,7 @@ static void test_region(void)
 
     region_and(r2, r1);
     g_debug("dump r2 and r1 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
-    region_dump(r2, "");
+    //region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
     expected[EXPECT_EQUAL] = FALSE;
@@ -353,7 +353,7 @@ static void test_region(void)
 
     region_clone(r3, r1);
     g_debug("dump r3 clone rgn [%s]", region_is_valid(r3) ? "VALID" : "INVALID");
-    region_dump(r3, "");
+    //region_dump(r3, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
     expected[EXPECT_EQUAL] = TRUE;
