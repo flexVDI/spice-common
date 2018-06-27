@@ -103,19 +103,29 @@ static void test(const QRegion *r1, const QRegion *r2, int *expected)
 {
     g_debug("r1 is_empty %s [%s]",
             region_is_empty(r1) ? "TRUE" : "FALSE",
-            (region_is_empty(r1) == *(expected++)) ? "OK" : "ERR");
+            (region_is_empty(r1) == *expected) ? "OK" : "ERR");
+    g_assert_cmpint(region_is_empty(r1), ==, *expected);
+    expected++;
     g_debug("r2 is_empty %s [%s]",
             region_is_empty(r2) ? "TRUE" : "FALSE",
-            (region_is_empty(r2) == *(expected++)) ? "OK" : "ERR");
+            (region_is_empty(r2) == *expected) ? "OK" : "ERR");
+    g_assert_cmpint(region_is_empty(r2), ==, *expected);
+    expected++;
     g_debug("is_equal %s [%s]",
             region_is_equal(r1, r2) ? "TRUE" : "FALSE",
-            (region_is_equal(r1, r2) == *(expected++)) ? "OK" : "ERR");
+            (region_is_equal(r1, r2) == *expected) ? "OK" : "ERR");
+    g_assert_cmpint(region_is_equal(r1, r2), ==, *expected);
+    expected++;
     g_debug("intersects %s [%s]",
             region_intersects(r1, r2) ? "TRUE" : "FALSE",
-            (region_intersects(r1, r2) == *(expected++)) ? "OK" : "ERR");
+            (region_intersects(r1, r2) == *expected) ? "OK" : "ERR");
+    g_assert_cmpint(region_intersects(r1, r2), ==, *expected);
+    expected++;
     g_debug("contains %s [%s]",
             region_contains(r1, r2) ? "TRUE" : "FALSE",
-            (region_contains(r1, r2) == *(expected++)) ? "OK" : "ERR");
+            (region_contains(r1, r2) == *expected) ? "OK" : "ERR");
+    g_assert_cmpint(region_contains(r1, r2), ==, *expected);
+    expected++;
 }
 
 enum {
@@ -388,6 +398,7 @@ static void test_region(void)
                 g_debug("r2:");
                 region_dump(r2, "");
             }
+            g_assert_cmpint(res1, ==, res2);
             j++;
         }
     }
