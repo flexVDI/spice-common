@@ -102,21 +102,21 @@ static void random_region(QRegion *reg)
 
 static void test(const QRegion *r1, const QRegion *r2, int *expected)
 {
-    printf("r1 is_empty %s [%s]\n",
-           region_is_empty(r1) ? "TRUE" : "FALSE",
-           (region_is_empty(r1) == *(expected++)) ? "OK" : "ERR");
-    printf("r2 is_empty %s [%s]\n",
-           region_is_empty(r2) ? "TRUE" : "FALSE",
-           (region_is_empty(r2) == *(expected++)) ? "OK" : "ERR");
-    printf("is_equal %s [%s]\n",
-           region_is_equal(r1, r2) ? "TRUE" : "FALSE",
-           (region_is_equal(r1, r2) == *(expected++)) ? "OK" : "ERR");
-    printf("intersects %s [%s]\n",
-           region_intersects(r1, r2) ? "TRUE" : "FALSE",
-           (region_intersects(r1, r2) == *(expected++)) ? "OK" : "ERR");
-    printf("contains %s [%s]\n",
-           region_contains(r1, r2) ? "TRUE" : "FALSE",
-           (region_contains(r1, r2) == *(expected++)) ? "OK" : "ERR");
+    g_debug("r1 is_empty %s [%s]",
+            region_is_empty(r1) ? "TRUE" : "FALSE",
+            (region_is_empty(r1) == *(expected++)) ? "OK" : "ERR");
+    g_debug("r2 is_empty %s [%s]",
+            region_is_empty(r2) ? "TRUE" : "FALSE",
+            (region_is_empty(r2) == *(expected++)) ? "OK" : "ERR");
+    g_debug("is_equal %s [%s]",
+            region_is_equal(r1, r2) ? "TRUE" : "FALSE",
+            (region_is_equal(r1, r2) == *(expected++)) ? "OK" : "ERR");
+    g_debug("intersects %s [%s]",
+            region_intersects(r1, r2) ? "TRUE" : "FALSE",
+            (region_intersects(r1, r2) == *(expected++)) ? "OK" : "ERR");
+    g_debug("contains %s [%s]",
+            region_contains(r1, r2) ? "TRUE" : "FALSE",
+            (region_contains(r1, r2) == *(expected++)) ? "OK" : "ERR");
 }
 
 enum {
@@ -141,7 +141,7 @@ static void test_region(void)
     region_init(r1);
     region_init(r2);
 
-    printf("dump r1 empty rgn [%s]\n", region_is_valid(r1) ? "VALID" : "INVALID");
+    g_debug("dump r1 empty rgn [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
     region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = TRUE;
     expected[EXPECT_R2_EMPTY] = TRUE;
@@ -149,10 +149,10 @@ static void test_region(void)
     expected[EXPECT_SECT] = FALSE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     region_clone(r3, r1);
-    printf("dump r3 clone rgn [%s]\n", region_is_valid(r3) ? "VALID" : "INVALID");
+    g_debug("dump r3 clone rgn [%s]", region_is_valid(r3) ? "VALID" : "INVALID");
     region_dump(r3, "");
     expected[EXPECT_R1_EMPTY] = TRUE;
     expected[EXPECT_R2_EMPTY] = TRUE;
@@ -161,11 +161,11 @@ static void test_region(void)
     expected[EXPECT_CONT] = TRUE;
     test(r1, r3, expected);
     region_destroy(r3);
-    printf("\n");
+    g_debug("\n");
 
     rect_set(r, 0, 0, 100, 100);
     region_add(r1, r);
-    printf("dump r1 [%s]\n", region_is_valid(r1) ? "VALID" : "INVALID");
+    g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
     region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = TRUE;
@@ -173,12 +173,12 @@ static void test_region(void)
     expected[EXPECT_SECT] = FALSE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     region_clear(r1);
     rect_set(r, 0, 0, 0, 0);
     region_add(r1, r);
-    printf("dump r1 [%s]\n", region_is_valid(r1) ? "VALID" : "INVALID");
+    g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
     region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = TRUE;
     expected[EXPECT_R2_EMPTY] = TRUE;
@@ -186,11 +186,11 @@ static void test_region(void)
     expected[EXPECT_SECT] = FALSE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     rect_set(r, -100, -100, 0, 0);
     region_add(r1, r);
-    printf("dump r1 [%s]\n", region_is_valid(r1) ? "VALID" : "INVALID");
+    g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
     region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = TRUE;
@@ -198,12 +198,12 @@ static void test_region(void)
     expected[EXPECT_SECT] = FALSE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     region_clear(r1);
     rect_set(r, -100, -100, 100, 100);
     region_add(r1, r);
-    printf("dump r1 [%s]\n", region_is_valid(r1) ? "VALID" : "INVALID");
+    g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
     region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = TRUE;
@@ -211,7 +211,7 @@ static void test_region(void)
     expected[EXPECT_SECT] = FALSE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
 
     region_clear(r1);
@@ -219,7 +219,7 @@ static void test_region(void)
 
     rect_set(r, 100, 100, 200, 200);
     region_add(r1, r);
-    printf("dump r1 [%s]\n", region_is_valid(r1) ? "VALID" : "INVALID");
+    g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
     region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = TRUE;
@@ -227,11 +227,11 @@ static void test_region(void)
     expected[EXPECT_SECT] = FALSE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     rect_set(r, 300, 300, 400, 400);
     region_add(r1, r);
-    printf("dump r1 [%s]\n", region_is_valid(r1) ? "VALID" : "INVALID");
+    g_debug("dump r1 [%s]", region_is_valid(r1) ? "VALID" : "INVALID");
     region_dump(r1, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = TRUE;
@@ -239,11 +239,11 @@ static void test_region(void)
     expected[EXPECT_SECT] = FALSE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     rect_set(r, 500, 500, 600, 600);
     region_add(r2, r);
-    printf("dump r2 [%s]\n", region_is_valid(r2) ? "VALID" : "INVALID");
+    g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
     region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
@@ -251,7 +251,7 @@ static void test_region(void)
     expected[EXPECT_SECT] = FALSE;
     expected[EXPECT_CONT] = FALSE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     region_clear(r2);
 
@@ -259,7 +259,7 @@ static void test_region(void)
     region_add(r2, r);
     rect_set(r, 300, 300, 400, 400);
     region_add(r2, r);
-    printf("dump r2 [%s]\n", region_is_valid(r2) ? "VALID" : "INVALID");
+    g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
     region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
@@ -267,13 +267,13 @@ static void test_region(void)
     expected[EXPECT_SECT] = TRUE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     region_clear(r2);
 
     rect_set(r, 100, 100, 200, 200);
     region_add(r2, r);
-    printf("dump r2 [%s]\n", region_is_valid(r2) ? "VALID" : "INVALID");
+    g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
     region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
@@ -281,13 +281,13 @@ static void test_region(void)
     expected[EXPECT_SECT] = TRUE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     region_clear(r2);
 
     rect_set(r, -2000, -2000, -1000, -1000);
     region_add(r2, r);
-    printf("dump r2 [%s]\n", region_is_valid(r2) ? "VALID" : "INVALID");
+    g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
     region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
@@ -295,13 +295,13 @@ static void test_region(void)
     expected[EXPECT_SECT] = FALSE;
     expected[EXPECT_CONT] = FALSE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     region_clear(r2);
 
     rect_set(r, -2000, -2000, 1000, 1000);
     region_add(r2, r);
-    printf("dump r2 [%s]\n", region_is_valid(r2) ? "VALID" : "INVALID");
+    g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
     region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
@@ -309,13 +309,13 @@ static void test_region(void)
     expected[EXPECT_SECT] = TRUE;
     expected[EXPECT_CONT] = FALSE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     region_clear(r2);
 
     rect_set(r, 150, 150, 175, 175);
     region_add(r2, r);
-    printf("dump r2 [%s]\n", region_is_valid(r2) ? "VALID" : "INVALID");
+    g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
     region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
@@ -323,13 +323,13 @@ static void test_region(void)
     expected[EXPECT_SECT] = TRUE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     region_clear(r2);
 
     rect_set(r, 150, 150, 350, 350);
     region_add(r2, r);
-    printf("dump r2 [%s]\n", region_is_valid(r2) ? "VALID" : "INVALID");
+    g_debug("dump r2 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
     region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
@@ -337,10 +337,10 @@ static void test_region(void)
     expected[EXPECT_SECT] = TRUE;
     expected[EXPECT_CONT] = FALSE;
     test(r1, r2, expected);
-    printf("\n");
+    g_debug("\n");
 
     region_and(r2, r1);
-    printf("dump r2 and r1 [%s]\n", region_is_valid(r2) ? "VALID" : "INVALID");
+    g_debug("dump r2 and r1 [%s]", region_is_valid(r2) ? "VALID" : "INVALID");
     region_dump(r2, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
@@ -348,11 +348,11 @@ static void test_region(void)
     expected[EXPECT_SECT] = TRUE;
     expected[EXPECT_CONT] = FALSE;
     test(r2, r1, expected);
-    printf("\n");
+    g_debug("\n");
 
 
     region_clone(r3, r1);
-    printf("dump r3 clone rgn [%s]\n", region_is_valid(r3) ? "VALID" : "INVALID");
+    g_debug("dump r3 clone rgn [%s]", region_is_valid(r3) ? "VALID" : "INVALID");
     region_dump(r3, "");
     expected[EXPECT_R1_EMPTY] = FALSE;
     expected[EXPECT_R2_EMPTY] = FALSE;
@@ -360,7 +360,7 @@ static void test_region(void)
     expected[EXPECT_SECT] = TRUE;
     expected[EXPECT_CONT] = TRUE;
     test(r1, r3, expected);
-    printf("\n");
+    g_debug("\n");
 
     j = 0;
     for (i = 0; i < 1000000; i++) {
@@ -382,11 +382,11 @@ static void test_region(void)
             res1 = region_test(r1, r2, tests[test]);
             res2 = slow_region_test(r1, r2, tests[test]);
             if (res1 != res2) {
-                printf ("Error in region_test %d, got %d, expected %d, query=%d\n",
-                        j, res1, res2, tests[test]);
-                printf ("r1:\n");
+                g_warning("Error in region_test %d, got %d, expected %d, query=%d",
+                          j, res1, res2, tests[test]);
+                g_debug("r1:");
                 region_dump(r1, "");
-                printf ("r2:\n");
+                g_debug("r2:");
                 region_dump(r2, "");
             }
             j++;
