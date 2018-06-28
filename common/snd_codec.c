@@ -85,14 +85,14 @@ static int snd_codec_create_celt051(SndCodecInternal *codec, int purpose)
                                            SND_CODEC_PLAYBACK_CHAN,
                                            SND_CODEC_CELT_FRAME_SIZE, &celt_error);
     if (! codec->celt_mode) {
-        spice_printerr("create celt mode failed %d", celt_error);
+        g_warning("create celt mode failed %d", celt_error);
         return SND_CODEC_UNAVAILABLE;
     }
 
     if (purpose & SND_CODEC_ENCODE) {
         codec->celt_encoder = celt051_encoder_create(codec->celt_mode);
         if (! codec->celt_encoder) {
-            spice_printerr("create celt encoder failed");
+            g_warning("create celt encoder failed");
             goto error;
         }
     }
@@ -100,7 +100,7 @@ static int snd_codec_create_celt051(SndCodecInternal *codec, int purpose)
     if (purpose & SND_CODEC_DECODE) {
         codec->celt_decoder = celt051_decoder_create(codec->celt_mode);
         if (! codec->celt_decoder) {
-            spice_printerr("create celt decoder failed");
+            g_warning("create celt decoder failed");
             goto error;
         }
     }
@@ -120,7 +120,7 @@ static int snd_codec_encode_celt051(SndCodecInternal *codec, uint8_t *in_ptr, in
         return SND_CODEC_INVALID_ENCODE_SIZE;
     n = celt051_encode(codec->celt_encoder, (celt_int16_t *) in_ptr, NULL, out_ptr, *out_size);
     if (n < 0) {
-        spice_printerr("celt051_encode failed %d\n", n);
+        g_warning("celt051_encode failed %d", n);
         return SND_CODEC_ENCODE_FAILED;
     }
     *out_size = n;
@@ -132,7 +132,7 @@ static int snd_codec_decode_celt051(SndCodecInternal *codec, uint8_t *in_ptr, in
     int n;
     n = celt051_decode(codec->celt_decoder, in_ptr, in_size, (celt_int16_t *) out_ptr);
     if (n < 0) {
-        spice_printerr("celt051_decode failed %d\n", n);
+        g_warning("celt051_decode failed %d", n);
         return SND_CODEC_DECODE_FAILED;
     }
     *out_size = SND_CODEC_CELT_FRAME_SIZE * SND_CODEC_PLAYBACK_CHAN * 2 /* 16 fmt */;
@@ -166,7 +166,7 @@ static int snd_codec_create_opus(SndCodecInternal *codec, int purpose)
                                 SND_CODEC_PLAYBACK_CHAN,
                                 OPUS_APPLICATION_AUDIO, &opus_error);
         if (! codec->opus_encoder) {
-            spice_printerr("create opus encoder failed; error %d", opus_error);
+            g_warning("create opus encoder failed; error %d", opus_error);
             goto error;
         }
     }
@@ -175,7 +175,7 @@ static int snd_codec_create_opus(SndCodecInternal *codec, int purpose)
         codec->opus_decoder = opus_decoder_create(codec->frequency,
                                 SND_CODEC_PLAYBACK_CHAN, &opus_error);
         if (! codec->opus_decoder) {
-            spice_printerr("create opus decoder failed; error %d", opus_error);
+            g_warning("create opus decoder failed; error %d", opus_error);
             goto error;
         }
     }
@@ -195,7 +195,7 @@ static int snd_codec_encode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int i
         return SND_CODEC_INVALID_ENCODE_SIZE;
     n = opus_encode(codec->opus_encoder, (opus_int16 *) in_ptr, SND_CODEC_OPUS_FRAME_SIZE, out_ptr, *out_size);
     if (n < 0) {
-        spice_printerr("opus_encode failed %d\n", n);
+        g_warning("opus_encode failed %d", n);
         return SND_CODEC_ENCODE_FAILED;
     }
     *out_size = n;
@@ -208,7 +208,7 @@ static int snd_codec_decode_opus(SndCodecInternal *codec, uint8_t *in_ptr, int i
     n = opus_decode(codec->opus_decoder, in_ptr, in_size, (opus_int16 *) out_ptr,
                 *out_size / SND_CODEC_PLAYBACK_CHAN / 2, 0);
     if (n < 0) {
-        spice_printerr("opus_decode failed %d\n", n);
+        g_warning("opus_decode failed %d", n);
         return SND_CODEC_DECODE_FAILED;
     }
     *out_size = n * SND_CODEC_PLAYBACK_CHAN * 2 /* 16 fmt */;
