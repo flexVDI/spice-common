@@ -88,10 +88,10 @@ libspice_common_la_LIBADD =				\
 	$(SPICE_COMMON_LIBS)				\
 	$(NULL)
 
-MARSHALLERS_DEPS =							\
-	$(top_srcdir)/python_modules/__init__.py		\
+MARSHALLERS_DEPS =					\
+	$(top_srcdir)/python_modules/__init__.py	\
 	$(top_srcdir)/python_modules/codegen.py		\
-	$(top_srcdir)/python_modules/demarshal.py		\
+	$(top_srcdir)/python_modules/demarshal.py	\
 	$(top_srcdir)/python_modules/marshal.py		\
 	$(top_srcdir)/python_modules/ptypes.py		\
 	$(top_srcdir)/python_modules/spice_parser.py	\

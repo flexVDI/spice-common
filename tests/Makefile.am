@@ -12,8 +12,8 @@ test_logging_CFLAGS =			\
 	$(NULL)
 test_logging_LDADD =					\
 	$(top_builddir)/common/libspice-common.la	\
-	$(GLIB2_LIBS)			\
-	$(GIO_UNIX_LIBS)		\
+	$(GLIB2_LIBS)					\
+	$(GIO_UNIX_LIBS)				\
 	$(NULL)
 
 
@@ -29,7 +29,7 @@ test_marshallers_CFLAGS =		\
 	$(NULL)
 test_marshallers_LDADD =				\
 	$(top_builddir)/common/libspice-common.la	\
-	$(GLIB2_LIBS)			\
+	$(GLIB2_LIBS)					\
 	$(NULL)
 
 
@@ -74,10 +74,10 @@ TEST_MARSHALLERS =				\
 
 BUILT_SOURCES = $(TEST_MARSHALLERS)
 
-MARSHALLERS_DEPS =							\
-	$(top_srcdir)/python_modules/__init__.py		\
+MARSHALLERS_DEPS =					\
+	$(top_srcdir)/python_modules/__init__.py	\
 	$(top_srcdir)/python_modules/codegen.py		\
-	$(top_srcdir)/python_modules/demarshal.py		\
+	$(top_srcdir)/python_modules/demarshal.py	\
 	$(top_srcdir)/python_modules/marshal.py		\
 	$(top_srcdir)/python_modules/ptypes.py		\
 	$(top_srcdir)/python_modules/spice_parser.py	\
