@@ -18,9 +18,7 @@ test_logging_LDADD =					\
 
 
 test_marshallers_SOURCES =		\
-	generated_test_marshallers.c	\
-	generated_test_marshallers.h	\
-	generated_test_demarshallers.c	\
+	$(TEST_MARSHALLERS)		\
 	test-marshallers.c		\
 	test-marshallers.h		\
 	$(NULL)
