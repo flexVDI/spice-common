@@ -57,10 +57,6 @@ void spice_log(GLogLevelFlags log_level,
     spice_log(G_LOG_LEVEL_WARNING, SPICE_STRLOC, __FUNCTION__, "should not be reached"); \
 } G_STMT_END
 
-#define spice_printerr(format, ...) G_STMT_START {                      \
-    fprintf(stderr, "%s: " format "\n", __FUNCTION__, ## __VA_ARGS__);  \
-} G_STMT_END
-
 #define spice_info(format, ...) G_STMT_START {                         \
     spice_log(G_LOG_LEVEL_INFO, SPICE_STRLOC, __FUNCTION__, "" format, ## __VA_ARGS__); \
 } G_STMT_END
