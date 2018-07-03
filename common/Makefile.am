@@ -51,7 +51,6 @@ libspice_common_la_SOURCES =		\
 	rop3.h				\
 	snd_codec.c			\
 	snd_codec.h			\
-	spice_common.h			\
 	verify.h			\
 	$(NULL)
 

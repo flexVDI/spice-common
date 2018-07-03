@@ -20,7 +20,6 @@
 #endif
 
 #include "rop3.h"
-#include "spice_common.h"
 
 typedef void (*rop3_with_pattern_handler_t)(pixman_image_t *d, pixman_image_t *s,
                                             SpicePoint *src_pos, pixman_image_t *p,

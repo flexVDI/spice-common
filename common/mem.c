@@ -19,7 +19,6 @@
 #include <config.h>
 #endif
 
-#include "spice_common.h"
 #include "mem.h"
 
 #include <string.h>

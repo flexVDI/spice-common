@@ -19,7 +19,7 @@
 #ifndef _H_RING2
 #define _H_RING2
 
-#include "spice_common.h"
+#include "log.h"
 
 SPICE_BEGIN_DECLS
 

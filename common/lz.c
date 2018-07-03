@@ -47,7 +47,6 @@
 #include <config.h>
 #endif
 
-#include "spice_common.h"
 #include "lz.h"
 
 #define HASH_LOG 13

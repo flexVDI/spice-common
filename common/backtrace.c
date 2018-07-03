@@ -24,10 +24,10 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include "spice_common.h"
 
-#include <unistd.h>
 #include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
 #ifndef __MINGW32__
