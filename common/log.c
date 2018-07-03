@@ -34,11 +34,7 @@ static int glib_debug_level = INT_MAX;
 static int abort_mask = 0;
 
 #ifndef SPICE_ABORT_MASK_DEFAULT
-#ifdef SPICE_DISABLE_ABORT
-#define SPICE_ABORT_MASK_DEFAULT 0
-#else
 #define SPICE_ABORT_MASK_DEFAULT (G_LOG_LEVEL_CRITICAL|G_LOG_LEVEL_ERROR)
-#endif
 #endif
 
 #define G_LOG_DOMAIN "Spice"

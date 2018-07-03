@@ -89,8 +89,7 @@ static void test_spice_fatal_warning(void)
     g_unsetenv("G_DEBUG");
 }
 
-/* Checks that spice_critical() aborts by default if SPICE_DISABLE_ABORT is not
- * defined at compile-time */
+/* Checks that spice_critical() aborts by default */
 static void test_spice_fatal_critical(void)
 {
     if (g_test_subprocess()) {
@@ -98,11 +97,7 @@ static void test_spice_fatal_critical(void)
         return;
     }
     g_test_trap_subprocess(NULL, 0, 0);
-#ifdef SPICE_DISABLE_ABORT
-    g_test_trap_assert_passed();
-#else
     g_test_trap_assert_failed();
-#endif
     g_test_trap_assert_stderr("*spice_critical*");
 }
 
@@ -132,8 +127,7 @@ static void test_spice_fatal_g_critical(void)
     g_unsetenv("G_DEBUG");
 }
 
-/* Checks that spice_return_if_fail() aborts by default unless
- * SPICE_DISABLE_ABORT was defined at compile time*/
+/* Checks that spice_return_if_fail() aborts by default */
 static void test_spice_fatal_return_if_fail(void)
 {
     if (g_test_subprocess()) {
@@ -141,11 +135,7 @@ static void test_spice_fatal_return_if_fail(void)
         return;
     }
     g_test_trap_subprocess(NULL, 0, 0);
-#ifdef SPICE_DISABLE_ABORT
-    g_test_trap_assert_passed();
-#else
     g_test_trap_assert_failed();
-#endif
     g_test_trap_assert_stderr("*test_spice_fatal_return_if_fail*");
 }
 

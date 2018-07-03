@@ -28,10 +28,6 @@
 #include "backtrace.h"
 #include "log.h"
 
-#ifdef SPICE_DISABLE_ABORT
-#define spice_abort() do { } while(0)
-#else
 #define spice_abort() abort()
-#endif
 
 #endif
