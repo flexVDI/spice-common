@@ -372,7 +372,7 @@ static void test_region(void)
     g_debug("\n");
 
     j = 0;
-    for (i = 0; i < 1000000; i++) {
+    for (i = 0; i < 100000; i++) {
         int res1, res2, test;
         int tests[] = {
             REGION_TEST_LEFT_EXCLUSIVE,
