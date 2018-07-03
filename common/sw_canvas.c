@@ -1222,32 +1222,6 @@ static SpiceCanvas *canvas_create_common(pixman_image_t *image,
     return (SpiceCanvas *)canvas;
 }
 
-SpiceCanvas *canvas_create(int width, int height, uint32_t format,
-                           SpiceImageCache *bits_cache,
-#ifdef SW_CANVAS_CACHE
-                           SpicePaletteCache *palette_cache,
-#endif
-                           SpiceImageSurfaces *surfaces,
-                           SpiceGlzDecoder *glz_decoder,
-                           SpiceJpegDecoder *jpeg_decoder,
-                           SpiceZlibDecoder *zlib_decoder)
-{
-    pixman_image_t *image;
-
-    image = pixman_image_create_bits(spice_surface_format_to_pixman(format),
-                                     width, height, NULL, 0);
-
-    return canvas_create_common(image, format,
-                                bits_cache,
-#ifdef SW_CANVAS_CACHE
-                                palette_cache,
-#endif
-                                surfaces,
-                                glz_decoder,
-                                jpeg_decoder,
-                                zlib_decoder);
-}
-
 SpiceCanvas *canvas_create_for_data(int width, int height, uint32_t format,
                                     uint8_t *data, int stride,
                                     SpiceImageCache *bits_cache,
