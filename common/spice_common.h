@@ -28,6 +28,4 @@
 #include "backtrace.h"
 #include "log.h"
 
-#define spice_abort() abort()
-
 #endif
