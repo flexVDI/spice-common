@@ -1998,7 +1998,7 @@ static void draw_brush(SpiceCanvas *canvas,
 
     rects = pixman_region32_rectangles(region, &n_rects);
 
-   switch (brush->type) {
+    switch (brush->type) {
     case SPICE_BRUSH_TYPE_SOLID:
         color = brush->u.color;
         if (rop == SPICE_ROP_COPY) {
@@ -2007,7 +2007,7 @@ static void draw_brush(SpiceCanvas *canvas,
             canvas->ops->fill_solid_rects_rop(canvas, rects, n_rects, color, rop);
         }
         break;
-        case SPICE_BRUSH_TYPE_PATTERN: {
+    case SPICE_BRUSH_TYPE_PATTERN: {
         SpiceCanvas *surface_canvas;
 
         pattern = &brush->u.pattern;
