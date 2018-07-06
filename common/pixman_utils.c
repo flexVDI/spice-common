@@ -935,8 +935,7 @@ pixman_format_code_t spice_surface_format_to_pixman(uint32_t surface_format)
     case SPICE_SURFACE_FMT_32_ARGB:
         return PIXMAN_a8r8g8b8;
     default:
-        printf("Unknown surface format %d\n", surface_format);
-        g_abort();
+        g_error("Unknown surface format %d\n", surface_format);
         break;
     }
         return (pixman_format_code_t)0; /* Not reached */
@@ -974,8 +973,7 @@ pixman_format_code_t spice_bitmap_format_to_pixman(int bitmap_format,
 
     case SPICE_BITMAP_FMT_INVALID:
     default:
-        printf("Unknown bitmap format %d\n", bitmap_format);
-        g_abort();
+        g_error("Unknown bitmap format %d\n", bitmap_format);
         return PIXMAN_a8r8g8b8;
     }
 }
