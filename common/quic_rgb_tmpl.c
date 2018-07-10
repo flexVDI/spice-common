@@ -26,13 +26,7 @@
 #undef QUIC_RGB32
 #define PIXEL rgb32_pixel_t
 #define FNAME(name) quic_rgb32_##name
-#define golomb_coding golomb_coding_8bpc
-#define golomb_decoding golomb_decoding_8bpc
-#define update_model update_model_8bpc
-#define find_bucket find_bucket_8bpc
-#define family family_8bpc
 #define BPC 8
-#define BPC_MASK 0xffU
 #define COMPRESS_IMP
 #define SET_r(pix, val) ((pix)->r = val)
 #define GET_r(pix) ((pix)->r)
@@ -47,13 +41,7 @@
 #undef QUIC_RGB24
 #define PIXEL rgb24_pixel_t
 #define FNAME(name) quic_rgb24_##name
-#define golomb_coding golomb_coding_8bpc
-#define golomb_decoding golomb_decoding_8bpc
-#define update_model update_model_8bpc
-#define find_bucket find_bucket_8bpc
-#define family family_8bpc
 #define BPC 8
-#define BPC_MASK 0xffU
 #define COMPRESS_IMP
 #define SET_r(pix, val) ((pix)->r = val)
 #define GET_r(pix) ((pix)->r)
@@ -68,13 +56,7 @@
 #undef QUIC_RGB16
 #define PIXEL rgb16_pixel_t
 #define FNAME(name) quic_rgb16_##name
-#define golomb_coding golomb_coding_5bpc
-#define golomb_decoding golomb_decoding_5bpc
-#define update_model update_model_5bpc
-#define find_bucket find_bucket_5bpc
-#define family family_5bpc
 #define BPC 5
-#define BPC_MASK 0x1fU
 #define COMPRESS_IMP
 #define SET_r(pix, val) (*(pix) = (*(pix) & ~(0x1f << 10)) | ((val) << 10))
 #define GET_r(pix) ((*(pix) >> 10) & 0x1f)
@@ -89,14 +71,7 @@
 #undef QUIC_RGB16_TO_32
 #define PIXEL rgb32_pixel_t
 #define FNAME(name) quic_rgb16_to_32_##name
-#define golomb_coding golomb_coding_5bpc
-#define golomb_decoding golomb_decoding_5bpc
-#define update_model update_model_5bpc
-#define find_bucket find_bucket_5bpc
-#define family family_5bpc
 #define BPC 5
-#define BPC_MASK 0x1fU
-
 #define SET_r(pix, val) ((pix)->r = ((val) << 3) | (((val) & 0x1f) >> 2))
 #define GET_r(pix) ((pix)->r >> 3)
 #define SET_g(pix, val) ((pix)->g = ((val) << 3) | (((val) & 0x1f) >> 2))
@@ -113,6 +88,23 @@
     (GET_r(p1) == GET_r(p2) && GET_g(p1) == GET_g(p2) &&   \
      GET_b(p1) == GET_b(p2))
 
+#if BPC == 5
+#  define golomb_coding golomb_coding_5bpc
+#  define golomb_decoding golomb_decoding_5bpc
+#  define update_model update_model_5bpc
+#  define find_bucket find_bucket_5bpc
+#  define family family_5bpc
+#  define BPC_MASK 0x1fU
+#elif BPC == 8
+#  define golomb_coding golomb_coding_8bpc
+#  define golomb_decoding golomb_decoding_8bpc
+#  define update_model update_model_8bpc
+#  define find_bucket find_bucket_8bpc
+#  define family family_8bpc
+#  define BPC_MASK 0xffU
+#else
+#  error BPC must be 5 or 8
+#endif
 
 #define _PIXEL_A(channel, curr) ((unsigned int)GET_##channel((curr) - 1))
 #define _PIXEL_B(channel, prev) ((unsigned int)GET_##channel(prev))

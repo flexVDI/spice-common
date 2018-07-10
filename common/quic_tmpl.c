@@ -36,20 +36,23 @@
 #define FNAME_DECL(name) FNAME(name) FARGS_DECL
 #define FNAME_CALL(name) FNAME(name) FARGS_CALL
 
-#define golomb_coding golomb_coding_8bpc
-#define golomb_decoding golomb_decoding_8bpc
-#define update_model update_model_8bpc
-#define find_bucket find_bucket_8bpc
-#define family family_8bpc
-
 #define BPC 8
-#define BPC_MASK 0xffU
 
 #define SET_a(pix, val) ((pix)->a = val)
 #define GET_a(pix) ((pix)->a)
 
 #define SAME_PIXEL(p1, p2)                                 \
      (GET_a(p1) == GET_a(p2))
+#if BPC == 8
+#  define golomb_coding golomb_coding_8bpc
+#  define golomb_decoding golomb_decoding_8bpc
+#  define update_model update_model_8bpc
+#  define find_bucket find_bucket_8bpc
+#  define family family_8bpc
+#  define BPC_MASK 0xffU
+#else
+#  error BPC must be 8
+#endif
 
 #define _PIXEL_A(channel, curr) ((unsigned int)GET_##channel((curr) - 1))
 #define _PIXEL_B(channel, prev) ((unsigned int)GET_##channel(prev))
