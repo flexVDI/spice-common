@@ -43,8 +43,8 @@
 #define SET_a(pix, val) ((pix)->a = val)
 #define GET_a(pix) ((pix)->a)
 
-#define _PIXEL_A ((unsigned int)curr[-1].a)
-#define _PIXEL_B ((unsigned int)prev[0].a)
+#define _PIXEL_A(channel, curr) ((unsigned int)GET_##channel((curr) - 1))
+#define _PIXEL_B(channel, prev) ((unsigned int)GET_##channel(prev))
 
 #define RLE_PRED_IMP                                                       \
 if (prev_row[i - 1].a == prev_row[i].a) {                                  \
@@ -56,13 +56,13 @@ if (prev_row[i - 1].a == prev_row[i].a) {                                  \
 /*  a  */
 static inline BYTE FNAME(decorrelate_0)(const PIXEL * const curr, const unsigned int bpc_mask)
 {
-    return family.xlatU2L[(unsigned)((int)curr[0].a - (int)_PIXEL_A) & bpc_mask];
+    return family.xlatU2L[(unsigned)((int)GET_a(curr) - (int)_PIXEL_A(a, curr)) & bpc_mask];
 }
 
 static inline void FNAME(correlate_0)(PIXEL *curr, const BYTE correlate,
                                       const unsigned int bpc_mask)
 {
-    curr->a = (family.xlatL2U[correlate] + _PIXEL_A) & bpc_mask;
+    curr->a = (family.xlatL2U[correlate] + _PIXEL_A(a, curr)) & bpc_mask;
 }
 
 
@@ -70,14 +70,14 @@ static inline void FNAME(correlate_0)(PIXEL *curr, const BYTE correlate,
 static inline BYTE FNAME(decorrelate)(const PIXEL *const prev, const PIXEL * const curr,
                                       const unsigned int bpc_mask)
 {
-    return family.xlatU2L[(unsigned)((int)curr->a - (int)((_PIXEL_A + _PIXEL_B) >> 1)) & bpc_mask];
+    return family.xlatU2L[(unsigned)((int)curr->a - (int)((_PIXEL_A(a, curr) + _PIXEL_B(a, prev)) >> 1)) & bpc_mask];
 }
 
 
 static inline void FNAME(correlate)(const PIXEL *prev, PIXEL *curr, const BYTE correlate,
                                     const unsigned int bpc_mask)
 {
-    curr->a = (family.xlatL2U[correlate] + (int)((_PIXEL_A + _PIXEL_B) >> 1)) & bpc_mask;
+    curr->a = (family.xlatL2U[correlate] + (int)((_PIXEL_A(a, curr) + _PIXEL_B(a, prev)) >> 1)) & bpc_mask;
 }
 
 #define COMPRESS_ONE_ROW0_0(channel)                                 \
