@@ -19,28 +19,11 @@
 #include <config.h>
 #endif
 
-#ifdef ONE_BYTE
-#undef ONE_BYTE
-#define FNAME(name) quic_one_##name
-#define PIXEL one_byte_t
-#endif
-
-#ifdef FOUR_BYTE
-#undef FOUR_BYTE
-#define FNAME(name) quic_four_##name
-#define PIXEL four_bytes_t
-#endif
-
 #define FARGS_DECL(...) (Encoder *encoder, Channel *channel_a, ##__VA_ARGS__)
 #define FARGS_CALL(...) (encoder, channel_a, ##__VA_ARGS__)
-#define FNAME_DECL(name) FNAME(name) FARGS_DECL
-#define FNAME_CALL(name) FNAME(name) FARGS_CALL
-
-#define BPC 8
-
+#define UNCOMPRESS_PIX_START(row) do { } while (0)
 #define SET_a(pix, val) ((pix)->a = val)
 #define GET_a(pix) ((pix)->a)
-
 #define SAME_PIXEL(p1, p2)                                 \
      (GET_a(p1) == GET_a(p2))
 #define COPY_PIXEL(dest, src) \
@@ -49,6 +32,27 @@
     CommonState *state = &channel_a->state
 #define DECLARE_CHANNEL_VARIABLES \
     BYTE * const correlate_row_a = channel_a->correlate_row
+#define APPLY_ALL_COMP(macro, ...) \
+    macro(a, ## __VA_ARGS__)
+
+#ifdef ONE_BYTE
+#undef ONE_BYTE
+#define FNAME(name) quic_one_##name
+#define PIXEL one_byte_t
+#define BPC 8
+
+#endif
+
+#ifdef FOUR_BYTE
+#undef FOUR_BYTE
+#define FNAME(name) quic_four_##name
+#define PIXEL four_bytes_t
+#define BPC 8
+
+#endif
+
+#define FNAME_DECL(name) FNAME(name) FARGS_DECL
+#define FNAME_CALL(name) FNAME(name) FARGS_CALL
 
 #if BPC == 8
 #  define golomb_coding golomb_coding_8bpc
@@ -63,13 +67,6 @@
 
 #define _PIXEL_A(channel, curr) ((unsigned int)GET_##channel((curr) - 1))
 #define _PIXEL_B(channel, prev) ((unsigned int)GET_##channel(prev))
-
-#define RLE_PRED_IMP                                                       \
-if (SAME_PIXEL(&prev_row[i - 1], &prev_row[i])) {                                   \
-    if (run_index != i && i > 2 && SAME_PIXEL(&cur_row[i - 1], &cur_row[i - 2])) {  \
-        goto do_run;                                                       \
-    }                                                                      \
-}
 
 /*  a  */
 
@@ -107,8 +104,12 @@ if (SAME_PIXEL(&prev_row[i - 1], &prev_row[i])) {                               
                  correlate_row_##channel[index])
 #define UPDATE_MODEL(index) APPLY_ALL_COMP(UPDATE_MODEL_COMP, index)
 
-#define APPLY_ALL_COMP(macro, ...) \
-    macro(a, ## __VA_ARGS__)
+#define RLE_PRED_IMP                                                                \
+if (SAME_PIXEL(&prev_row[i - 1], &prev_row[i])) {                                   \
+    if (run_index != i && i > 2 && SAME_PIXEL(&cur_row[i - 1], &cur_row[i - 2])) {  \
+        goto do_run;                                                                \
+    }                                                                               \
+}
 
 static void FNAME_DECL(compress_row0_seg)(int i,
                                           const PIXEL * const cur_row,
@@ -300,8 +301,6 @@ static void FNAME_DECL(compress_row)(const PIXEL * const prev_row,
     spice_assert(state->wmidx <= 32);
     spice_assert(DEFwminext > 0);
 }
-
-#define UNCOMPRESS_PIX_START(row) do { } while (0)
 
 #define UNCOMPRESS_ONE_ROW0_0(channel)                                                                      \
     correlate_row_##channel[0] = (BYTE)golomb_decoding(find_bucket(channel_##channel,                       \
@@ -542,10 +541,17 @@ static void FNAME_DECL(uncompress_row)(const PIXEL * const prev_row,
 #undef _PIXEL_B
 #undef SAME_PIXEL
 #undef RLE_PRED_IMP
+#undef UPDATE_MODEL
 #undef DECORRELATE_0
 #undef DECORRELATE
+#undef COMPRESS_ONE_0
+#undef COMPRESS_ONE
 #undef CORRELATE_0
 #undef CORRELATE
+#undef UNCOMPRESS_ONE_ROW0_0
+#undef UNCOMPRESS_ONE_ROW0
+#undef UNCOMPRESS_ONE_0
+#undef UNCOMPRESS_ONE
 #undef golomb_coding
 #undef golomb_decoding
 #undef update_model
@@ -553,17 +559,10 @@ static void FNAME_DECL(uncompress_row)(const PIXEL * const prev_row,
 #undef family
 #undef BPC
 #undef BPC_MASK
-#undef UPDATE_MODEL
-#undef UNCOMPRESS_PIX_START
-#undef UPDATE_MODEL_COMP
-#undef COMPRESS_ONE_0
-#undef COMPRESS_ONE
-#undef UNCOMPRESS_ONE_ROW0
-#undef UNCOMPRESS_ONE_ROW0_0
-#undef UNCOMPRESS_ONE_0
-#undef UNCOMPRESS_ONE
 #undef SET_a
 #undef GET_a
+#undef UNCOMPRESS_PIX_START
+#undef UPDATE_MODEL_COMP
 #undef APPLY_ALL_COMP
 #undef DECLARE_STATE_VARIABLES
 #undef DECLARE_CHANNEL_VARIABLES

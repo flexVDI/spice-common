@@ -19,71 +19,10 @@
 #include <config.h>
 #endif
 
+#define COMPRESS_IMP
+
 #define FARGS_DECL(arg1, ...) (Encoder *encoder, arg1, ##__VA_ARGS__)
 #define FARGS_CALL(arg1, ...) (encoder, arg1, ##__VA_ARGS__)
-
-#ifdef QUIC_RGB32
-#undef QUIC_RGB32
-#define PIXEL rgb32_pixel_t
-#define FNAME(name) quic_rgb32_##name
-#define BPC 8
-#define COMPRESS_IMP
-#define SET_r(pix, val) ((pix)->r = val)
-#define GET_r(pix) ((pix)->r)
-#define SET_g(pix, val) ((pix)->g = val)
-#define GET_g(pix) ((pix)->g)
-#define SET_b(pix, val) ((pix)->b = val)
-#define GET_b(pix) ((pix)->b)
-#define UNCOMPRESS_PIX_START(pix) ((pix)->pad = 0)
-#endif
-
-#ifdef QUIC_RGB24
-#undef QUIC_RGB24
-#define PIXEL rgb24_pixel_t
-#define FNAME(name) quic_rgb24_##name
-#define BPC 8
-#define COMPRESS_IMP
-#define SET_r(pix, val) ((pix)->r = val)
-#define GET_r(pix) ((pix)->r)
-#define SET_g(pix, val) ((pix)->g = val)
-#define GET_g(pix) ((pix)->g)
-#define SET_b(pix, val) ((pix)->b = val)
-#define GET_b(pix) ((pix)->b)
-#define UNCOMPRESS_PIX_START(pix)
-#endif
-
-#ifdef QUIC_RGB16
-#undef QUIC_RGB16
-#define PIXEL rgb16_pixel_t
-#define FNAME(name) quic_rgb16_##name
-#define BPC 5
-#define COMPRESS_IMP
-#define SET_r(pix, val) (*(pix) = (*(pix) & ~(0x1f << 10)) | ((val) << 10))
-#define GET_r(pix) ((*(pix) >> 10) & 0x1f)
-#define SET_g(pix, val) (*(pix) = (*(pix) & ~(0x1f << 5)) | ((val) << 5))
-#define GET_g(pix) ((*(pix) >> 5) & 0x1f)
-#define SET_b(pix, val) (*(pix) = (*(pix) & ~0x1f) | (val))
-#define GET_b(pix) (*(pix) & 0x1f)
-#define UNCOMPRESS_PIX_START(pix) (*(pix) = 0)
-#endif
-
-#ifdef QUIC_RGB16_TO_32
-#undef QUIC_RGB16_TO_32
-#define PIXEL rgb32_pixel_t
-#define FNAME(name) quic_rgb16_to_32_##name
-#define BPC 5
-#define SET_r(pix, val) ((pix)->r = ((val) << 3) | (((val) & 0x1f) >> 2))
-#define GET_r(pix) ((pix)->r >> 3)
-#define SET_g(pix, val) ((pix)->g = ((val) << 3) | (((val) & 0x1f) >> 2))
-#define GET_g(pix) ((pix)->g >> 3)
-#define SET_b(pix, val) ((pix)->b = ((val) << 3) | (((val) & 0x1f) >> 2))
-#define GET_b(pix) ((pix)->b >> 3)
-#define UNCOMPRESS_PIX_START(pix) ((pix)->pad = 0)
-#endif
-
-#define FNAME_DECL(name) FNAME(name) FARGS_DECL
-#define FNAME_CALL(name) FNAME(name) FARGS_CALL
-
 #define SAME_PIXEL(p1, p2)                                 \
     (GET_r(p1) == GET_r(p2) && GET_g(p1) == GET_g(p2) &&   \
      GET_b(p1) == GET_b(p2))
@@ -100,6 +39,70 @@
     BYTE * const correlate_row_r = channel_r->correlate_row; \
     BYTE * const correlate_row_g = channel_g->correlate_row; \
     BYTE * const correlate_row_b = channel_b->correlate_row
+#define APPLY_ALL_COMP(macro, ...) \
+    macro(r, ## __VA_ARGS__); \
+    macro(g, ## __VA_ARGS__); \
+    macro(b, ## __VA_ARGS__)
+
+#ifdef QUIC_RGB32
+#undef QUIC_RGB32
+#define PIXEL rgb32_pixel_t
+#define FNAME(name) quic_rgb32_##name
+#define BPC 8
+#define SET_r(pix, val) ((pix)->r = val)
+#define GET_r(pix) ((pix)->r)
+#define SET_g(pix, val) ((pix)->g = val)
+#define GET_g(pix) ((pix)->g)
+#define SET_b(pix, val) ((pix)->b = val)
+#define GET_b(pix) ((pix)->b)
+#define UNCOMPRESS_PIX_START(pix) ((pix)->pad = 0)
+#endif
+
+#ifdef QUIC_RGB24
+#undef QUIC_RGB24
+#define PIXEL rgb24_pixel_t
+#define FNAME(name) quic_rgb24_##name
+#define BPC 8
+#define SET_r(pix, val) ((pix)->r = val)
+#define GET_r(pix) ((pix)->r)
+#define SET_g(pix, val) ((pix)->g = val)
+#define GET_g(pix) ((pix)->g)
+#define SET_b(pix, val) ((pix)->b = val)
+#define GET_b(pix) ((pix)->b)
+#define UNCOMPRESS_PIX_START(pix)
+#endif
+
+#ifdef QUIC_RGB16
+#undef QUIC_RGB16
+#define PIXEL rgb16_pixel_t
+#define FNAME(name) quic_rgb16_##name
+#define BPC 5
+#define SET_r(pix, val) (*(pix) = (*(pix) & ~(0x1f << 10)) | ((val) << 10))
+#define GET_r(pix) ((*(pix) >> 10) & 0x1f)
+#define SET_g(pix, val) (*(pix) = (*(pix) & ~(0x1f << 5)) | ((val) << 5))
+#define GET_g(pix) ((*(pix) >> 5) & 0x1f)
+#define SET_b(pix, val) (*(pix) = (*(pix) & ~0x1f) | (val))
+#define GET_b(pix) (*(pix) & 0x1f)
+#define UNCOMPRESS_PIX_START(pix) (*(pix) = 0)
+#endif
+
+#ifdef QUIC_RGB16_TO_32
+#undef QUIC_RGB16_TO_32
+#define PIXEL rgb32_pixel_t
+#define FNAME(name) quic_rgb16_to_32_##name
+#define BPC 5
+#define COMPRESS_IMP
+#define SET_r(pix, val) ((pix)->r = ((val) << 3) | (((val) & 0x1f) >> 2))
+#define GET_r(pix) ((pix)->r >> 3)
+#define SET_g(pix, val) ((pix)->g = ((val) << 3) | (((val) & 0x1f) >> 2))
+#define GET_g(pix) ((pix)->g >> 3)
+#define SET_b(pix, val) ((pix)->b = ((val) << 3) | (((val) & 0x1f) >> 2))
+#define GET_b(pix) ((pix)->b >> 3)
+#define UNCOMPRESS_PIX_START(pix) ((pix)->pad = 0)
+#endif
+
+#define FNAME_DECL(name) FNAME(name) FARGS_DECL
+#define FNAME_CALL(name) FNAME(name) FARGS_CALL
 
 #if BPC == 5
 #  define golomb_coding golomb_coding_5bpc
@@ -156,11 +159,6 @@
                  correlate_row_##channel[index])
 #define UPDATE_MODEL(index) APPLY_ALL_COMP(UPDATE_MODEL_COMP, index)
 
-#define APPLY_ALL_COMP(macro, ...) \
-    macro(r, ## __VA_ARGS__); \
-    macro(g, ## __VA_ARGS__); \
-    macro(b, ## __VA_ARGS__)
-
 #define RLE_PRED_IMP                                                                \
 if (SAME_PIXEL(&prev_row[i - 1], &prev_row[i])) {                                   \
     if (run_index != i && i > 2 && SAME_PIXEL(&cur_row[i - 1], &cur_row[i - 2])) {  \
@@ -211,6 +209,9 @@ static void FNAME_DECL(compress_row0_seg)(int i,
     }
     state->waitcnt = stopidx - end;
 }
+
+#undef COMPRESS_ONE_ROW0_0
+#undef COMPRESS_ONE_ROW0
 
 static void FNAME_DECL(compress_row0)(const PIXEL *cur_row, unsigned int width)
 {
@@ -605,8 +606,6 @@ static void FNAME_DECL(uncompress_row)(const PIXEL * const prev_row,
 #undef UPDATE_MODEL
 #undef DECORRELATE_0
 #undef DECORRELATE
-#undef COMPRESS_ONE_ROW0_0
-#undef COMPRESS_ONE_ROW0
 #undef COMPRESS_ONE_0
 #undef COMPRESS_ONE
 #undef CORRELATE_0
