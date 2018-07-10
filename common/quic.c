@@ -540,16 +540,6 @@ static void encode_state_run(Encoder *encoder, CommonState *state, unsigned int 
     }
 }
 
-static void encode_run(Encoder *encoder, unsigned int runlen) //todo: try use end of line
-{
-    encode_state_run(encoder, &encoder->rgb_state, runlen);
-}
-
-static void encode_channel_run(Encoder *encoder, Channel *channel, unsigned int runlen)
-{
-    encode_state_run(encoder, &channel->state, runlen);
-}
-
 
 /* decoding routine: reads bits from the input and returns a run length. */
 /* argument is the number of pixels left to end-of-line (bound on run length) */
@@ -591,17 +581,6 @@ static int decode_state_run(Encoder *encoder, CommonState *state)
     }
 
     return runlen;
-}
-
-static int decode_run(Encoder *encoder)
-{
-    return decode_state_run(encoder, &encoder->rgb_state);
-}
-
-
-static int decode_channel_run(Encoder *encoder, Channel *channel)
-{
-    return decode_state_run(encoder, &channel->state);
 }
 
 static inline void init_decode_io(Encoder *encoder)

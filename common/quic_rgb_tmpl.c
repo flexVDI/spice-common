@@ -326,11 +326,11 @@ do_run:
         while (SAME_PIXEL(&cur_row[i], &cur_row[i - 1])) {
             run_size++;
             if (++i == end) {
-                encode_run(encoder, run_size);
+                encode_state_run(encoder, state, run_size);
                 return;
             }
         }
-        encode_run(encoder, run_size);
+        encode_state_run(encoder, state, run_size);
         stopidx = i + state->waitcnt;
     }
 }
@@ -582,7 +582,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder,
 do_run:
         state->waitcnt = stopidx - i;
         run_index = i;
-        run_end = i + decode_run(encoder);
+        run_end = i + decode_state_run(encoder, state);
 
         for (; i < run_end; i++) {
             UNCOMPRESS_PIX_START(&cur_row[i]);
