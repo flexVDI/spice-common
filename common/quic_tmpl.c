@@ -90,7 +90,10 @@ if (SAME_PIXEL(&prev_row[i - 1], &prev_row[i])) {                               
 #define UPDATE_MODEL_COMP(channel, index)                                                   \
     update_model(state, find_bucket(channel_##channel, correlate_row_##channel[index - 1]), \
                  correlate_row_##channel[index])
-#define UPDATE_MODEL(index) UPDATE_MODEL_COMP(a, index)
+#define UPDATE_MODEL(index) APPLY_ALL_COMP(UPDATE_MODEL_COMP, index)
+
+#define APPLY_ALL_COMP(macro, ...) \
+    macro(a, ## __VA_ARGS__)
 
 static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel_a, int i,
                                      const PIXEL * const cur_row,
@@ -106,7 +109,7 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel_a, int i
     spice_assert(end - i > 0);
 
     if (i == 0) {
-        COMPRESS_ONE_ROW0_0(a);
+        APPLY_ALL_COMP(COMPRESS_ONE_ROW0_0);
 
         if (state->waitcnt) {
             state->waitcnt--;
@@ -121,7 +124,7 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel_a, int i
 
     while (stopidx < end) {
         for (; i <= stopidx; i++) {
-            COMPRESS_ONE_ROW0(a, i);
+            APPLY_ALL_COMP(COMPRESS_ONE_ROW0, i);
         }
 
         UPDATE_MODEL(stopidx);
@@ -129,7 +132,7 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel_a, int i
     }
 
     for (; i < end; i++) {
-        COMPRESS_ONE_ROW0(a, i);
+        APPLY_ALL_COMP(COMPRESS_ONE_ROW0, i);
     }
     state->waitcnt = stopidx - end;
 }
@@ -199,7 +202,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel_a, int i,
     spice_assert(end - i > 0);
 
     if (i == 0) {
-        COMPRESS_ONE_0(a);
+        APPLY_ALL_COMP(COMPRESS_ONE_0);
 
         if (state->waitcnt) {
             state->waitcnt--;
@@ -215,7 +218,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel_a, int i,
         while (stopidx < end) {
             for (; i <= stopidx; i++) {
                 RLE_PRED_IMP;
-                COMPRESS_ONE(a, i);
+                APPLY_ALL_COMP(COMPRESS_ONE, i);
             }
 
             UPDATE_MODEL(stopidx);
@@ -224,7 +227,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel_a, int i,
 
         for (; i < end; i++) {
             RLE_PRED_IMP;
-            COMPRESS_ONE(a, i);
+            APPLY_ALL_COMP(COMPRESS_ONE, i);
         }
         state->waitcnt = stopidx - end;
 
@@ -319,7 +322,7 @@ static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel_a, int
         unsigned int codewordlen;
 
         UNCOMPRESS_PIX_START(&cur_row[i]);
-        UNCOMPRESS_ONE_ROW0_0(a);
+        APPLY_ALL_COMP(UNCOMPRESS_ONE_ROW0_0);
 
         if (state->waitcnt) {
             --state->waitcnt;
@@ -337,7 +340,7 @@ static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel_a, int
             unsigned int codewordlen;
 
             UNCOMPRESS_PIX_START(&cur_row[i]);
-            UNCOMPRESS_ONE_ROW0(a);
+            APPLY_ALL_COMP(UNCOMPRESS_ONE_ROW0);
         }
         UPDATE_MODEL(stopidx);
         stopidx = i + (tabrand(&state->tabrand_seed) & waitmask);
@@ -347,7 +350,7 @@ static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel_a, int
         unsigned int codewordlen;
 
         UNCOMPRESS_PIX_START(&cur_row[i]);
-        UNCOMPRESS_ONE_ROW0(a);
+        APPLY_ALL_COMP(UNCOMPRESS_ONE_ROW0);
     }
     state->waitcnt = stopidx - end;
 }
@@ -426,7 +429,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel_a,
         unsigned int codewordlen;
 
         UNCOMPRESS_PIX_START(&cur_row[i]);
-        UNCOMPRESS_ONE_0(a);
+        APPLY_ALL_COMP(UNCOMPRESS_ONE_0);
 
         if (state->waitcnt) {
             --state->waitcnt;
@@ -444,7 +447,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel_a,
                 unsigned int codewordlen;
                 RLE_PRED_IMP;
                 UNCOMPRESS_PIX_START(&cur_row[i]);
-                UNCOMPRESS_ONE(a);
+                APPLY_ALL_COMP(UNCOMPRESS_ONE);
             }
 
             UPDATE_MODEL(stopidx);
@@ -456,7 +459,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel_a,
             unsigned int codewordlen;
             RLE_PRED_IMP;
             UNCOMPRESS_PIX_START(&cur_row[i]);
-            UNCOMPRESS_ONE(a);
+            APPLY_ALL_COMP(UNCOMPRESS_ONE);
         }
 
         state->waitcnt = stopidx - end;
@@ -546,3 +549,4 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 #undef UNCOMPRESS_ONE
 #undef SET_a
 #undef GET_a
+#undef APPLY_ALL_COMP
