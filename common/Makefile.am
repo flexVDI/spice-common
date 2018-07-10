@@ -133,7 +133,6 @@ EXTRA_DIST =				\
 	lz_compress_tmpl.c		\
 	lz_decompress_tmpl.c		\
 	quic_family_tmpl.c		\
-	quic_rgb_tmpl.c			\
 	quic_tmpl.c			\
 	snd_codec.h			\
 	$(NULL)

@@ -626,16 +626,16 @@ typedef uint16_t rgb16_pixel_t;
 #include "quic_tmpl.c"
 
 #define QUIC_RGB32
-#include "quic_rgb_tmpl.c"
+#include "quic_tmpl.c"
 
 #define QUIC_RGB24
-#include "quic_rgb_tmpl.c"
+#include "quic_tmpl.c"
 
 #define QUIC_RGB16
-#include "quic_rgb_tmpl.c"
+#include "quic_tmpl.c"
 
 #define QUIC_RGB16_TO_32
-#include "quic_rgb_tmpl.c"
+#include "quic_tmpl.c"
 
 static void fill_model_structures(SPICE_GNUC_UNUSED Encoder *encoder, FamilyStat *family_stat,
                                   unsigned int rep_first, unsigned int first_size,
