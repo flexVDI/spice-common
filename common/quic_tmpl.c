@@ -43,6 +43,11 @@
 
 #define SAME_PIXEL(p1, p2)                                 \
      (GET_a(p1) == GET_a(p2))
+#define DECLARE_STATE_VARIABLES \
+    CommonState *state = &channel_a->state
+#define DECLARE_CHANNEL_VARIABLES \
+    BYTE * const correlate_row_a = channel_a->correlate_row
+
 #if BPC == 8
 #  define golomb_coding golomb_coding_8bpc
 #  define golomb_decoding golomb_decoding_8bpc
@@ -110,8 +115,8 @@ static void FNAME_DECL(compress_row0_seg)(int i,
                                           SPICE_GNUC_UNUSED const unsigned int bpc,
                                           const unsigned int bpc_mask)
 {
-    CommonState *state = &channel_a->state;
-    BYTE * const correlate_row_a = channel_a->correlate_row;
+    DECLARE_STATE_VARIABLES;
+    DECLARE_CHANNEL_VARIABLES;
     int stopidx;
 
     spice_assert(end - i > 0);
@@ -150,7 +155,7 @@ static void FNAME_DECL(compress_row0_seg)(int i,
 
 static void FNAME_DECL(compress_row0)(const PIXEL *cur_row, unsigned int width)
 {
-    CommonState *state = &channel_a->state;
+    DECLARE_STATE_VARIABLES;
     const unsigned int bpc = BPC;
     const unsigned int bpc_mask = BPC_MASK;
     int pos = 0;
@@ -200,8 +205,8 @@ static void FNAME_DECL(compress_row_seg)(int i,
                                          SPICE_GNUC_UNUSED const unsigned int bpc,
                                          const unsigned int bpc_mask)
 {
-    CommonState *state = &channel_a->state;
-    BYTE * const correlate_row_a = channel_a->correlate_row;
+    DECLARE_STATE_VARIABLES;
+    DECLARE_CHANNEL_VARIABLES;
     int stopidx;
     int run_index = 0;
     int run_size;
@@ -262,7 +267,7 @@ static void FNAME_DECL(compress_row)(const PIXEL * const prev_row,
                                      unsigned int width)
 
 {
-    CommonState *state = &channel_a->state;
+    DECLARE_STATE_VARIABLES;
     const unsigned int bpc = BPC;
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
@@ -318,8 +323,8 @@ static void FNAME_DECL(uncompress_row0_seg)(int i,
                                             SPICE_GNUC_UNUSED const unsigned int bpc,
                                             const unsigned int bpc_mask)
 {
-    CommonState *state = &channel_a->state;
-    BYTE * const correlate_row_a = channel_a->correlate_row;
+    DECLARE_STATE_VARIABLES;
+    DECLARE_CHANNEL_VARIABLES;
     int stopidx;
 
     spice_assert(end - i > 0);
@@ -361,10 +366,11 @@ static void FNAME_DECL(uncompress_row0_seg)(int i,
     state->waitcnt = stopidx - end;
 }
 
-static void FNAME_DECL(uncompress_row0)(PIXEL * const cur_row, unsigned int width)
+static void FNAME_DECL(uncompress_row0)(PIXEL * const cur_row,
+                                        unsigned int width)
 
 {
-    CommonState *state = &channel_a->state;
+    DECLARE_STATE_VARIABLES;
     const unsigned int bpc = BPC;
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
@@ -420,8 +426,8 @@ static void FNAME_DECL(uncompress_row_seg)(const PIXEL * const prev_row,
                                            SPICE_GNUC_UNUSED const unsigned int bpc,
                                            const unsigned int bpc_mask)
 {
-    CommonState *state = &channel_a->state;
-    BYTE * const correlate_row_a = channel_a->correlate_row;
+    DECLARE_STATE_VARIABLES;
+    DECLARE_CHANNEL_VARIABLES;
     const unsigned int waitmask = bppmask[state->wmidx];
     int stopidx;
     int run_index = 0;
@@ -493,7 +499,7 @@ static void FNAME_DECL(uncompress_row)(const PIXEL * const prev_row,
                                        unsigned int width)
 
 {
-    CommonState *state = &channel_a->state;
+    DECLARE_STATE_VARIABLES;
     const unsigned int bpc = BPC;
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
@@ -557,3 +563,5 @@ static void FNAME_DECL(uncompress_row)(const PIXEL * const prev_row,
 #undef SET_a
 #undef GET_a
 #undef APPLY_ALL_COMP
+#undef DECLARE_STATE_VARIABLES
+#undef DECLARE_CHANNEL_VARIABLES
