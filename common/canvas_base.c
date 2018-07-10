@@ -377,7 +377,7 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
         if (surface != NULL) {
             pixman_image_unref(surface);
         }
-        spice_warning("%s", quic_data->message_buf);
+        g_warning("%s", quic_data->message_buf);
         return NULL;
     }
 
@@ -388,7 +388,7 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
                           SPICE_UNALIGNED_CAST(uint32_t *,image->u.quic.data->chunk[0].data),
                           image->u.quic.data->chunk[0].len >> 2,
                           &type, &width, &height) == QUIC_ERROR) {
-        spice_warning("quic decode begin failed");
+        g_warning("quic decode begin failed");
         return NULL;
     }
 
@@ -433,7 +433,7 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
     if (quic_decode(quic_data->quic, as_type,
                     dest, stride) == QUIC_ERROR) {
         pixman_image_unref(surface);
-        spice_warning("quic decode failed");
+        g_warning("quic decode failed");
         return NULL;
     }
 
@@ -488,7 +488,7 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image)
     surface = surface_create(PIXMAN_LE_x8r8g8b8,
                              width, height, FALSE);
     if (surface == NULL) {
-        spice_warning("create surface failed");
+        g_warning("create surface failed");
         return NULL;
     }
 
@@ -561,14 +561,14 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
             stride_encoded *= 4;
             break;
         default:
-            spice_warning("Unsupported bitmap format %d with LZ4\n", spice_format);
+            g_warning("unsupported bitmap format %d with LZ4", spice_format);
             return NULL;
     }
 
     surface = surface_create(format,
                              width, height, top_down);
     if (surface == NULL) {
-        spice_warning("create surface failed");
+        g_warning("create surface failed");
         return NULL;
     }
 
@@ -611,7 +611,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
     return surface;
 
 format_error:
-    spice_warning("Error decoding LZ4 block\n");
+    g_warning("error decoding LZ4 block");
     LZ4_freeStreamDecode(stream);
     pixman_image_unref(surface);
     return NULL;
@@ -649,7 +649,7 @@ static pixman_image_t *canvas_get_jpeg_alpha(CanvasBase *canvas, SpiceImage *ima
                                      width, height, width*height, alpha_top_down);
 
     if (surface == NULL) {
-        spice_warning("create surface failed");
+        g_warning("create surface failed");
         return NULL;
     }
 
@@ -702,7 +702,7 @@ static pixman_image_t *canvas_bitmap_to_surface(CanvasBase *canvas, SpiceBitmap*
     image = surface_create(format,
                            bitmap->x, bitmap->y, FALSE);
     if (image == NULL) {
-        spice_warning("create surface failed");
+        g_warning("create surface failed");
         return NULL;
     }
 
@@ -791,7 +791,7 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
             free(palette);
         }
         free(decomp_buf);
-        spice_warning("%s", lz_data->message_buf);
+        g_warning("%s", lz_data->message_buf);
         return NULL;
     }
 
@@ -1127,7 +1127,7 @@ static pixman_image_t *get_surface_from_canvas(CanvasBase *canvas,
 #ifdef USE_LZ4
         return canvas_get_lz4(canvas, image);
 #else
-        spice_warning("Lz4 compression algorithm not supported.\n");
+        g_warning("LZ4 compression algorithm not supported");
         return NULL;
 #endif
 
@@ -1221,7 +1221,7 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
 #ifdef SW_CANVAS_CACHE
     } else if (descriptor->flags & SPICE_IMAGE_FLAGS_CACHE_REPLACE_ME) {
         if (spice_image_descriptor_is_lossy(descriptor)) {
-            spice_warning("invalid cache replace request: the image is lossy");
+            g_warning("invalid cache replace request: the image is lossy");
             return NULL;
         }
         canvas->bits_cache->ops->replace_lossy(canvas->bits_cache, descriptor->id, surface);
