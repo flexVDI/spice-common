@@ -43,12 +43,15 @@
 #define SET_a(pix, val) ((pix)->a = val)
 #define GET_a(pix) ((pix)->a)
 
+#define SAME_PIXEL(p1, p2)                                 \
+     (GET_a(p1) == GET_a(p2))
+
 #define _PIXEL_A(channel, curr) ((unsigned int)GET_##channel((curr) - 1))
 #define _PIXEL_B(channel, prev) ((unsigned int)GET_##channel(prev))
 
 #define RLE_PRED_IMP                                                       \
-if (prev_row[i - 1].a == prev_row[i].a) {                                  \
-    if (run_index != i && i > 2 && cur_row[i - 1].a == cur_row[i - 2].a) { \
+if (SAME_PIXEL(&prev_row[i - 1], &prev_row[i])) {                                   \
+    if (run_index != i && i > 2 && SAME_PIXEL(&cur_row[i - 1], &cur_row[i - 2])) {  \
         goto do_run;                                                       \
     }                                                                      \
 }
@@ -238,7 +241,7 @@ do_run:
         state->waitcnt = stopidx - i;
         run_size = 0;
 
-        while (cur_row[i].a == cur_row[i - 1].a) {
+        while (SAME_PIXEL(&cur_row[i], &cur_row[i - 1])) {
             run_size++;
             if (++i == end) {
                 encode_channel_run(encoder, channel, run_size);
@@ -525,6 +528,7 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 #undef FNAME
 #undef _PIXEL_A
 #undef _PIXEL_B
+#undef SAME_PIXEL
 #undef RLE_PRED_IMP
 #undef golomb_coding
 #undef golomb_decoding
