@@ -140,13 +140,13 @@
     golomb_coding(encoder, correlate_row_##channel[index], find_bucket(channel_##channel, \
                   correlate_row_##channel[index -1])->bestcode)
 
+#define UPDATE_MODEL_COMP(channel, index)                                                             \
+    update_model(state, find_bucket(channel_##channel, correlate_row_##channel[index - 1]),        \
+                 correlate_row_##channel[index])
 #define UPDATE_MODEL(index)                                                            \
-    update_model(state, find_bucket(channel_r, correlate_row_r[index - 1]),            \
-                correlate_row_r[index]);                                               \
-    update_model(state, find_bucket(channel_g, correlate_row_g[index - 1]),            \
-                correlate_row_g[index]);                                               \
-    update_model(state, find_bucket(channel_b, correlate_row_b[index - 1]),            \
-                correlate_row_b[index]);
+    UPDATE_MODEL_COMP(r, index); \
+    UPDATE_MODEL_COMP(g, index); \
+    UPDATE_MODEL_COMP(b, index)
 
 
 #define RLE_PRED_IMP                                                                \
@@ -670,3 +670,4 @@ static void FNAME(uncompress_row)(Encoder *encoder,
 #undef SET_b
 #undef GET_b
 #undef UNCOMPRESS_PIX_START
+#undef UPDATE_MODEL_COMP
