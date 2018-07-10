@@ -21,28 +21,59 @@
 
 #define COMPRESS_IMP
 
-#define FARGS_DECL(arg1, ...) (Encoder *encoder, arg1, ##__VA_ARGS__)
-#define FARGS_CALL(arg1, ...) (encoder, arg1, ##__VA_ARGS__)
-#define SAME_PIXEL(p1, p2)                                 \
+#if defined(ONE_BYTE) || defined(FOUR_BYTE)
+#  define FARGS_DECL(arg1, ...) (Encoder *encoder, Channel *channel_a, arg1, ##__VA_ARGS__)
+#  define FARGS_CALL(arg1, ...) (encoder, channel_a, arg1, ##__VA_ARGS__)
+#  define UNCOMPRESS_PIX_START(row) do { } while (0)
+#  define SET_a(pix, val) ((pix)->a = val)
+#  define GET_a(pix) ((pix)->a)
+#  define SAME_PIXEL(p1, p2) (GET_a(p1) == GET_a(p2))
+#  define COPY_PIXEL(dest, src) \
+    SET_a(dest, GET_a(src));
+#  define DECLARE_STATE_VARIABLES \
+    CommonState *state = &channel_a->state
+#  define DECLARE_CHANNEL_VARIABLES \
+    BYTE * const correlate_row_a = channel_a->correlate_row
+#  define APPLY_ALL_COMP(macro, ...) \
+    macro(a, ## __VA_ARGS__)
+#else
+#  define FARGS_DECL(arg1, ...) (Encoder *encoder, arg1, ##__VA_ARGS__)
+#  define FARGS_CALL(arg1, ...) (encoder, arg1, ##__VA_ARGS__)
+#  define SAME_PIXEL(p1, p2)                               \
     (GET_r(p1) == GET_r(p2) && GET_g(p1) == GET_g(p2) &&   \
      GET_b(p1) == GET_b(p2))
-#define COPY_PIXEL(dest, src) \
+#  define COPY_PIXEL(dest, src) \
     SET_r(dest, GET_r(src)); \
     SET_g(dest, GET_g(src)); \
     SET_b(dest, GET_b(src))
-#define DECLARE_STATE_VARIABLES \
+#  define DECLARE_STATE_VARIABLES \
     CommonState *state = &encoder->rgb_state
-#define DECLARE_CHANNEL_VARIABLES \
+#  define DECLARE_CHANNEL_VARIABLES \
     Channel * const channel_r = encoder->channels; \
     Channel * const channel_g = channel_r + 1; \
     Channel * const channel_b = channel_g + 1; \
     BYTE * const correlate_row_r = channel_r->correlate_row; \
     BYTE * const correlate_row_g = channel_g->correlate_row; \
     BYTE * const correlate_row_b = channel_b->correlate_row
-#define APPLY_ALL_COMP(macro, ...) \
+#  define APPLY_ALL_COMP(macro, ...) \
     macro(r, ## __VA_ARGS__); \
     macro(g, ## __VA_ARGS__); \
     macro(b, ## __VA_ARGS__)
+#endif
+
+#ifdef ONE_BYTE
+#undef ONE_BYTE
+#define FNAME(name) quic_one_##name
+#define PIXEL one_byte_t
+#define BPC 8
+#endif
+
+#ifdef FOUR_BYTE
+#undef FOUR_BYTE
+#define FNAME(name) quic_four_##name
+#define PIXEL four_bytes_t
+#define BPC 8
+#endif
 
 #ifdef QUIC_RGB32
 #undef QUIC_RGB32
@@ -91,7 +122,7 @@
 #define PIXEL rgb32_pixel_t
 #define FNAME(name) quic_rgb16_to_32_##name
 #define BPC 5
-#define COMPRESS_IMP
+#undef COMPRESS_IMP
 #define SET_r(pix, val) ((pix)->r = ((val) << 3) | (((val) & 0x1f) >> 2))
 #define GET_r(pix) ((pix)->r >> 3)
 #define SET_g(pix, val) ((pix)->g = ((val) << 3) | (((val) & 0x1f) >> 2))
@@ -628,6 +659,8 @@ static void FNAME_DECL(uncompress_row)(const PIXEL * const prev_row,
 #undef GET_g
 #undef SET_b
 #undef GET_b
+#undef SET_a
+#undef GET_a
 #undef UNCOMPRESS_PIX_START
 #undef UPDATE_MODEL_COMP
 #undef APPLY_ALL_COMP
