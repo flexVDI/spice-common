@@ -546,3 +546,5 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 #undef UNCOMPRESS_ONE_ROW0_0
 #undef UNCOMPRESS_ONE_0
 #undef UNCOMPRESS_ONE
+#undef SET_a
+#undef GET_a
