@@ -43,6 +43,8 @@
 
 #define SAME_PIXEL(p1, p2)                                 \
      (GET_a(p1) == GET_a(p2))
+#define COPY_PIXEL(dest, src) \
+    SET_a(dest, GET_a(src));
 #define DECLARE_STATE_VARIABLES \
     CommonState *state = &channel_a->state
 #define DECLARE_CHANNEL_VARIABLES \
@@ -483,7 +485,7 @@ do_run:
 
         for (; i < run_end; i++) {
             UNCOMPRESS_PIX_START(&cur_row[i]);
-            SET_a(&cur_row[i], GET_a(&cur_row[i - 1]));
+            COPY_PIXEL(&cur_row[i], &cur_row[i - 1]);
         }
 
         if (i == end) {
@@ -565,3 +567,4 @@ static void FNAME_DECL(uncompress_row)(const PIXEL * const prev_row,
 #undef APPLY_ALL_COMP
 #undef DECLARE_STATE_VARIABLES
 #undef DECLARE_CHANNEL_VARIABLES
+#undef COPY_PIXEL

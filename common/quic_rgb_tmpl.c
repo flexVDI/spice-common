@@ -87,6 +87,10 @@
 #define SAME_PIXEL(p1, p2)                                 \
     (GET_r(p1) == GET_r(p2) && GET_g(p1) == GET_g(p2) &&   \
      GET_b(p1) == GET_b(p2))
+#define COPY_PIXEL(dest, src) \
+    SET_r(dest, GET_r(src)); \
+    SET_g(dest, GET_g(src)); \
+    SET_b(dest, GET_b(src))
 #define DECLARE_STATE_VARIABLES \
     CommonState *state = &encoder->rgb_state
 #define DECLARE_CHANNEL_VARIABLES \
@@ -541,9 +545,7 @@ do_run:
 
         for (; i < run_end; i++) {
             UNCOMPRESS_PIX_START(&cur_row[i]);
-            SET_r(&cur_row[i], GET_r(&cur_row[i - 1]));
-            SET_g(&cur_row[i], GET_g(&cur_row[i - 1]));
-            SET_b(&cur_row[i], GET_b(&cur_row[i - 1]));
+            COPY_PIXEL(&cur_row[i], &cur_row[i - 1]);
         }
 
         if (i == end) {
@@ -632,3 +634,4 @@ static void FNAME_DECL(uncompress_row)(const PIXEL * const prev_row,
 #undef APPLY_ALL_COMP
 #undef DECLARE_STATE_VARIABLES
 #undef DECLARE_CHANNEL_VARIABLES
+#undef COPY_PIXEL
