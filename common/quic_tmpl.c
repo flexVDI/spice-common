@@ -57,31 +57,23 @@ if (SAME_PIXEL(&prev_row[i - 1], &prev_row[i])) {                               
 }
 
 /*  a  */
-static inline BYTE FNAME(decorrelate_0)(const PIXEL * const curr, const unsigned int bpc_mask)
-{
-    return family.xlatU2L[(unsigned)((int)GET_a(curr) - (int)_PIXEL_A(a, curr)) & bpc_mask];
-}
 
-static inline void FNAME(correlate_0)(PIXEL *curr, const BYTE correlate,
-                                      const unsigned int bpc_mask)
-{
-    curr->a = (family.xlatL2U[correlate] + _PIXEL_A(a, curr)) & bpc_mask;
-}
+#define DECORRELATE_0(channel, curr, bpc_mask)\
+    family.xlatU2L[(unsigned)((int)GET_##channel(curr) - (int)_PIXEL_A(channel, curr)) & bpc_mask]
+
+#define CORRELATE_0(channel, curr, correlate, bpc_mask)\
+    ((family.xlatL2U[correlate] + _PIXEL_A(channel, curr)) & bpc_mask)
 
 
 /*  (a+b)/2  */
-static inline BYTE FNAME(decorrelate)(const PIXEL *const prev, const PIXEL * const curr,
-                                      const unsigned int bpc_mask)
-{
-    return family.xlatU2L[(unsigned)((int)curr->a - (int)((_PIXEL_A(a, curr) + _PIXEL_B(a, prev)) >> 1)) & bpc_mask];
-}
+#define DECORRELATE(channel, prev, curr, bpc_mask, r)                                          \
+    r = family.xlatU2L[(unsigned)((int)GET_##channel(curr) - (int)((_PIXEL_A(channel, curr) +  \
+    _PIXEL_B(channel, prev)) >> 1)) & bpc_mask]
 
+#define CORRELATE(channel, prev, curr, correlate, bpc_mask, r)                                  \
+    SET_##channel(r, ((family.xlatL2U[correlate] +                                              \
+         (int)((_PIXEL_A(channel, curr) + _PIXEL_B(channel, prev)) >> 1)) & bpc_mask))
 
-static inline void FNAME(correlate)(const PIXEL *prev, PIXEL *curr, const BYTE correlate,
-                                    const unsigned int bpc_mask)
-{
-    curr->a = (family.xlatL2U[correlate] + (int)((_PIXEL_A(a, curr) + _PIXEL_B(a, prev)) >> 1)) & bpc_mask;
-}
 
 #define COMPRESS_ONE_ROW0_0(channel)                                    \
     correlate_row_##channel[0] = family.xlatU2L[GET_##channel(cur_row)];\
@@ -90,7 +82,7 @@ static inline void FNAME(correlate)(const PIXEL *prev, PIXEL *curr, const BYTE c
                               correlate_row_##channel[-1])->bestcode)
 
 #define COMPRESS_ONE_ROW0(channel, index)                                               \
-    correlate_row_##channel[index] = FNAME(decorrelate_0)(&cur_row[index], bpc_mask);   \
+    correlate_row_##channel[index] = DECORRELATE_0(channel, &cur_row[index], bpc_mask); \
     golomb_coding(encoder, correlate_row_##channel[index],                              \
                   find_bucket(channel_##channel,                                        \
                               correlate_row_##channel[index - 1])->bestcode)
@@ -186,7 +178,7 @@ static void FNAME(compress_row0)(Encoder *encoder, Channel *channel, const PIXEL
                   find_bucket(channel_##channel, correlate_row_##channel[-1])->bestcode)
 
 #define COMPRESS_ONE(channel, index)                                                                   \
-     correlate_row_##channel[index] = FNAME(decorrelate)(&prev_row[index], &cur_row[index], bpc_mask); \
+     DECORRELATE(channel, &prev_row[index], &cur_row[index],bpc_mask, correlate_row_##channel[index]); \
      golomb_coding(encoder, correlate_row_##channel[index],                                            \
                    find_bucket(channel_##channel, correlate_row_##channel[index - 1])->bestcode)
 
@@ -306,7 +298,8 @@ static void FNAME(compress_row)(Encoder *encoder, Channel *channel,
     correlate_row_##channel[i] = (BYTE)golomb_decoding(find_bucket(channel_##channel,                          \
                                                                    correlate_row_##channel[i - 1])->bestcode,  \
                                                        encoder->io_word, &codewordlen);                        \
-    FNAME(correlate_0)(&cur_row[i], correlate_row_##channel[i], bpc_mask);                                     \
+    SET_##channel(&cur_row[i], CORRELATE_0(channel, &cur_row[i], correlate_row_##channel[i],                   \
+                  bpc_mask));                                                                                  \
     decode_eatbits(encoder, codewordlen);
 
 static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel_a, int i,
@@ -408,7 +401,8 @@ static void FNAME(uncompress_row0)(Encoder *encoder, Channel *channel,
     correlate_row_##channel[i] = (BYTE)golomb_decoding(find_bucket(channel_##channel,                         \
                                                                    correlate_row_##channel[i - 1])->bestcode, \
                                                        encoder->io_word, &codewordlen);                       \
-    FNAME(correlate)(&prev_row[i], &cur_row[i], correlate_row_##channel[i], bpc_mask);                        \
+    CORRELATE(channel, &prev_row[i], &cur_row[i], correlate_row_##channel[i], bpc_mask,                       \
+              &cur_row[i]);                                                                                   \
     decode_eatbits(encoder, codewordlen);
 
 static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel_a,
@@ -530,6 +524,10 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 #undef _PIXEL_B
 #undef SAME_PIXEL
 #undef RLE_PRED_IMP
+#undef DECORRELATE_0
+#undef DECORRELATE
+#undef CORRELATE_0
+#undef CORRELATE
 #undef golomb_coding
 #undef golomb_decoding
 #undef update_model
