@@ -153,6 +153,10 @@
 #endif // TO_RGB32
 #endif
 
+#ifndef CAST_PLT_DISTANCE
+#define CAST_PLT_DISTANCE(dist) (dist)
+#endif
+
 #ifdef LZ_A8
 #ifndef TO_RGB32
 #define OUT_PIXEL one_byte_pixel_t
@@ -222,9 +226,8 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
     OUT_PIXEL    *op = out_buf;
     OUT_PIXEL    *op_limit = out_buf + size;
     uint32_t ctrl = decode(encoder);
-    int loop = TRUE;
 
-    do {
+    for (;;) {
         const OUT_PIXEL *ref = op;
         uint32_t len = ctrl >> 5;
         uint32_t ofs = (ctrl & 31) << 8; // 5 MSb of distance
@@ -262,12 +265,8 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
 #endif
             ofs += 1; // offset is biased by 1       (fixing bias)
 
-#if defined(TO_RGB32)
-#if defined(PLT4_BE) || defined(PLT4_LE) || defined(PLT1_BE) || defined(PLT1_LE)
             ofs = CAST_PLT_DISTANCE(ofs);
             len = CAST_PLT_DISTANCE(len);
-#endif
-#endif
             ref -= ofs;
 
             spice_assert(op + len <= op_limit);
@@ -296,12 +295,7 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
             }
         } else { // copy
             ctrl++; // copy count is biased by 1
-#if defined(TO_RGB32) && (defined(PLT4_BE) || defined(PLT4_LE) || defined(PLT1_BE) || \
-                                                                                   defined(PLT1_LE))
             spice_assert(op + CAST_PLT_DISTANCE(ctrl) <= op_limit);
-#else
-            spice_assert(op + ctrl <= op_limit);
-#endif
             COPY_COMP_PIXEL(encoder, op);
 
             spice_assert(op <= op_limit);
@@ -312,12 +306,11 @@ static size_t FNAME(decompress)(Encoder *encoder, OUT_PIXEL *out_buf, int size)
             }
         }
 
-        if (LZ_EXPECT_CONDITIONAL(op < op_limit)) {
-            ctrl = decode(encoder);
-        } else {
-            loop = FALSE;
+        if (LZ_UNEXPECT_CONDITIONAL(op >= op_limit)) {
+            break;
         }
-    } while (LZ_EXPECT_CONDITIONAL(loop));
+        ctrl = decode(encoder);
+    }
 
     return (op - out_buf);
 }

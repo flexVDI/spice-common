@@ -40,24 +40,37 @@ def write_parser_helpers(writer):
 
     writer = writer.function_helper()
 
+    writer.writeln("#include <spice/start-packed.h>")
+    for size in [16, 32, 64]:
+        for sign in ["", "u"]:
+            type = "%sint%d" % (sign, size)
+            writer.begin_block("typedef struct SPICE_ATTR_PACKED")
+            writer.variable_def("%s_t" % type, "v")
+            writer.end_block(newline=False)
+            writer.writeln(" %s_unaligned_t;" % type)
+    writer.writeln("#include <spice/end-packed.h>")
+    writer.newline()
+
+    for sign in ["", "u"]:
+        type = "%sint8" % sign
+        writer.macro("read_%s" % type, "ptr", "(*((%s_t *)(ptr)))" % type)
+        writer.macro("write_%s" % type, "ptr, val", "*(%s_t *)(ptr) = val" % (type))
+    writer.newline()
+
     writer.writeln("#ifdef WORDS_BIGENDIAN")
-    for size in [8, 16, 32, 64]:
+    for size in [16, 32, 64]:
         for sign in ["", "u"]:
             utype = "uint%d" % (size)
             type = "%sint%d" % (sign, size)
             swap = "SPICE_BYTESWAP%d" % size
-            if size == 8:
-                writer.macro("read_%s" % type, "ptr", "(*((%s_t *)(ptr)))" % type)
-                writer.macro("write_%s" % type, "ptr, val", "*(%s_t *)(ptr) = val" % (type))
-            else:
-                writer.macro("read_%s" % type, "ptr", "((%s_t)%s(*((%s_t *)(ptr))))" % (type, swap, utype))
-                writer.macro("write_%s" % type, "ptr, val", "*(%s_t *)(ptr) = %s((%s_t)val)" % (utype, swap, utype))
+            writer.macro("read_%s" % type, "ptr", "((%s_t)%s(((%s_unaligned_t *)(ptr))->v))" % (type, swap, utype))
+            writer.macro("write_%s" % type, "ptr, val", "((%s_unaligned_t *)(ptr))->v = %s((%s_t)val)" % (utype, swap, utype))
     writer.writeln("#else")
-    for size in [8, 16, 32, 64]:
+    for size in [16, 32, 64]:
         for sign in ["", "u"]:
             type = "%sint%d" % (sign, size)
-            writer.macro("read_%s" % type, "ptr", "(*((%s_t *)(ptr)))" % type)
-            writer.macro("write_%s" % type, "ptr, val", "(*((%s_t *)(ptr))) = val" % type)
+            writer.macro("read_%s" % type, "ptr", "(((%s_unaligned_t *)(ptr))->v)" % type)
+            writer.macro("write_%s" % type, "ptr, val", "(((%s_unaligned_t *)(ptr))->v) = val" % type)
     writer.writeln("#endif")
 
     for size in [8, 16, 32, 64]:

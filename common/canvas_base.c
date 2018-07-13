@@ -94,17 +94,6 @@ static inline uint32_t canvas_16bpp_to_32bpp(uint32_t color)
 
     return ret;
 }
-#if defined(WIN32) && defined(GDI_CANVAS)
-static HDC create_compatible_dc()
-{
-    HDC dc = CreateCompatibleDC(NULL);
-
-    spice_return_val_if_fail(dc != NULL, NULL);
-
-    return dc;
-}
-
-#endif
 
 typedef struct LzData {
     LzUsrContext usr;
@@ -142,9 +131,6 @@ typedef struct CanvasBase {
     SpiceImageCache *bits_cache;
 #ifdef SW_CANVAS_CACHE
     SpicePaletteCache *palette_cache;
-#endif
-#ifdef WIN32
-    HDC dc;
 #endif
 
     SpiceImageSurfaces *surfaces;
@@ -380,7 +366,9 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
     int height;
 
     if (setjmp(quic_data->jmp_env)) {
-        pixman_image_unref(surface);
+        if (surface != NULL) {
+            pixman_image_unref(surface);
+        }
         spice_warning("%s", quic_data->message_buf);
         return NULL;
     }
@@ -427,11 +415,7 @@ static pixman_image_t *canvas_get_quic(CanvasBase *canvas, SpiceImage *image,
     spice_return_val_if_fail((uint32_t)width == image->descriptor.width, NULL);
     spice_return_val_if_fail((uint32_t)height == image->descriptor.height, NULL);
 
-    surface = surface_create(
-#ifdef WIN32
-                             canvas->dc,
-#endif
-                             pixman_format,
+    surface = surface_create(pixman_format,
                              width, height, FALSE);
 
     spice_return_val_if_fail(surface != NULL, NULL);
@@ -490,11 +474,7 @@ static pixman_image_t *canvas_get_jpeg(CanvasBase *canvas, SpiceImage *image)
     spice_return_val_if_fail((uint32_t)width == image->descriptor.width, NULL);
     spice_return_val_if_fail((uint32_t)height == image->descriptor.height, NULL);
 
-    surface = surface_create(
-#ifdef WIN32
-                             canvas->dc,
-#endif
-                             PIXMAN_LE_x8r8g8b8,
+    surface = surface_create(PIXMAN_LE_x8r8g8b8,
                              width, height, FALSE);
     if (surface == NULL) {
         spice_warning("create surface failed");
@@ -520,12 +500,11 @@ static void canvas_fix_alignment(uint8_t *bits,
     if (stride_pixman > stride_encoded) {
         // Fix the row alignment
         int row;
-        uint8_t *dest = bits;
         for (row = height - 1; row > 0; --row) {
-            uint32_t *dest_aligned, *dest_misaligned;
-            dest_aligned = SPICE_ALIGNED_CAST(uint32_t *,dest + stride_pixman*row);
-            dest_misaligned = SPICE_UNALIGNED_CAST(uint32_t*,dest + stride_encoded*row);
-            memmove(dest_aligned, dest_misaligned, stride_encoded);
+            uint8_t *aligned, *misaligned;
+            aligned = bits + stride_pixman*row;
+            misaligned = bits + stride_encoded*row;
+            memmove(aligned, misaligned, stride_encoded);
         }
     }
 }
@@ -573,11 +552,7 @@ static pixman_image_t *canvas_get_lz4(CanvasBase *canvas, SpiceImage *image)
             return NULL;
     }
 
-    surface = surface_create(
-#ifdef WIN32
-                             canvas->dc,
-#endif
-                             format,
+    surface = surface_create(format,
                              width, height, top_down);
     if (surface == NULL) {
         spice_warning("create surface failed");
@@ -645,9 +620,6 @@ static pixman_image_t *canvas_get_jpeg_alpha(CanvasBase *canvas, SpiceImage *ima
         alpha_top_down = TRUE;
     }
 
-#ifdef WIN32
-    lz_data->decode_data.dc = canvas->dc;
-#endif
     surface = alloc_lz_image_surface(&lz_data->decode_data, PIXMAN_LE_a8r8g8b8,
                                      width, height, width*height, alpha_top_down);
 
@@ -704,11 +676,7 @@ static pixman_image_t *canvas_bitmap_to_surface(CanvasBase *canvas, SpiceBitmap*
                                           bitmap->format == SPICE_BITMAP_FMT_RGBA);
     }
 
-    image = surface_create(
-#ifdef WIN32
-                           canvas->dc,
-#endif
-                           format,
+    image = surface_create(format,
                            bitmap->x, bitmap->y, FALSE);
     if (image == NULL) {
         spice_warning("create surface failed");
@@ -747,16 +715,13 @@ static inline SpicePalette *canvas_get_localized_palette(CanvasBase *canvas, Spi
     SpicePalette *palette = canvas_get_palette(canvas, base_palette, palette_id, flags);
     SpicePalette *copy;
     uint32_t *now, *end;
-    size_t size;
 
     if (canvas->format == SPICE_SURFACE_FMT_32_xRGB ||
         canvas->format == SPICE_SURFACE_FMT_32_ARGB) {
         return palette;
     }
 
-    size = sizeof(SpicePalette) + palette->num_ents * 4;
-    copy = (SpicePalette *)spice_malloc(size);
-    memcpy(copy, palette, size);
+    copy = spice_memdup(palette, sizeof(SpicePalette) + palette->num_ents * 4);
 
     switch (canvas->format) {
     case SPICE_SURFACE_FMT_32_xRGB:
@@ -789,22 +754,24 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     uint8_t    *decomp_buf = NULL;
     pixman_format_code_t pixman_format;
     LzImageType type, as_type;
-    SpicePalette *palette;
+    SpicePalette *palette = NULL;
     int n_comp_pixels;
     int width;
     int height;
     int top_down;
     int stride_encoded;
     int stride;
-    int free_palette;
+    volatile int free_palette = FALSE;
 
     if (setjmp(lz_data->jmp_env)) {
+        if (free_palette)  {
+            free(palette);
+        }
         free(decomp_buf);
         spice_warning("%s", lz_data->message_buf);
         return NULL;
     }
 
-    free_palette = FALSE;
     if (image->descriptor.type == SPICE_IMAGE_TYPE_LZ_RGB) {
         spice_return_val_if_fail(image->u.lz_rgb.data->num_chunks == 1, NULL); /* TODO: Handle chunks */
         comp_buf = image->u.lz_rgb.data->chunk[0].data;
@@ -814,7 +781,9 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
         spice_return_val_if_fail(image->u.lz_plt.data->num_chunks == 1, NULL); /* TODO: Handle chunks */
         comp_buf = image->u.lz_plt.data->chunk[0].data;
         comp_size = image->u.lz_plt.data->chunk[0].len;
-        palette = canvas_get_localized_palette(canvas, image->u.lz_plt.palette, image->u.lz_plt.palette_id, image->u.lz_plt.flags, &free_palette);
+        palette = canvas_get_localized_palette(canvas, image->u.lz_plt.palette,
+                                               image->u.lz_plt.palette_id, image->u.lz_plt.flags,
+                                               (int*) &free_palette);
     } else {
         spice_warn_if_reached();
         return NULL;
@@ -823,7 +792,7 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     lz_decode_begin(lz_data->lz, comp_buf, comp_size, &type,
                     &width, &height, &n_comp_pixels, &top_down, palette);
 
-    stride_encoded = width;
+    stride_encoded = n_comp_pixels / height;
     switch (type) {
     case LZ_IMAGE_TYPE_RGBA:
         as_type = LZ_IMAGE_TYPE_RGBA;
@@ -867,10 +836,6 @@ static pixman_image_t *canvas_get_lz(CanvasBase *canvas, SpiceImage *image,
     spice_return_val_if_fail((unsigned)height == image->descriptor.height, NULL);
 
     spice_return_val_if_fail((image->descriptor.type == SPICE_IMAGE_TYPE_LZ_PLT) || (n_comp_pixels == width * height), NULL);
-#ifdef WIN32
-    lz_data->decode_data.dc = canvas->dc;
-#endif
-
 
     alloc_lz_image_surface(&lz_data->decode_data, pixman_format,
                            width, height, n_comp_pixels, top_down);
@@ -913,9 +878,6 @@ static pixman_image_t *canvas_get_glz(CanvasBase *canvas, SpiceImage *image,
                                       int want_original)
 {
     spice_return_val_if_fail(image->descriptor.type == SPICE_IMAGE_TYPE_GLZ_RGB, NULL);
-#ifdef WIN32
-    canvas->glz_data.decode_data.dc = canvas->dc;
-#endif
 
     spice_return_val_if_fail(image->u.lz_rgb.data->num_chunks == 1, NULL); /* TODO: Handle chunks */
     return canvas_get_glz_rgb_common(canvas, image->u.lz_rgb.data->chunk[0].data, want_original);
@@ -1273,11 +1235,7 @@ static pixman_image_t *canvas_get_image_internal(CanvasBase *canvas, SpiceImage 
                                                  surface_format == PIXMAN_a8r8g8b8);
 
         if (surface_format != wanted_format) {
-            converted = surface_create(
-#ifdef WIN32
-                                       canvas->dc,
-#endif
-                                       wanted_format,
+            converted = surface_create(wanted_format,
                                        pixman_image_get_width(surface),
                                        pixman_image_get_height(surface),
                                        TRUE);
@@ -1422,11 +1380,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
     int line_size;
     int dest_stride;
 
-    surface = surface_create(
-#ifdef WIN32
-            canvas->dc,
-#endif
-            PIXMAN_a1, bitmap->x, bitmap->y, TRUE);
+    surface = surface_create(PIXMAN_a1, bitmap->x, bitmap->y, TRUE);
     spice_return_val_if_fail(surface != NULL, NULL);
 
     spice_chunks_linearize(bitmap->data);
@@ -1445,11 +1399,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
 
     if (invers) {
         switch (bitmap->format) {
-#if defined(GDI_CANVAS)
-        case SPICE_BITMAP_FMT_1BIT_BE:
-#else
         case SPICE_BITMAP_FMT_1BIT_LE:
-#endif
             for (; src_line != end_line; src_line += src_stride, dest_line += dest_stride) {
                 uint8_t *dest = dest_line;
                 uint8_t *now = src_line;
@@ -1459,11 +1409,7 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
                 }
             }
             break;
-#if defined(GDI_CANVAS)
-        case SPICE_BITMAP_FMT_1BIT_LE:
-#else
         case SPICE_BITMAP_FMT_1BIT_BE:
-#endif
             for (; src_line != end_line; src_line += src_stride, dest_line += dest_stride) {
                 uint8_t *dest = dest_line;
                 uint8_t *now = src_line;
@@ -1482,20 +1428,12 @@ static pixman_image_t *canvas_get_bitmap_mask(CanvasBase *canvas, SpiceBitmap* b
         }
     } else {
         switch (bitmap->format) {
-#if defined(GDI_CANVAS)
-        case SPICE_BITMAP_FMT_1BIT_BE:
-#else
         case SPICE_BITMAP_FMT_1BIT_LE:
-#endif
             for (; src_line != end_line; src_line += src_stride, dest_line += dest_stride) {
                 memcpy(dest_line, src_line, line_size);
             }
             break;
-#if defined(GDI_CANVAS)
-        case SPICE_BITMAP_FMT_1BIT_LE:
-#else
         case SPICE_BITMAP_FMT_1BIT_BE:
-#endif
             for (; src_line != end_line; src_line += src_stride, dest_line += dest_stride) {
                 uint8_t *dest = dest_line;
                 uint8_t *now = src_line;
@@ -1904,9 +1842,6 @@ static void canvas_base_destroy(CanvasBase *canvas)
 {
     quic_destroy(canvas->quic_data.quic);
     lz_destroy(canvas->lz_data.lz);
-#ifdef GDI_CANVAS
-    DeleteDC(canvas->dc);
-#endif
 }
 
 static void canvas_clip_pixman(CanvasBase *canvas,
@@ -3535,16 +3470,5 @@ static int canvas_base_init(CanvasBase *canvas, SpiceCanvasOps *ops,
     canvas->palette_cache = palette_cache;
 #endif
 
-#ifdef WIN32
-    canvas->dc = NULL;
-#endif
-
-#ifdef GDI_CANVAS
-    canvas->dc = create_compatible_dc();
-    if (!canvas->dc) {
-        lz_destroy(canvas->lz_data.lz);
-        return 0;
-    }
-#endif
     return 1;
 }

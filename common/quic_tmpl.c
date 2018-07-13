@@ -83,31 +83,31 @@ if (i > 1 && cur_row[i - 1].a == cur_row[i - 2].a && i != run_index) {  \
 #endif
 
 /*  a  */
-static inline BYTE FNAME(decorelate_0)(const PIXEL * const curr, const unsigned int bpc_mask)
+static inline BYTE FNAME(decorrelate_0)(const PIXEL * const curr, const unsigned int bpc_mask)
 {
     return family.xlatU2L[(unsigned)((int)curr[0].a - (int)_PIXEL_A) & bpc_mask];
 }
 
-static inline void FNAME(corelate_0)(PIXEL *curr, const BYTE corelate,
-                                     const unsigned int bpc_mask)
+static inline void FNAME(correlate_0)(PIXEL *curr, const BYTE correlate,
+                                      const unsigned int bpc_mask)
 {
-    curr->a = (family.xlatL2U[corelate] + _PIXEL_A) & bpc_mask;
+    curr->a = (family.xlatL2U[correlate] + _PIXEL_A) & bpc_mask;
 }
 
 #ifdef PRED_1
 
 /*  (a+b)/2  */
-static inline BYTE FNAME(decorelate)(const PIXEL *const prev, const PIXEL * const curr,
-                                     const unsigned int bpc_mask)
+static inline BYTE FNAME(decorrelate)(const PIXEL *const prev, const PIXEL * const curr,
+                                      const unsigned int bpc_mask)
 {
     return family.xlatU2L[(unsigned)((int)curr->a - (int)((_PIXEL_A + _PIXEL_B) >> 1)) & bpc_mask];
 }
 
 
-static inline void FNAME(corelate)(const PIXEL *prev, PIXEL *curr, const BYTE corelate,
-                                   const unsigned int bpc_mask)
+static inline void FNAME(correlate)(const PIXEL *prev, PIXEL *curr, const BYTE correlate,
+                                    const unsigned int bpc_mask)
 {
-    curr->a = (family.xlatL2U[corelate] + (int)((_PIXEL_A + _PIXEL_B) >> 1)) & bpc_mask;
+    curr->a = (family.xlatL2U[correlate] + (int)((_PIXEL_A + _PIXEL_B) >> 1)) & bpc_mask;
 }
 
 #endif
@@ -115,8 +115,8 @@ static inline void FNAME(corelate)(const PIXEL *prev, PIXEL *curr, const BYTE co
 #ifdef PRED_2
 
 /*  .75a+.75b-.5c  */
-static inline BYTE FNAME(decorelate)(const PIXEL *const prev, const PIXEL * const curr,
-                                     const unsigned int bpc_mask)
+static inline BYTE FNAME(decorrelate)(const PIXEL *const prev, const PIXEL * const curr,
+                                      const unsigned int bpc_mask)
 {
     int p = ((int)(3 * (_PIXEL_A + _PIXEL_B)) - (int)(_PIXEL_C << 1)) >> 2;
 
@@ -131,11 +131,11 @@ static inline BYTE FNAME(decorelate)(const PIXEL *const prev, const PIXEL * cons
     }
 }
 
-static inline void FNAME(corelate)(const PIXEL *prev, PIXEL *curr, const BYTE corelate,
-                                   const unsigned int bpc_mask)
+static inline void FNAME(correlate)(const PIXEL *prev, PIXEL *curr, const BYTE correlate,
+                                    const unsigned int bpc_mask)
 {
     const int p = ((int)(3 * (_PIXEL_A + _PIXEL_B)) - (int)(_PIXEL_C << 1)) >> 2;
-    const unsigned int s = family.xlatL2U[corelate];
+    const unsigned int s = family.xlatL2U[correlate];
 
     if (!(p & ~bpc_mask)) {
         curr->a = (s + (unsigned)p) & bpc_mask;
@@ -155,7 +155,7 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel, int i,
                                      SPICE_GNUC_UNUSED const unsigned int bpc,
                                      const unsigned int bpc_mask)
 {
-    BYTE * const decorelate_drow = channel->correlate_row;
+    BYTE * const decorrelate_drow = channel->correlate_row;
     int stopidx;
 
     spice_assert(end - i > 0);
@@ -163,8 +163,8 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel, int i,
     if (i == 0) {
         unsigned int codeword, codewordlen;
 
-        decorelate_drow[0] = family.xlatU2L[cur_row->a];
-        golomb_coding(decorelate_drow[0], find_bucket(channel, decorelate_drow[-1])->bestcode,
+        decorrelate_drow[0] = family.xlatU2L[cur_row->a];
+        golomb_coding(decorrelate_drow[0], find_bucket(channel, decorrelate_drow[-1])->bestcode,
                       &codeword, &codewordlen);
         encode(encoder, codeword, codewordlen);
 
@@ -172,8 +172,8 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel, int i,
             channel->state.waitcnt--;
         } else {
             channel->state.waitcnt = (tabrand(&channel->state.tabrand_seed) & waitmask);
-            update_model(&channel->state, find_bucket(channel, decorelate_drow[-1]),
-                         decorelate_drow[i]);
+            update_model(&channel->state, find_bucket(channel, decorrelate_drow[-1]),
+                         decorrelate_drow[i]);
         }
         stopidx = ++i + channel->state.waitcnt;
     } else {
@@ -183,22 +183,22 @@ static void FNAME(compress_row0_seg)(Encoder *encoder, Channel *channel, int i,
     while (stopidx < end) {
         for (; i <= stopidx; i++) {
             unsigned int codeword, codewordlen;
-            decorelate_drow[i] = FNAME(decorelate_0)(&cur_row[i], bpc_mask);
-            golomb_coding(decorelate_drow[i],
-                          find_bucket(channel, decorelate_drow[i - 1])->bestcode, &codeword,
+            decorrelate_drow[i] = FNAME(decorrelate_0)(&cur_row[i], bpc_mask);
+            golomb_coding(decorrelate_drow[i],
+                          find_bucket(channel, decorrelate_drow[i - 1])->bestcode, &codeword,
                           &codewordlen);
             encode(encoder, codeword, codewordlen);
         }
 
-        update_model(&channel->state, find_bucket(channel, decorelate_drow[stopidx - 1]),
-                     decorelate_drow[stopidx]);
+        update_model(&channel->state, find_bucket(channel, decorrelate_drow[stopidx - 1]),
+                     decorrelate_drow[stopidx]);
         stopidx = i + (tabrand(&channel->state.tabrand_seed) & waitmask);
     }
 
     for (; i < end; i++) {
         unsigned int codeword, codewordlen;
-        decorelate_drow[i] = FNAME(decorelate_0)(&cur_row[i], bpc_mask);
-        golomb_coding(decorelate_drow[i], find_bucket(channel, decorelate_drow[i - 1])->bestcode,
+        decorrelate_drow[i] = FNAME(decorrelate_0)(&cur_row[i], bpc_mask);
+        golomb_coding(decorrelate_drow[i], find_bucket(channel, decorrelate_drow[i - 1])->bestcode,
                       &codeword, &codewordlen);
         encode(encoder, codeword, codewordlen);
     }
@@ -212,7 +212,7 @@ static void FNAME(compress_row0)(Encoder *encoder, Channel *channel, const PIXEL
     const unsigned int bpc_mask = BPC_MASK;
     int pos = 0;
 
-    while ((wmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
+    while ((DEFwmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
         if (channel->state.wmileft) {
             FNAME(compress_row0_seg)(encoder, channel, pos, cur_row, pos + channel->state.wmileft,
                                      bppmask[channel->state.wmidx], bpc, bpc_mask);
@@ -222,20 +222,20 @@ static void FNAME(compress_row0)(Encoder *encoder, Channel *channel, const PIXEL
 
         channel->state.wmidx++;
         set_wm_trigger(&channel->state);
-        channel->state.wmileft = wminext;
+        channel->state.wmileft = DEFwminext;
     }
 
     if (width) {
         FNAME(compress_row0_seg)(encoder, channel, pos, cur_row, pos + width,
                                  bppmask[channel->state.wmidx], bpc, bpc_mask);
-        if (wmimax > (int)channel->state.wmidx) {
+        if (DEFwmimax > (int)channel->state.wmidx) {
             channel->state.wmileft -= width;
         }
     }
 
-    spice_assert((int)channel->state.wmidx <= wmimax);
+    spice_assert((int)channel->state.wmidx <= DEFwmimax);
     spice_assert(channel->state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
@@ -246,7 +246,7 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
                                     SPICE_GNUC_UNUSED const unsigned int bpc,
                                     const unsigned int bpc_mask)
 {
-    BYTE * const decorelate_drow = channel->correlate_row;
+    BYTE * const decorrelate_drow = channel->correlate_row;
     int stopidx;
 #ifdef RLE
     int run_index = 0;
@@ -255,14 +255,14 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
 
     spice_assert(end - i > 0);
 
-    if (!i) {
+    if (i == 0) {
         unsigned int codeword, codewordlen;
 
-        decorelate_drow[0] = family.xlatU2L[(unsigned)((int)cur_row->a -
+        decorrelate_drow[0] = family.xlatU2L[(unsigned)((int)cur_row->a -
                                                        (int)prev_row->a) & bpc_mask];
 
-        golomb_coding(decorelate_drow[0],
-                      find_bucket(channel, decorelate_drow[-1])->bestcode,
+        golomb_coding(decorrelate_drow[0],
+                      find_bucket(channel, decorrelate_drow[-1])->bestcode,
                       &codeword,
                       &codewordlen);
         encode(encoder, codeword, codewordlen);
@@ -271,8 +271,8 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
             channel->state.waitcnt--;
         } else {
             channel->state.waitcnt = (tabrand(&channel->state.tabrand_seed) & waitmask);
-            update_model(&channel->state, find_bucket(channel, decorelate_drow[-1]),
-                         decorelate_drow[0]);
+            update_model(&channel->state, find_bucket(channel, decorrelate_drow[-1]),
+                         decorrelate_drow[0]);
         }
         stopidx = ++i + channel->state.waitcnt;
     } else {
@@ -287,15 +287,15 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
                 RLE_PRED_2_IMP;
                 RLE_PRED_3_IMP;
 #endif
-                decorelate_drow[i] = FNAME(decorelate)(&prev_row[i], &cur_row[i], bpc_mask);
-                golomb_coding(decorelate_drow[i],
-                              find_bucket(channel, decorelate_drow[i - 1])->bestcode, &codeword,
+                decorrelate_drow[i] = FNAME(decorrelate)(&prev_row[i], &cur_row[i], bpc_mask);
+                golomb_coding(decorrelate_drow[i],
+                              find_bucket(channel, decorrelate_drow[i - 1])->bestcode, &codeword,
                               &codewordlen);
                 encode(encoder, codeword, codewordlen);
             }
 
-            update_model(&channel->state, find_bucket(channel, decorelate_drow[stopidx - 1]),
-                         decorelate_drow[stopidx]);
+            update_model(&channel->state, find_bucket(channel, decorrelate_drow[stopidx - 1]),
+                         decorrelate_drow[stopidx]);
             stopidx = i + (tabrand(&channel->state.tabrand_seed) & waitmask);
         }
 
@@ -306,9 +306,9 @@ static void FNAME(compress_row_seg)(Encoder *encoder, Channel *channel, int i,
             RLE_PRED_2_IMP;
             RLE_PRED_3_IMP;
 #endif
-            decorelate_drow[i] = FNAME(decorelate)(&prev_row[i], &cur_row[i], bpc_mask);
-            golomb_coding(decorelate_drow[i], find_bucket(channel,
-                                                          decorelate_drow[i - 1])->bestcode,
+            decorrelate_drow[i] = FNAME(decorrelate)(&prev_row[i], &cur_row[i], bpc_mask);
+            golomb_coding(decorrelate_drow[i], find_bucket(channel,
+                                                          decorrelate_drow[i - 1])->bestcode,
                           &codeword, &codewordlen);
             encode(encoder, codeword, codewordlen);
         }
@@ -353,7 +353,7 @@ static void FNAME(compress_row)(Encoder *encoder, Channel *channel,
     const unsigned int bpc_mask = BPC_MASK;
     unsigned int pos = 0;
 
-    while ((wmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
+    while ((DEFwmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
         if (channel->state.wmileft) {
             FNAME(compress_row_seg)(encoder, channel, pos, prev_row, cur_row,
                                     pos + channel->state.wmileft, bppmask[channel->state.wmidx],
@@ -364,20 +364,20 @@ static void FNAME(compress_row)(Encoder *encoder, Channel *channel,
 
         channel->state.wmidx++;
         set_wm_trigger(&channel->state);
-        channel->state.wmileft = wminext;
+        channel->state.wmileft = DEFwminext;
     }
 
     if (width) {
         FNAME(compress_row_seg)(encoder, channel, pos, prev_row, cur_row, pos + width,
                                 bppmask[channel->state.wmidx], bpc, bpc_mask);
-        if (wmimax > (int)channel->state.wmidx) {
+        if (DEFwmimax > (int)channel->state.wmidx) {
             channel->state.wmileft -= width;
         }
     }
 
-    spice_assert((int)channel->state.wmidx <= wmimax);
+    spice_assert((int)channel->state.wmidx <= DEFwmimax);
     spice_assert(channel->state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel, int i,
@@ -422,7 +422,7 @@ static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel, int i
             pbucket = find_bucket(channel, correlate_row[i - 1]);
             correlate_row[i] = (BYTE)golomb_decoding(pbucket->bestcode, encoder->io_word,
                                                      &codewordlen);
-            FNAME(corelate_0)(&cur_row[i], correlate_row[i], bpc_mask);
+            FNAME(correlate_0)(&cur_row[i], correlate_row[i], bpc_mask);
             decode_eatbits(encoder, codewordlen);
         }
 
@@ -437,7 +437,7 @@ static void FNAME(uncompress_row0_seg)(Encoder *encoder, Channel *channel, int i
         correlate_row[i] = (BYTE)golomb_decoding(find_bucket(channel,
                                                              correlate_row[i - 1])->bestcode,
                                                  encoder->io_word, &codewordlen);
-        FNAME(corelate_0)(&cur_row[i], correlate_row[i], bpc_mask);
+        FNAME(correlate_0)(&cur_row[i], correlate_row[i], bpc_mask);
         decode_eatbits(encoder, codewordlen);
     }
     channel->state.waitcnt = stopidx - end;
@@ -453,7 +453,7 @@ static void FNAME(uncompress_row0)(Encoder *encoder, Channel *channel,
     BYTE * const correlate_row = channel->correlate_row;
     unsigned int pos = 0;
 
-    while ((wmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
+    while ((DEFwmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
         if (channel->state.wmileft) {
             FNAME(uncompress_row0_seg)(encoder, channel, pos, correlate_row, cur_row,
                                        pos + channel->state.wmileft, bppmask[channel->state.wmidx],
@@ -464,20 +464,20 @@ static void FNAME(uncompress_row0)(Encoder *encoder, Channel *channel,
 
         channel->state.wmidx++;
         set_wm_trigger(&channel->state);
-        channel->state.wmileft = wminext;
+        channel->state.wmileft = DEFwminext;
     }
 
     if (width) {
         FNAME(uncompress_row0_seg)(encoder, channel, pos, correlate_row, cur_row, pos + width,
                                    bppmask[channel->state.wmidx], bpc, bpc_mask);
-        if (wmimax > (int)channel->state.wmidx) {
+        if (DEFwmimax > (int)channel->state.wmidx) {
             channel->state.wmileft -= width;
         }
     }
 
-    spice_assert((int)channel->state.wmidx <= wmimax);
+    spice_assert((int)channel->state.wmidx <= DEFwmimax);
     spice_assert(channel->state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
@@ -531,7 +531,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
                 pbucket = find_bucket(channel, correlate_row[i - 1]);
                 correlate_row[i] = (BYTE)golomb_decoding(pbucket->bestcode, encoder->io_word,
                                                          &codewordlen);
-                FNAME(corelate)(&prev_row[i], &cur_row[i], correlate_row[i], bpc_mask);
+                FNAME(correlate)(&prev_row[i], &cur_row[i], correlate_row[i], bpc_mask);
                 decode_eatbits(encoder, codewordlen);
             }
 
@@ -550,7 +550,7 @@ static void FNAME(uncompress_row_seg)(Encoder *encoder, Channel *channel,
             correlate_row[i] = (BYTE)golomb_decoding(find_bucket(channel,
                                                                  correlate_row[i - 1])->bestcode,
                                                      encoder->io_word, &codewordlen);
-            FNAME(corelate)(&prev_row[i], &cur_row[i], correlate_row[i], bpc_mask);
+            FNAME(correlate)(&prev_row[i], &cur_row[i], correlate_row[i], bpc_mask);
             decode_eatbits(encoder, codewordlen);
         }
 
@@ -592,7 +592,7 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
     BYTE * const correlate_row = channel->correlate_row;
     unsigned int pos = 0;
 
-    while ((wmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
+    while ((DEFwmimax > (int)channel->state.wmidx) && (channel->state.wmileft <= width)) {
         if (channel->state.wmileft) {
             FNAME(uncompress_row_seg)(encoder, channel, correlate_row, prev_row, cur_row, pos,
                                       pos + channel->state.wmileft, bpc, bpc_mask);
@@ -602,20 +602,20 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 
         channel->state.wmidx++;
         set_wm_trigger(&channel->state);
-        channel->state.wmileft = wminext;
+        channel->state.wmileft = DEFwminext;
     }
 
     if (width) {
         FNAME(uncompress_row_seg)(encoder, channel, correlate_row, prev_row, cur_row, pos,
                                   pos + width, bpc, bpc_mask);
-        if (wmimax > (int)channel->state.wmidx) {
+        if (DEFwmimax > (int)channel->state.wmidx) {
             channel->state.wmileft -= width;
         }
     }
 
-    spice_assert((int)channel->state.wmidx <= wmimax);
+    spice_assert((int)channel->state.wmidx <= DEFwmimax);
     spice_assert(channel->state.wmidx <= 32);
-    spice_assert(wminext > 0);
+    spice_assert(DEFwminext > 0);
 }
 
 #undef PIXEL
@@ -627,7 +627,7 @@ static void FNAME(uncompress_row)(Encoder *encoder, Channel *channel,
 #undef RLE_PRED_2_IMP
 #undef RLE_PRED_3_IMP
 #undef golomb_coding
-#undef golomb_deoding
+#undef golomb_decoding
 #undef update_model
 #undef find_bucket
 #undef family

@@ -25,9 +25,6 @@
 #include "lz.h"
 #include "region.h"
 #include "draw.h"
-#ifdef WIN32
-#include <windows.h>
-#endif
 
 SPICE_BEGIN_DECLS
 
@@ -60,7 +57,7 @@ typedef struct {
 } SpiceImageCacheOps;
 
 struct _SpiceImageCache {
-  SpiceImageCacheOps *ops;
+  const SpiceImageCacheOps *ops;
 };
 
 typedef struct {
@@ -69,7 +66,7 @@ typedef struct {
 } SpiceImageSurfacesOps;
 
 struct _SpiceImageSurfaces {
- SpiceImageSurfacesOps *ops;
+ const SpiceImageSurfacesOps *ops;
 };
 
 typedef struct {
@@ -141,9 +138,6 @@ typedef struct {
     void (*draw_transparent)(SpiceCanvas *canvas, SpiceRect *bbox, SpiceClip *clip, SpiceTransparent* transparent);
     void (*draw_alpha_blend)(SpiceCanvas *canvas, SpiceRect *bbox, SpiceClip *clip, SpiceAlphaBlend* alpha_blend);
     void (*put_image)(SpiceCanvas *canvas,
-#ifdef WIN32
-                      HDC dc,
-#endif
                       const SpiceRect *dest, const uint8_t *src_data,
                       uint32_t src_width, uint32_t src_height, int src_stride,
                       const QRegion *clip);

@@ -82,11 +82,11 @@ typedef struct QuicFamily {
     unsigned int golomb_code[256][MAXNUMCODES];
 
     /* array for translating distribution U to L for depths up to 8 bpp,
-    initialized by decorelateinit() */
+    initialized by decorrelate_init() */
     BYTE xlatU2L[256];
 
     /* array for translating distribution L to U for depths up to 8 bpp,
-       initialized by corelateinit() */
+       initialized by correlate_init() */
     unsigned int xlatL2U[256];
 } QuicFamily;
 
@@ -103,8 +103,6 @@ typedef struct s_bucket {
 typedef struct Encoder Encoder;
 
 typedef struct CommonState {
-    Encoder *encoder;
-
     unsigned int waitcnt;
     unsigned int tabrand_seed;
     unsigned int wm_trigger;
@@ -135,8 +133,6 @@ typedef struct FamilyStat {
 } FamilyStat;
 
 typedef struct Channel {
-    Encoder *encoder;
-
     int correlate_row_width;
     BYTE *correlate_row;
 
@@ -153,7 +149,6 @@ struct Encoder {
     QuicImageType type;
     unsigned int width;
     unsigned int height;
-    unsigned int num_channels;
 
     unsigned int n_buckets_8bpc;
     unsigned int n_buckets_5bpc;
@@ -172,17 +167,8 @@ struct Encoder {
     CommonState rgb_state;
 };
 
-/* target wait mask index */
-static int wmimax = DEFwmimax;
-
-/* number of symbols to encode before increasing wait mask index */
-static int wminext = DEFwminext;
-
-/* model evolution mode */
-static int evol = DEFevol;
-
 /* bppmask[i] contains i ones as lsb-s */
-static const unsigned long int bppmask[33] = {
+static const unsigned int bppmask[33] = {
     0x00000000, /* [0] */
     0x00000001, 0x00000003, 0x00000007, 0x0000000f,
     0x0000001f, 0x0000003f, 0x0000007f, 0x000000ff,
@@ -237,8 +223,8 @@ static const unsigned int tabrand_chaos[TABRAND_TABSIZE] = {
 
 static unsigned int stabrand(void)
 {
-    //spice_assert( !(TABRAND_SEEDMASK & TABRAND_TABSIZE));
-    //spice_assert( TABRAND_SEEDMASK + 1 == TABRAND_TABSIZE );
+    SPICE_VERIFY( !(TABRAND_SEEDMASK & TABRAND_TABSIZE));
+    SPICE_VERIFY( TABRAND_SEEDMASK + 1 == TABRAND_TABSIZE );
 
     return TABRAND_SEEDMASK;
 }
@@ -248,14 +234,14 @@ static unsigned int tabrand(unsigned int *tabrand_seed)
     return tabrand_chaos[++*tabrand_seed & TABRAND_SEEDMASK];
 }
 
-static const unsigned short besttrigtab[3][11] = { /* array of wm_trigger for waitmask and evol,
+static const unsigned short besttrigtab[3][11] = { /* array of wm_trigger for waitmask and DEFevol,
                                                     used by set_wm_trigger() */
     /* 1 */ { 550, 900, 800, 700, 500, 350, 300, 200, 180, 180, 160},
     /* 3 */ { 110, 550, 900, 800, 550, 400, 350, 250, 140, 160, 140},
     /* 5 */ { 100, 120, 550, 900, 700, 500, 400, 300, 220, 250, 160}
 };
 
-/* set wm_trigger knowing waitmask (param) and evol (glob)*/
+/* set wm_trigger knowing waitmask (param) and DEFevol (glob)*/
 static void set_wm_trigger(CommonState *state)
 {
     unsigned int wm = state->wmidx;
@@ -263,9 +249,9 @@ static void set_wm_trigger(CommonState *state)
         wm = 10;
     }
 
-    spice_assert(evol < 6);
+    SPICE_VERIFY(DEFevol < 6);
 
-    state->wm_trigger = besttrigtab[evol / 2][wm];
+    state->wm_trigger = besttrigtab[DEFevol / 2][wm];
 
     spice_assert(state->wm_trigger <= 2000);
     spice_assert(state->wm_trigger >= 1);
@@ -324,7 +310,7 @@ static unsigned int cnt_l_zeroes(const unsigned int bits)
 #include "quic_family_tmpl.c"
 #endif
 
-static void decorelate_init(QuicFamily *family, int bpc)
+static void decorrelate_init(QuicFamily *family, int bpc)
 {
     const unsigned int pixelbitmask = bppmask[bpc];
     const unsigned int pixelbitmaskshr = pixelbitmask >> 1;
@@ -341,9 +327,9 @@ static void decorelate_init(QuicFamily *family, int bpc)
     }
 }
 
-static void corelate_init(QuicFamily *family, int bpc)
+static void correlate_init(QuicFamily *family, int bpc)
 {
-    const unsigned long int pixelbitmask = bppmask[bpc];
+    const unsigned int pixelbitmask = bppmask[bpc];
     unsigned long int s;
 
     //spice_assert(bpc <= 8);
@@ -397,8 +383,8 @@ static void family_init(QuicFamily *family, int bpc, int limit)
         }
     }
 
-    decorelate_init(family, bpc);
-    corelate_init(family, bpc);
+    decorrelate_init(family, bpc);
+    correlate_init(family, bpc);
 }
 
 static void more_io_words(Encoder *encoder)
@@ -521,7 +507,7 @@ static inline void encode_ones(Encoder *encoder, unsigned int n)
     unsigned int count;
 
     for (count = n >> 5; count; count--) {
-        encode(encoder, ~0U, 32);
+        encode_32(encoder, ~0U);
     }
 
     if ((n &= 0x1f)) {
@@ -878,7 +864,7 @@ static void find_model_params(Encoder *encoder,
     /* The only valid values are 1, 3 and 5.
        0, 2 and 4 are obsolete and the rest of the
        values are considered out of the range. */
-    spice_static_assert (evol == 1 || evol == 3 || evol == 5);
+    SPICE_VERIFY(DEFevol == 1 || DEFevol == 3 || DEFevol == 5);
     spice_assert(bpc <= 8 && bpc > 0);
 
     *ncounters = 8;
@@ -887,7 +873,7 @@ static void find_model_params(Encoder *encoder,
 
     *n_buckets_ptrs = 0;  /* ==0 means: not set yet */
 
-    switch (evol) {   /* set repfirst firstsize repnext mulsize */
+    switch (DEFevol) {   /* set repfirst firstsize repnext mulsize */
     case 1: /* buckets contain following numbers of contexts: 1 1 1 2 2 4 4 8 8 ... */
         *repfirst = 3;
         *firstsize = 1;
@@ -907,7 +893,7 @@ static void find_model_params(Encoder *encoder,
         *mulsize = 4;
         break;
     default:
-        encoder->usr->error(encoder->usr, "findmodelparams(): evol out of range!!!\n");
+        encoder->usr->error(encoder->usr, "findmodelparams(): DEFevol out of range!!!\n");
         return;
     }
 
@@ -1006,8 +992,6 @@ static int init_channel(Encoder *encoder, Channel *channel)
     unsigned int n_buckets;
     unsigned int n_buckets_ptrs;
 
-    channel->encoder = encoder;
-    channel->state.encoder = encoder;
     channel->correlate_row_width = 0;
     channel->correlate_row = NULL;
 
@@ -1033,9 +1017,9 @@ static int init_channel(Encoder *encoder, Channel *channel)
     return TRUE;
 }
 
-static void destroy_channel(Channel *channel)
+static void destroy_channel(Encoder *encoder, Channel *channel)
 {
-    QuicUsrContext *usr = channel->encoder->usr;
+    QuicUsrContext *usr = encoder->usr;
     if (channel->correlate_row) {
         usr->free(usr, channel->correlate_row - 1);
     }
@@ -1048,12 +1032,11 @@ static int init_encoder(Encoder *encoder, QuicUsrContext *usr)
     int i;
 
     encoder->usr = usr;
-    encoder->rgb_state.encoder = encoder;
 
     for (i = 0; i < MAX_CHANNELS; i++) {
         if (!init_channel(encoder, &encoder->channels[i])) {
             for (--i; i >= 0; i--) {
-                destroy_channel(&encoder->channels[i]);
+                destroy_channel(encoder, &encoder->channels[i]);
             }
             return FALSE;
         }
@@ -1061,7 +1044,7 @@ static int init_encoder(Encoder *encoder, QuicUsrContext *usr)
     return TRUE;
 }
 
-static int encoder_reste(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_end)
+static int encoder_reset(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_end)
 {
     spice_assert(((uintptr_t)io_ptr % 4) == ((uintptr_t)io_ptr_end % 4));
     spice_assert(io_ptr <= io_ptr_end);
@@ -1069,7 +1052,7 @@ static int encoder_reste(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_en
     encoder->rgb_state.waitcnt = 0;
     encoder->rgb_state.tabrand_seed = stabrand();
     encoder->rgb_state.wmidx = DEFwmistart;
-    encoder->rgb_state.wmileft = wminext;
+    encoder->rgb_state.wmileft = DEFwminext;
     set_wm_trigger(&encoder->rgb_state);
 
 #if defined(RLE) && defined(RLE_STAT)
@@ -1084,11 +1067,9 @@ static int encoder_reste(Encoder *encoder, uint32_t *io_ptr, uint32_t *io_ptr_en
     return TRUE;
 }
 
-static int encoder_reste_channels(Encoder *encoder, int channels, int width, int bpc)
+static int encoder_reset_channels(Encoder *encoder, int channels, int width, int bpc)
 {
     int i;
-
-    encoder->num_channels = channels;
 
     for (i = 0; i < channels; i++) {
         s_bucket *bucket;
@@ -1133,7 +1114,7 @@ static int encoder_reste_channels(Encoder *encoder, int channels, int width, int
         encoder->channels[i].state.waitcnt = 0;
         encoder->channels[i].state.tabrand_seed = stabrand();
         encoder->channels[i].state.wmidx = DEFwmistart;
-        encoder->channels[i].state.wmileft = wminext;
+        encoder->channels[i].state.wmileft = DEFwminext;
         set_wm_trigger(&encoder->channels[i].state);
 
 #if defined(RLE) && defined(RLE_STAT)
@@ -1233,8 +1214,8 @@ int quic_encode(QuicContext *quic, QuicImageType type, int width, int height,
 
     quic_image_params(encoder, type, &channels, &bpc);
 
-    if (!encoder_reste(encoder, io_ptr, io_ptr_end) ||
-        !encoder_reste_channels(encoder, channels, width, bpc)) {
+    if (!encoder_reset(encoder, io_ptr, io_ptr_end) ||
+        !encoder_reset_channels(encoder, channels, width, bpc)) {
         return QUIC_ERROR;
     }
 
@@ -1369,7 +1350,7 @@ int quic_decode_begin(QuicContext *quic, uint32_t *io_ptr, unsigned int num_io_w
     int channels;
     int bpc;
 
-    if (!encoder_reste(encoder, io_ptr, io_ptr_end)) {
+    if (!encoder_reset(encoder, io_ptr, io_ptr_end)) {
         return QUIC_ERROR;
     }
 
@@ -1400,7 +1381,7 @@ int quic_decode_begin(QuicContext *quic, uint32_t *io_ptr, unsigned int num_io_w
 
     quic_image_params(encoder, type, &channels, &bpc);
 
-    if (!encoder_reste_channels(encoder, channels, width, bpc)) {
+    if (!encoder_reset_channels(encoder, channels, width, bpc)) {
         return QUIC_ERROR;
     }
 
@@ -1654,7 +1635,7 @@ void quic_destroy(QuicContext *quic)
     }
 
     for (i = 0; i < MAX_CHANNELS; i++) {
-        destroy_channel(&encoder->channels[i]);
+        destroy_channel(encoder, &encoder->channels[i]);
     }
     encoder->usr->free(encoder->usr, encoder);
 }

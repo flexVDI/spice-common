@@ -19,10 +19,6 @@
 #ifndef _H_CANVAS_UTILS
 #define _H_CANVAS_UTILS
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
 #include <spice/types.h>
 #include <spice/macros.h>
 
@@ -31,40 +27,18 @@
 
 SPICE_BEGIN_DECLS
 
-typedef struct PixmanData {
-#ifdef WIN32
-    HBITMAP bitmap;
-    HANDLE mutex;
-#endif
-    uint8_t *data;
-    pixman_format_code_t format;
-} PixmanData;
-
 void spice_pixman_image_set_format(pixman_image_t *image,
                                    pixman_format_code_t format);
 int spice_pixman_image_get_format(pixman_image_t *image, pixman_format_code_t *format);
 
 
-#ifdef WIN32
-pixman_image_t *surface_create(HDC dc, pixman_format_code_t format,
-                               int width, int height, int top_down);
-#else
 pixman_image_t *surface_create(pixman_format_code_t format, int width, int height, int top_down);
-#endif
 
-#ifdef WIN32
-pixman_image_t *surface_create_stride(HDC dc, pixman_format_code_t format, int width, int height,
-                                      int stride);
-#else
 pixman_image_t *surface_create_stride(pixman_format_code_t format, int width, int height,
                                       int stride);
-#endif
 
 
 typedef struct LzDecodeUsrData {
-#ifdef WIN32
-    HDC dc;
-#endif
     pixman_image_t       *out_surface;
 } LzDecodeUsrData;
 

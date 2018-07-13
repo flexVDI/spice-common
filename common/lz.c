@@ -90,7 +90,6 @@ typedef struct Encoder {
     // (2) a pointer to the first byte in the segment that matches the word
     HashEntry htab[HASH_SIZE];
 
-    uint8_t            *io_start;
     uint8_t            *io_now;
     uint8_t            *io_end;
     size_t io_bytes_count;
@@ -255,11 +254,6 @@ static inline void update_copy_count(Encoder *encoder, uint8_t copy_count)
     *(encoder->io_last_copy) = copy_count;
 }
 
-static inline void encode_level(Encoder *encoder, uint8_t level_code)
-{
-    *(encoder->io_start) |= level_code;
-}
-
 // decrease the io ptr by 1
 static inline void compress_output_prev(Encoder *encoder)
 {
@@ -274,7 +268,6 @@ static int encoder_reset(Encoder *encoder, uint8_t *io_ptr, uint8_t *io_ptr_end)
     spice_return_val_if_fail(io_ptr <= io_ptr_end, FALSE);
 
     encoder->io_bytes_count = io_ptr_end - io_ptr;
-    encoder->io_start = io_ptr;
     encoder->io_now = io_ptr;
     encoder->io_end = io_ptr_end;
     encoder->io_last_copy = NULL;

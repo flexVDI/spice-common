@@ -19,7 +19,6 @@
 #endif
 
 #define G_LOG_DOMAIN "Spice"
-#define SPICE_LOG_DOMAIN G_LOG_DOMAIN
 
 #include <glib.h>
 #include <stdlib.h>
@@ -168,15 +167,15 @@ static void test_spice_non_fatal_g_return_if_fail(void)
 static void test_log_levels(void)
 {
     if (g_test_subprocess()) {
-        g_test_expect_message(SPICE_LOG_DOMAIN,
+        g_test_expect_message(G_LOG_DOMAIN,
                               G_LOG_LEVEL_WARNING,
                               "*spice_warning");
         spice_warning("spice_warning");
-        g_test_expect_message(SPICE_LOG_DOMAIN,
+        g_test_expect_message(G_LOG_DOMAIN,
                               G_LOG_LEVEL_INFO,
                               "*spice_info");
         spice_info("spice_info");
-        g_test_expect_message(SPICE_LOG_DOMAIN,
+        g_test_expect_message(G_LOG_DOMAIN,
                               G_LOG_LEVEL_DEBUG,
                               "*spice_debug");
         spice_debug("spice_debug");

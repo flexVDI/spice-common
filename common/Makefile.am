@@ -133,8 +133,6 @@ EXTRA_DIST =				\
 	$(SERVER_MARSHALLERS)		\
 	canvas_base.c			\
 	canvas_base.h			\
-	gdi_canvas.c			\
-	gdi_canvas.h			\
 	lz_compress_tmpl.c		\
 	lz_decompress_tmpl.c		\
 	quic_family_tmpl.c		\

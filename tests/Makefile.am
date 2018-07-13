@@ -20,6 +20,7 @@ test_logging_LDADD =					\
 test_marshallers_SOURCES =		\
 	generated_test_marshallers.c	\
 	generated_test_marshallers.h	\
+	generated_test_demarshallers.c	\
 	test-marshallers.c		\
 	test-marshallers.h		\
 	$(NULL)
@@ -37,6 +38,7 @@ test_marshallers_LDADD =				\
 TEST_MARSHALLERS =				\
 	generated_test_marshallers.c		\
 	generated_test_marshallers.h		\
+	generated_test_demarshallers.c		\
 	$(NULL)
 
 BUILT_SOURCES = $(TEST_MARSHALLERS)
@@ -57,6 +59,8 @@ generated_test_marshallers.c: $(srcdir)/test-marshallers.proto $(MARSHALLERS_DEP
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers --server --include test-marshallers.h $< $@ >/dev/null
 generated_test_marshallers.h: $(srcdir)/test-marshallers.proto $(MARSHALLERS_DEPS)
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-marshallers --server --include test-marshallers.h -H $< $@ >/dev/null
+generated_test_demarshallers.c: $(srcdir)/test-marshallers.proto $(MARSHALLERS_DEPS)
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/spice_codegen.py --generate-demarshallers --client --include test-marshallers.h $< $@ >/dev/null
 
 EXTRA_DIST =				\
 	$(TEST_MARSHALLERS)		\
