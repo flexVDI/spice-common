@@ -615,7 +615,7 @@ typedef struct SpiceMsgcSmartcard {
 #endif
 
 typedef struct SpiceMsgDisplayHead {
-    uint32_t id;
+    uint32_t monitor_id;
     uint32_t surface_id;
     uint32_t width;
     uint32_t height;
