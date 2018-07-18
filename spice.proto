@@ -156,39 +156,39 @@ struct ChannelWait {
 channel BaseChannel {
  server:
     message {
-	migrate_flags flags;
+        migrate_flags flags;
     } migrate;
 
     Data migrate_data;
 
     message {
-	uint32 generation;
-	uint32 window;
+        uint32 generation;
+        uint32 window;
     } set_ack;
 
     message {
-	uint32 id;
-	uint64 timestamp;
-	uint8 data[] @ctype(uint8_t) @as_ptr(data_len);
+        uint32 id;
+        uint64 timestamp;
+        uint8 data[] @ctype(uint8_t) @as_ptr(data_len);
     } ping;
 
     message {
-	uint8 wait_count;
-	ChannelWait wait_list[wait_count] @end;
+        uint8 wait_count;
+        ChannelWait wait_list[wait_count] @end;
     } wait_for_channels;
 
     message {
-	uint64 time_stamp;
-	link_err reason;
+        uint64 time_stamp;
+        link_err reason;
     } @ctype(SpiceMsgDisconnect) disconnecting;
 
     message {
-	uint64 time_stamp;
-	notify_severity severity;
-	notify_visibility visibilty;
-	uint32 what; /* error_code/warn_code/info_code */
-	uint32 message_len;
-	uint8 message[message_len] @end @nomarshal;
+        uint64 time_stamp;
+        notify_severity severity;
+        notify_visibility visibilty;
+        uint32 what; /* error_code/warn_code/info_code */
+        uint32 message_len;
+        uint8 message[message_len] @end @nomarshal;
     } notify;
 
     Data list; /* the msg body is SpiceSubMessageList */
@@ -197,14 +197,14 @@ channel BaseChannel {
 
  client:
     message {
-	uint32 generation;
+        uint32 generation;
     } ack_sync;
 
     Empty ack;
 
     message {
-	uint32 id;
-	uint64 timestamp;
+        uint32 id;
+        uint64 timestamp;
     } @ctype(SpiceMsgPing) pong;
 
     Empty migrate_flush_mark;
@@ -212,8 +212,8 @@ channel BaseChannel {
     Data migrate_data;
 
     message {
-	uint64 time_stamp;
-	link_err reason;
+        uint64 time_stamp;
+        link_err reason;
     } @ctype(SpiceMsgDisconnect) disconnecting;
 };
 
@@ -223,66 +223,66 @@ struct ChannelId {
 };
 
 struct DstInfo {
-	uint16 port;
-	uint16 sport;
-	uint32 host_size;
-	uint8 *host_data[host_size] @zero_terminated @marshall @nonnull;
-	uint32 cert_subject_size;
-	uint8 *cert_subject_data[cert_subject_size] @zero_terminated @marshall;
+    uint16 port;
+    uint16 sport;
+    uint32 host_size;
+    uint8 *host_data[host_size] @zero_terminated @marshall @nonnull;
+    uint32 cert_subject_size;
+    uint8 *cert_subject_data[cert_subject_size] @zero_terminated @marshall;
 } @ctype(SpiceMigrationDstInfo);
 
 channel MainChannel : BaseChannel {
  server:
-     message {
+    message {
         DstInfo dst_info;
     } @ctype(SpiceMsgMainMigrationBegin) migrate_begin = 101;
 
     Empty migrate_cancel;
 
     message {
-	uint32 session_id;
-	uint32 display_channels_hint;
-	uint32 supported_mouse_modes;
-	uint32 current_mouse_mode;
-	uint32 agent_connected;
-	uint32 agent_tokens;
-	uint32 multi_media_time;
-	uint32 ram_hint;
+        uint32 session_id;
+        uint32 display_channels_hint;
+        uint32 supported_mouse_modes;
+        uint32 current_mouse_mode;
+        uint32 agent_connected;
+        uint32 agent_tokens;
+        uint32 multi_media_time;
+        uint32 ram_hint;
     } init;
 
     message {
-	uint32 num_of_channels;
-	ChannelId channels[num_of_channels] @end;
+        uint32 num_of_channels;
+        ChannelId channels[num_of_channels] @end;
     } @ctype(SpiceMsgChannels) channels_list;
 
     message {
-	mouse_mode supported_modes;
-	mouse_mode current_mode @unique_flag;
+        mouse_mode supported_modes;
+        mouse_mode current_mode @unique_flag;
     } mouse_mode;
 
     message {
-	uint32 time;
+        uint32 time;
     } @ctype(SpiceMsgMainMultiMediaTime) multi_media_time;
 
     Empty agent_connected;
 
     message {
-	link_err error_code;
+        link_err error_code;
     } @ctype(SpiceMsgMainAgentDisconnect) agent_disconnected;
 
     Data agent_data;
 
     message {
-	uint32 num_tokens;
+        uint32 num_tokens;
     } @ctype(SpiceMsgMainAgentTokens) agent_token;
 
     message {
-      uint16 port;
-      uint16 sport;
-      uint32 host_size;
-      uint8 *host_data[host_size] @zero_terminated @marshall;
-      uint32 cert_subject_size;
-      uint8 *cert_subject_data[cert_subject_size] @zero_terminated  @marshall;
+        uint16 port;
+        uint16 sport;
+        uint32 host_size;
+        uint8 *host_data[host_size] @zero_terminated @marshall;
+        uint32 cert_subject_size;
+        uint8 *cert_subject_data[cert_subject_size] @zero_terminated  @marshall;
     } @ctype(SpiceMsgMainMigrationSwitchHost) migrate_switch_host;
 
     Empty migrate_end;
@@ -310,7 +310,7 @@ channel MainChannel : BaseChannel {
 
  client:
     message {
-	uint64 cache_size;
+        uint64 cache_size;
     } @ctype(SpiceMsgcClientInfo) client_info = 101;
 
     Empty migrate_connected;
@@ -320,11 +320,11 @@ channel MainChannel : BaseChannel {
     Empty attach_channels;
 
     message {
-	mouse_mode mode;
+        mouse_mode mode;
     } mouse_mode_request;
 
     message {
-	uint32 num_tokens;
+        uint32 num_tokens;
     } agent_start;
 
     Data agent_data;
@@ -500,8 +500,8 @@ flags8 alpha_flags {
 };
 
 enum8 resource_type {
-      INVALID,
-      PIXMAP
+    INVALID,
+    PIXMAP
 } @prefix(SPICE_RES_TYPE_);
 
 struct ClipRects {
@@ -559,9 +559,9 @@ struct BitmapData {
     uint32 stride;
     switch (flags) {
     case PAL_FROM_CACHE:
-	uint64 palette_id;
+        uint64 palette_id;
     default:
-	Palette *palette @outvar(bitmap);
+        Palette *palette @outvar(bitmap);
     } pal @anon;
     uint8 data[image_size(8, stride, y)] @chunk @nomarshal;
 } @ctype(SpiceBitmap);
@@ -576,9 +576,9 @@ struct LZPLTData {
     uint32 data_size;
     switch (flags) {
     case PAL_FROM_CACHE:
-	uint64 palette_id;
+        uint64 palette_id;
     default:
-	Palette *palette @nonnull @outvar(lzplt);
+        Palette *palette @nonnull @outvar(lzplt);
     } pal @anon;
     uint8 data[data_size] @nomarshal @chunk;
 };
@@ -695,17 +695,17 @@ struct String {
     string_flags flags; /* Special: Only one of a1/a4/a8 set */
     switch (flags) {
     case RASTER_A1:
-	RasterGlyphA1 glyphs[length] @ctype(SpiceRasterGlyph) @ptr_array;
+        RasterGlyphA1 glyphs[length] @ctype(SpiceRasterGlyph) @ptr_array;
     case RASTER_A4:
-	RasterGlyphA4 glyphs[length] @ctype(SpiceRasterGlyph) @ptr_array;
+        RasterGlyphA4 glyphs[length] @ctype(SpiceRasterGlyph) @ptr_array;
     case RASTER_A8:
-	RasterGlyphA8 glyphs[length] @ctype(SpiceRasterGlyph) @ptr_array;
+        RasterGlyphA8 glyphs[length] @ctype(SpiceRasterGlyph) @ptr_array;
     } u @anon;
 };
 
 struct StreamDataHeader {
-	stream_id_t id;
-	uint32 multi_media_time;
+    stream_id_t id;
+    uint32 multi_media_time;
 };
 
 struct Head {
@@ -725,21 +725,21 @@ flags32 gl_scanout_flags {
 channel DisplayChannel : BaseChannel {
  server:
     message {
-	uint32 x_res;
-	uint32 y_res;
-	uint32 bits;
+        uint32 x_res;
+        uint32 y_res;
+        uint32 bits;
     } mode = 101;
 
     Empty mark;
     Empty reset;
     message {
-	DisplayBase base;
-	Point src_pos;
+        DisplayBase base;
+        Point src_pos;
     } copy_bits;
 
     message {
-	uint16 count;
-	ResourceID resources[count] @end;
+        uint16 count;
+        ResourceID resources[count] @end;
     } @ctype(SpiceResourceList) inval_list;
 
     /* This message is used to invalidate the complete image cache
@@ -750,213 +750,213 @@ channel DisplayChannel : BaseChannel {
      * message serials to wait for.
      */
     message {
-	uint8 wait_count;
-	WaitForChannel wait_list[wait_count] @end;
+        uint8 wait_count;
+        WaitForChannel wait_list[wait_count] @end;
     } @ctype(SpiceMsgWaitForChannels) inval_all_pixmaps;
 
     message {
-	uint64 id;
+        uint64 id;
     } @ctype(SpiceMsgDisplayInvalOne) inval_palette;
 
     Empty inval_all_palettes;
 
     message {
-	uint32 surface_id;
-	stream_id_t id;
-	stream_flags flags;
-	video_codec_type codec_type;
-	uint64 stamp;
-	uint32 stream_width;
-	uint32 stream_height;
-	uint32 src_width;
-	uint32 src_height;
-	Rect dest;
-	Clip clip;
+        uint32 surface_id;
+        stream_id_t id;
+        stream_flags flags;
+        video_codec_type codec_type;
+        uint64 stamp;
+        uint32 stream_width;
+        uint32 stream_height;
+        uint32 src_width;
+        uint32 src_height;
+        Rect dest;
+        Clip clip;
     } stream_create = 122;
 
     message {
-	StreamDataHeader base;
-	uint32 data_size;
-	uint8 data[data_size] @end @nomarshal;
+        StreamDataHeader base;
+        uint32 data_size;
+        uint8 data[data_size] @end @nomarshal;
     } stream_data;
 
     message {
-	stream_id_t id;
-	Clip clip;
+        stream_id_t id;
+        Clip clip;
     } stream_clip;
 
     message {
-	stream_id_t id;
+        stream_id_t id;
     } stream_destroy;
 
     Empty stream_destroy_all;
 
     message {
-	DisplayBase base;
-	struct Fill {
-	    Brush brush @outvar(brush);
-	    ropd rop_descriptor;
-	    QMask mask @outvar(mask);
-	} data;
+        DisplayBase base;
+        struct Fill {
+            Brush brush @outvar(brush);
+            ropd rop_descriptor;
+            QMask mask @outvar(mask);
+        } data;
     } draw_fill = 302;
 
     message {
-	DisplayBase base;
-	struct Opaque {
-	    Image *src_bitmap;
-	    Rect src_area;
-	    Brush brush;
-	    ropd rop_descriptor;
-	    image_scale_mode scale_mode;
-	    QMask mask @outvar(mask);
-	} data;
+        DisplayBase base;
+        struct Opaque {
+            Image *src_bitmap;
+            Rect src_area;
+            Brush brush;
+            ropd rop_descriptor;
+            image_scale_mode scale_mode;
+            QMask mask @outvar(mask);
+        } data;
     } draw_opaque;
 
     message {
-	DisplayBase base;
-	struct Copy {
-	    Image *src_bitmap;
-	    Rect src_area;
-	    ropd rop_descriptor;
-	    image_scale_mode scale_mode;
-	    QMask mask @outvar(mask);
-	} data;
+        DisplayBase base;
+        struct Copy {
+            Image *src_bitmap;
+            Rect src_area;
+            ropd rop_descriptor;
+            image_scale_mode scale_mode;
+            QMask mask @outvar(mask);
+        } data;
     } draw_copy;
 
     message {
-	DisplayBase base;
-	struct Blend {
-	    Image *src_bitmap;
-	    Rect src_area;
-	    ropd rop_descriptor;
-	    image_scale_mode scale_mode;
-	    QMask mask @outvar(mask);
-	} @ctype(SpiceCopy) data;
+        DisplayBase base;
+        struct Blend {
+            Image *src_bitmap;
+            Rect src_area;
+            ropd rop_descriptor;
+            image_scale_mode scale_mode;
+            QMask mask @outvar(mask);
+        } @ctype(SpiceCopy) data;
     } draw_blend;
 
     message {
-	DisplayBase base;
-	struct Blackness {
-	    QMask mask @outvar(mask);
-	} data;
+        DisplayBase base;
+        struct Blackness {
+            QMask mask @outvar(mask);
+        } data;
     } draw_blackness;
 
     message {
-	DisplayBase base;
-	struct Whiteness {
-	    QMask mask @outvar(mask);
-	} data;
+        DisplayBase base;
+        struct Whiteness {
+            QMask mask @outvar(mask);
+        } data;
     } draw_whiteness;
 
     message {
-	DisplayBase base;
-	struct Invers {
-	    QMask mask @outvar(mask);
-	} data;
+        DisplayBase base;
+        struct Invers {
+            QMask mask @outvar(mask);
+        } data;
     } draw_invers;
 
     message {
-	DisplayBase base;
-	struct Rop3 {
-	    Image *src_bitmap;
-	    Rect src_area;
-	    Brush brush;
-	    uint8 rop3;
-	    image_scale_mode scale_mode;
-	    QMask mask @outvar(mask);
-	} data;
+        DisplayBase base;
+        struct Rop3 {
+            Image *src_bitmap;
+            Rect src_area;
+            Brush brush;
+            uint8 rop3;
+            image_scale_mode scale_mode;
+            QMask mask @outvar(mask);
+        } data;
     } draw_rop3;
 
     message {
-	DisplayBase base;
-	struct Stroke {
-	    Path *path @marshall @nonnull;
-	    LineAttr attr;
-	    Brush brush;
-	    uint16 fore_mode;
-	    uint16 back_mode;
-	} data;
+        DisplayBase base;
+        struct Stroke {
+            Path *path @marshall @nonnull;
+            LineAttr attr;
+            Brush brush;
+            uint16 fore_mode;
+            uint16 back_mode;
+        } data;
     } draw_stroke;
 
     message {
-	DisplayBase base;
-	struct Text {
-	    String *str @marshall @nonnull;
-	    Rect back_area;
-	    Brush fore_brush @outvar(fore_brush);
-	    Brush back_brush @outvar(back_brush);
-	    uint16 fore_mode;
-	    uint16 back_mode;
-	} data;
+        DisplayBase base;
+        struct Text {
+            String *str @marshall @nonnull;
+            Rect back_area;
+            Brush fore_brush @outvar(fore_brush);
+            Brush back_brush @outvar(back_brush);
+            uint16 fore_mode;
+            uint16 back_mode;
+        } data;
     } draw_text;
 
     message {
-	DisplayBase base;
-	struct Transparent {
-	    Image *src_bitmap;
-	    Rect src_area;
-	    uint32 src_color;
-	    uint32 true_color;
-	} data;
+        DisplayBase base;
+        struct Transparent {
+            Image *src_bitmap;
+            Rect src_area;
+            uint32 src_color;
+            uint32 true_color;
+        } data;
     } draw_transparent;
 
     message {
-	DisplayBase base;
-	struct AlphaBlend {
-	    alpha_flags alpha_flags;
-	    uint8 alpha;
-	    Image *src_bitmap;
-	    Rect src_area;
-	} data;
+        DisplayBase base;
+        struct AlphaBlend {
+            alpha_flags alpha_flags;
+            uint8 alpha;
+            Image *src_bitmap;
+            Rect src_area;
+        } data;
     } draw_alpha_blend;
 
     message {
-	uint32 surface_id;
-	uint32 width;
-	uint32 height;
-	surface_fmt format;
-	surface_flags flags;
+        uint32 surface_id;
+        uint32 width;
+        uint32 height;
+        surface_fmt format;
+        surface_flags flags;
     } @ctype(SpiceMsgSurfaceCreate) surface_create;
 
     message {
-	uint32 surface_id;
+        uint32 surface_id;
     } @ctype(SpiceMsgSurfaceDestroy) surface_destroy;
 
     message {
-	StreamDataHeader base;
-	uint32 width;
-	uint32 height;
-	Rect dest;
-	uint32 data_size;
-	uint8 data[data_size] @end @nomarshal;
+        StreamDataHeader base;
+        uint32 width;
+        uint32 height;
+        Rect dest;
+        uint32 data_size;
+        uint8 data[data_size] @end @nomarshal;
     } stream_data_sized;
 
     message {
-	uint16 count;
-    uint16 max_allowed;
-	Head heads[count] @end;
+        uint16 count;
+        uint16 max_allowed;
+        Head heads[count] @end;
     } monitors_config;
 
     message {
-	DisplayBase base;
-	struct Composite {
-	    composite_flags flags;
-	    Image *src_bitmap;
-	    switch (flags) {
-	    case HAS_MASK:
-	        Image *mask_bitmap;
+        DisplayBase base;
+        struct Composite {
+            composite_flags flags;
+            Image *src_bitmap;
+            switch (flags) {
+            case HAS_MASK:
+                Image *mask_bitmap;
             } a @anon;
-	    switch (flags) {
-	    case HAS_SRC_TRANSFORM:
-	        Transform src_transform;
+            switch (flags) {
+            case HAS_SRC_TRANSFORM:
+                Transform src_transform;
             } b @anon;
-	    switch (flags) {
-	    case HAS_MASK_TRANSFORM:
-	        Transform mask_transform;
+            switch (flags) {
+            case HAS_MASK_TRANSFORM:
+                Transform mask_transform;
             } c @anon;
-	    Point16 src_origin;
-	    Point16 mask_origin;
-	} data;
+            Point16 src_origin;
+            Point16 mask_origin;
+        } data;
     } draw_composite;
 
     message {
@@ -985,10 +985,10 @@ channel DisplayChannel : BaseChannel {
 
  client:
     message {
-	uint8 pixmap_cache_id;
-	int64 pixmap_cache_size; //in pixels
-	uint8 glz_dictionary_id;
-	int32 glz_dictionary_window_size;  // in pixels
+        uint8 pixmap_cache_id;
+        int64 pixmap_cache_size; //in pixels
+        uint8 glz_dictionary_id;
+        int32 glz_dictionary_window_size;  // in pixels
     } init = 101;
 
     message {
@@ -1052,49 +1052,49 @@ flags16 mouse_button_mask {
 channel InputsChannel : BaseChannel {
  client:
     message {
-	uint32 code;
+        uint32 code;
     } @ctype(SpiceMsgcKeyDown) key_down = 101;
 
     message {
-	uint32 code;
+        uint32 code;
     } @ctype(SpiceMsgcKeyUp) key_up;
 
     message {
-	keyboard_modifier_flags modifiers;
+        keyboard_modifier_flags modifiers;
     } @ctype(SpiceMsgcKeyModifiers) key_modifiers;
 
     Data key_scancode;
 
     message {
-	int32 dx;
-	int32 dy;
-	mouse_button_mask buttons_state;
+        int32 dx;
+        int32 dy;
+        mouse_button_mask buttons_state;
     } @ctype(SpiceMsgcMouseMotion) mouse_motion = 111;
 
     message {
-	uint32 x;
-	uint32 y;
-	mouse_button_mask buttons_state;
-	uint8 display_id;
+        uint32 x;
+        uint32 y;
+        mouse_button_mask buttons_state;
+        uint8 display_id;
     } @ctype(SpiceMsgcMousePosition) mouse_position;
 
     message {
-	mouse_button button;
-	mouse_button_mask buttons_state;
+        mouse_button button;
+        mouse_button_mask buttons_state;
     } @ctype(SpiceMsgcMousePress) mouse_press;
 
     message {
-	mouse_button button;
-	mouse_button_mask buttons_state;
+        mouse_button button;
+        mouse_button_mask buttons_state;
     } @ctype(SpiceMsgcMouseRelease) mouse_release;
 
  server:
     message {
-	keyboard_modifier_flags keyboard_modifiers;
+        keyboard_modifier_flags keyboard_modifiers;
     } init = 101;
 
     message {
-	keyboard_modifier_flags modifiers;
+        keyboard_modifier_flags modifiers;
     } key_modifiers;
 
     Empty mouse_motion_ack = 111;
@@ -1137,34 +1137,34 @@ struct Cursor {
 channel CursorChannel : BaseChannel {
  server:
     message {
-	Point16 position;
-	uint16 trail_length;
-	uint16 trail_frequency;
-	uint8 visible;
-	Cursor cursor;
+        Point16 position;
+        uint16 trail_length;
+        uint16 trail_frequency;
+        uint8 visible;
+        Cursor cursor;
     } init = 101;
 
     Empty reset;
 
     message {
-	Point16 position;
-	uint8 visible;
-	Cursor cursor;
+        Point16 position;
+        uint8 visible;
+        Cursor cursor;
     } set;
 
     message {
-	Point16 position;
+        Point16 position;
     } move;
 
     Empty hide;
 
     message {
-	uint16 length;
-	uint16 frequency;
+        uint16 length;
+        uint16 frequency;
     } trail;
 
     message {
-	uint64 id;
+        uint64 id;
     } @ctype(SpiceMsgDisplayInvalOne) inval_one;
 
     Empty inval_all;
@@ -1194,14 +1194,14 @@ message AudioMute {
 channel PlaybackChannel : BaseChannel {
  server:
     message {
-	uint32 time;
-	uint8 data[] @as_ptr(data_size);
+        uint32 time;
+        uint8 data[] @as_ptr(data_size);
     } @ctype(SpiceMsgPlaybackPacket) data = 101;
 
     message {
-	uint32 time;
-	audio_data_mode mode;
-	uint8 data[] @as_ptr(data_size);
+        uint32 time;
+        audio_data_mode mode;
+        uint8 data[] @as_ptr(data_size);
     } mode;
 
     message {
@@ -1223,9 +1223,9 @@ channel PlaybackChannel : BaseChannel {
 channel RecordChannel : BaseChannel {
  server:
     message {
-	uint32 channels;
-	audio_fmt format;
-	uint32 frequency;
+        uint32 channels;
+        audio_fmt format;
+        uint32 frequency;
     } start = 101;
 
     Empty stop;
@@ -1233,18 +1233,18 @@ channel RecordChannel : BaseChannel {
     AudioMute mute;
  client:
     message {
-	uint32 time;
-	uint8 data[] @nomarshal @as_ptr(data_size);
+        uint32 time;
+        uint8 data[] @nomarshal @as_ptr(data_size);
     } @ctype(SpiceMsgcRecordPacket) data = 101;
 
     message {
-	uint32 time;
-	audio_data_mode mode;
-	uint8 data[] @as_ptr(data_size);
+        uint32 time;
+        audio_data_mode mode;
+        uint8 data[] @as_ptr(data_size);
     } mode;
 
     message {
-	uint32 time;
+        uint32 time;
     } start_mark;
 };
 
@@ -1263,97 +1263,97 @@ struct TunnelIpInfo {
     tunnel_ip_type type;
     switch (type) {
     case IPv4:
-	uint8 ipv4[4];
+        uint8 ipv4[4];
     } u;
 } @ctype(SpiceMsgTunnelIpInfo);
 
 channel TunnelChannel : BaseChannel {
  server:
     message {
-	uint16 max_num_of_sockets;
-	uint32 max_socket_data_size;
+        uint16 max_num_of_sockets;
+        uint32 max_socket_data_size;
     } init = 101;
 
     message {
-	uint32 service_id;
-	TunnelIpInfo virtual_ip;
+        uint32 service_id;
+        TunnelIpInfo virtual_ip;
     } service_ip_map;
 
     message {
-	uint16 connection_id;
-	uint32 service_id;
-	uint32 tokens;
+        uint16 connection_id;
+        uint32 service_id;
+        uint32 tokens;
     } socket_open;
 
     message {
-	uint16 connection_id;
+        uint16 connection_id;
     } socket_fin;
 
     message {
-	uint16 connection_id;
+        uint16 connection_id;
     } socket_close;
 
     message {
-	uint16 connection_id;
-	uint8 data[] @end;
+        uint16 connection_id;
+        uint8 data[] @end;
     } socket_data;
 
     message {
-	uint16 connection_id;
+        uint16 connection_id;
     } socket_closed_ack;
 
     message {
-	uint16 connection_id;
-	uint32 num_tokens;
+        uint16 connection_id;
+        uint32 num_tokens;
     } @ctype(SpiceMsgTunnelSocketTokens) socket_token;
 
  client:
     message {
-	tunnel_service_type type;
-	uint32 id;
-	uint32 group;
-	uint32 port;
-	uint8 *name[cstring()] @nocopy;
-	uint8 *description[cstring()] @nocopy;
-	switch (type) {
-	case IPP:
-	    TunnelIpInfo ip @ctype(SpiceMsgTunnelIpInfo);
-	} u;
+        tunnel_service_type type;
+        uint32 id;
+        uint32 group;
+        uint32 port;
+        uint8 *name[cstring()] @nocopy;
+        uint8 *description[cstring()] @nocopy;
+        switch (type) {
+        case IPP:
+            TunnelIpInfo ip @ctype(SpiceMsgTunnelIpInfo);
+        } u;
     } @ctype(SpiceMsgcTunnelAddGenericService) service_add = 101;
 
     message {
-	uint32 id;
+        uint32 id;
     } @ctype(SpiceMsgcTunnelRemoveService) service_remove;
 
     message {
-	uint16 connection_id;
-	uint32 tokens;
+        uint16 connection_id;
+        uint32 tokens;
     } socket_open_ack;
 
     message {
-	uint16 connection_id;
+        uint16 connection_id;
     } socket_open_nack;
 
     message {
-	uint16 connection_id;
+        uint16 connection_id;
     } socket_fin;
 
     message {
-	uint16 connection_id;
+        uint16 connection_id;
     } socket_closed;
 
     message {
-	uint16 connection_id;
+        uint16 connection_id;
     } socket_closed_ack;
 
     message {
-	uint16 connection_id;
-	uint8 data[] @end;
+        uint16 connection_id;
+        uint8 data[] @end;
     } socket_data;
 
     message {
-	uint16 connection_id;
-	uint32 num_tokens;
+        uint16 connection_id;
+        uint32 num_tokens;
     } @ctype(SpiceMsgcTunnelSocketTokens) socket_token;
 };
 
@@ -1394,10 +1394,10 @@ struct VscMessageReaderAdd {
 channel SmartcardChannel : BaseChannel {
  server:
     message {
-	vsc_message_type type;
-	uint32 reader_id;
-	uint32 length;
-	uint8 data[length] @end @nomarshal;
+        vsc_message_type type;
+        uint32 reader_id;
+        uint32 length;
+        uint8 data[length] @end @nomarshal;
     } @ctype(SpiceMsgSmartcard) data = 101;
 
  client:
@@ -1408,35 +1408,35 @@ channel SmartcardChannel : BaseChannel {
  */
 /*
     message {
-	VscMessageHeader header;
-	switch (header.type) {
-	case ReaderAdd:
-	    VscMessageReaderAdd add;
-	case ATR:
-	case APDU:
-	    VscMessageATR atr_data;
-	case Error:
-	    VscMessageError error;
-	} u @anon;
+        VscMessageHeader header;
+        switch (header.type) {
+        case ReaderAdd:
+            VscMessageReaderAdd add;
+        case ATR:
+        case APDU:
+            VscMessageATR atr_data;
+        case Error:
+            VscMessageError error;
+        } u @anon;
     } @ctype(SpiceMsgcSmartcard) data = 101;
 */
     message {
-	vsc_message_type type;
-	uint32 reader_id;
-	uint32 length;
+        vsc_message_type type;
+        uint32 reader_id;
+        uint32 length;
     } @ctype(VSCMsgHeader) header = 101;
 /* See comment on client data message above */
 /*
     message {
-	uint32 code;
+        uint32 code;
     } @ctype(VSCMsgError) error = 101;
 
     message {
-	uint8 data[];
+        uint8 data[];
     } @ctype(VSCMsgATR) atr = 101;
 
     message {
-	int8 name[] @zero_terminated @nonnull;
+        int8 name[] @zero_terminated @nonnull;
     } @ctype(VSCMsgReaderAdd) reader_add = 101;
 */
 } @ifdef(USE_SMARTCARD);
@@ -1456,16 +1456,16 @@ channel UsbredirChannel : SpicevmcChannel {
 channel PortChannel : SpicevmcChannel {
  client:
     message {
-	uint8 event;
+        uint8 event;
     } event = 201;
  server:
     message {
-	uint32 name_size;
-	uint8 *name[name_size] @zero_terminated @marshall @nonnull;
-	uint8 opened;
+        uint32 name_size;
+        uint8 *name[name_size] @zero_terminated @marshall @nonnull;
+        uint8 opened;
     } init = 201;
     message {
-	uint8 event;
+        uint8 event;
     } event;
 };
 
