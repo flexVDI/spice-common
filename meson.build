@@ -141,15 +141,17 @@ if get_option('python-checks')
 endif
 
 # smartcard check
-smartcard_dep = dependency('libcacard', required : false, version : '>= 2.5.1')
-if smartcard_dep.found()
-  spice_common_deps += smartcard_dep
-  spice_common_config_data.set('USE_SMARTCARD', '1')
-else
-  smartcard012_dep = dependency('libcacard', required : false, version : '>= 0.1.2')
-  if smartcard012_dep.found()
-    spice_common_deps += smartcard012_dep
-    spice_common_config_data.set('USE_SMARTCARD_012', '1')
+if get_option('smartcard')
+  smartcard_dep = dependency('libcacard', required : false, version : '>= 2.5.1')
+  if smartcard_dep.found()
+    spice_common_deps += smartcard_dep
+    spice_common_config_data.set('USE_SMARTCARD', '1')
+  else
+    smartcard012_dep = dependency('libcacard', required : false, version : '>= 0.1.2')
+    if smartcard012_dep.found()
+      spice_common_deps += smartcard012_dep
+      spice_common_config_data.set('USE_SMARTCARD_012', '1')
+    endif
   endif
 endif
 

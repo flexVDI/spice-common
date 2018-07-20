@@ -14,12 +14,20 @@ option('celt051',
     type : 'combo',
     choices : ['true', 'false', 'auto'],
     value : 'auto',
+    yield : true,
     description: 'Enable celt051 audio codec')
 
 option('opus',
     type : 'combo',
     choices : ['true', 'false', 'auto'],
+    yield : true,
     description: 'Enable Opus audio codec')
+
+option('smartcard',
+    type : 'boolean',
+    value : true,
+    yield : true,
+    description : 'Enable smartcard support')
 
 option('python-checks',
     type : 'boolean',
