@@ -4,7 +4,7 @@ before_script:
   - >
     dnf install 'dnf-command(copr)' git libtool make libasan
     python3 python3-six python3-pyparsing glib-networking
-    python3-devel meson ninja-build gdk-pixbuf2-devel
+    meson ninja-build gdk-pixbuf2-devel
     -y
   - dnf copr enable @spice/nightly -y
   - dnf builddep spice -y

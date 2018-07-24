@@ -128,11 +128,12 @@ foreach dep : optional_deps
 endforeach
 
 # Python
+py_module = import('python3')
+python = py_module.find_python()
+
 if get_option('python-checks')
-  dependency('python3')
-  py_module = import('python3')
-  python = py_module.find_python()
   foreach module : ['six', 'pyparsing']
+    message('Checking for python module @0@'.format(module))
     cmd = run_command(python, '-m', module)
     if cmd.returncode() != 0
       error('Python module @0@ not found'.format(module))
