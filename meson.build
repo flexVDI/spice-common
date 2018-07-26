@@ -115,13 +115,10 @@ endforeach
 optional_deps = {'celt051' : '>= 0.5.1.1',
                  'opus'    : '>= 0.9.14'}
 foreach dep, version : optional_deps
-  option_value = get_option(dep)
-  if option_value != 'false'
-    d = dependency(dep, required: (option_value == 'true'), version : version)
-    if d.found()
-      spice_common_deps += d
-      spice_common_config_data.set('HAVE_@0@'.format(dep.underscorify().to_upper()), '1')
-    endif
+  d = dependency(dep, required : get_option(dep), version : version)
+  if d.found()
+    spice_common_deps += d
+    spice_common_config_data.set('HAVE_@0@'.format(dep.underscorify().to_upper()), '1')
   endif
 endforeach
 
