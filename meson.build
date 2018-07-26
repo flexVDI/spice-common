@@ -2,7 +2,7 @@
 # project definition
 #
 project('spice-common', 'c',
-         meson_version : '>= 0.45.0',
+         meson_version : '>= 0.47.0',
          license : 'LGPLv2.1')
 
 if not meson.is_subproject()
@@ -98,31 +98,29 @@ endif
 glib_version = '2.38'
 glib_version_info = '>= @0@'.format(glib_version)
 
-deps = [['spice-protocol', '>= 0.12.12'],
-        ['glib-2.0', glib_version_info],
-        ['gio-2.0', glib_version_info],
-        ['gthread-2.0', glib_version_info],
-        ['pixman-1', '>= 0.17.7'],
-        ['openssl', '>= 1.0.0']]
+deps = {'spice-protocol' : '>= 0.12.12',
+        'glib-2.0'       : glib_version_info,
+        'gio-2.0'        : glib_version_info,
+        'gthread-2.0'    : glib_version_info,
+        'pixman-1'       : '>= 0.17.7',
+        'openssl'        : '>= 1.0.0'}
 
-foreach dep : deps
-  spice_common_deps += dependency(dep[0], version : dep[1])
+foreach dep, version : deps
+  spice_common_deps += dependency(dep, version : version)
 endforeach
 
 #
 # Non-mandatory/optional dependencies
 #
-optional_deps = [
-                    ['celt051', '>= 0.5.1.1'],
-                    ['opus', '>= 0.9.14'],
-                ]
-foreach dep : optional_deps
-  option_value = get_option(dep[0])
+optional_deps = {'celt051' : '>= 0.5.1.1',
+                 'opus'    : '>= 0.9.14'}
+foreach dep, version : optional_deps
+  option_value = get_option(dep)
   if option_value != 'false'
-    d = dependency(dep[0], required: (option_value == 'true'), version : dep[1])
+    d = dependency(dep, required: (option_value == 'true'), version : version)
     if d.found()
       spice_common_deps += d
-      spice_common_config_data.set('HAVE_@0@'.format(dep[0].underscorify().to_upper()), '1')
+      spice_common_config_data.set('HAVE_@0@'.format(dep.underscorify().to_upper()), '1')
     endif
   endif
 endforeach
